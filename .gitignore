@@ -1,0 +1,18 @@
+# CONFIDENTIAL stakeholder documents (student material) — never commit
+Resources/General/
+
+# Secrets and local environment
+.env
+.env.*
+!.env.example
+
+# Dependencies and build output
+node_modules/
+web/.next/
+web/out/
+*.tsbuildinfo
+web/next-env.d.ts
+
+# OS / editor
+.DS_Store
+*.log
