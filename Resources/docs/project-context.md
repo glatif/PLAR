@@ -26,6 +26,7 @@ Team-internal notes that keep the project's working context in this folder. They
 | 2026-10-22 | **Identity verification:** the student shows photo ID to the camera before the interview; a multimodal model assists; a person confirms; images are deleted promptly. | Project lead |
 | 2026-10-22 | **Shareable docs stay clean:** no question IDs, source IDs or local `.md` references in anything sent to the supervisor or stakeholders (13-features, 14-design-system, PDFs, emails). Traceability lives in the local docs (00–12, stakeholder-questions). | Project lead |
 | 2026-10-29 | **Feature list approved**; implementation starts. Plan in [16-implementation-plan.md](16-implementation-plan.md). The app lives in `web/` (Next.js 16, Tailwind v4). | Project lead |
+| 2026-10-29 | **Light theme only** for the platform. Dark tokens are kept behind a `.dark` class (not used), and `dark:` utilities follow that class, not the OS setting. | Project lead |
 | 2026-10-22 | Keep **documented facts**, **assumptions** and **proposals** visibly separate in every doc. | Project lead |
 
 ## Key findings to remember

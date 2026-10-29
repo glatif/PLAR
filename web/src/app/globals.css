@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+/* Light theme only (project lead, 2026-10-29). Dark tokens are kept behind a `.dark` class for a possible future toggle;
+   `dark:` utilities follow that class instead of the OS setting. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /*
  * PLAR "Calm Glass" design tokens.
  * Source of truth: Resources/docs/14-design-system.md (§3 colour, §5 spacing, §6 shape, §7 glass, §8 motion).
@@ -42,38 +46,36 @@
   color-scheme: light;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --canvas: #0b0d0f;
-    --surface: #1c1c1e;
-    --surface-2: #2c2c2e;
-    --label: #f5f5f7;
-    --label-2: #a1a1a6;
-    --label-3: #8e8e93;
-    --separator: rgba(255, 255, 255, 0.12);
-    --border-strong: #3a3a3c;
-    --accent: #3bb5aa;
-    --accent-hover: #72cfc5;
-    --accent-subtle: rgba(59, 181, 170, 0.14);
-    --accent-ink: #a9e4dd;
-    --on-accent: #062826;
-    --success: #4cd58a;
-    --warning: #ffa44a;
-    --danger: #ff6b60;
+.dark {
+  --canvas: #0b0d0f;
+  --surface: #1c1c1e;
+  --surface-2: #2c2c2e;
+  --label: #f5f5f7;
+  --label-2: #a1a1a6;
+  --label-3: #8e8e93;
+  --separator: rgba(255, 255, 255, 0.12);
+  --border-strong: #3a3a3c;
+  --accent: #3bb5aa;
+  --accent-hover: #72cfc5;
+  --accent-subtle: rgba(59, 181, 170, 0.14);
+  --accent-ink: #a9e4dd;
+  --on-accent: #062826;
+  --success: #4cd58a;
+  --warning: #ffa44a;
+  --danger: #ff6b60;
 
-    --glass: rgba(28, 28, 30, 0.66);
-    --glass-thick: rgba(28, 28, 30, 0.82);
-    --glass-edge: rgba(255, 255, 255, 0.14);
+  --glass: rgba(28, 28, 30, 0.66);
+  --glass-thick: rgba(28, 28, 30, 0.82);
+  --glass-edge: rgba(255, 255, 255, 0.14);
 
-    --elev-1: 0 0 0 1px rgba(255, 255, 255, 0.06);
-    --elev-2: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 8px 24px rgba(0, 0, 0, 0.4);
-    --elev-3: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 24px 64px rgba(0, 0, 0, 0.55);
+  --elev-1: 0 0 0 1px rgba(255, 255, 255, 0.06);
+  --elev-2: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 8px 24px rgba(0, 0, 0, 0.4);
+  --elev-3: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 24px 64px rgba(0, 0, 0, 0.55);
 
-    --glow-a: rgba(59, 181, 170, 0.16);
-    --glow-b: rgba(13, 127, 119, 0.18);
+  --glow-a: rgba(59, 181, 170, 0.16);
+  --glow-b: rgba(13, 127, 119, 0.18);
 
-    color-scheme: dark;
-  }
+  color-scheme: dark;
 }
 
 /* Glass falls back to solid surfaces when people ask for less transparency or more contrast (§7.2). */

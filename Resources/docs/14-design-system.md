@@ -2,7 +2,7 @@
 
 This is the single design reference for the PLAR platform and **everything we produce alongside it**: the web app, emails, PDFs, assessment reports, proposals, slides and documentation.
 
-> **Status:** v0.1 draft, 2026-10-22. The visual language is inspired by Apple's Human Interface Guidelines (HIG), with **teal** replacing Apple's blue accent. It still needs checking against TRU's brand guidelines for official student-facing documents.
+> **Status:** v0.1 draft, 2026-10-22. The visual language is inspired by Apple's Human Interface Guidelines (HIG), with **teal** replacing Apple's blue accent. It still needs checking against TRU's brand guidelines for official student-facing documents. **The platform uses the light theme only.** The dark-theme values below are kept for reference in case a dark option is added later.
 
 ---
 
