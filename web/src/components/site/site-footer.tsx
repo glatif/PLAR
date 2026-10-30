@@ -12,7 +12,7 @@ export function SiteFooter() {
           </p>
           <p className="text-[13px] text-label-2">
             Questions about PLAR?{" "}
-            <a className="font-medium text-accent hover:text-accent-hover" href="mailto:plar@tru.ca">
+            <a className="font-medium text-accent-text hover:underline hover:underline-offset-2" href="mailto:plar@tru.ca">
               plar@tru.ca
             </a>
           </p>

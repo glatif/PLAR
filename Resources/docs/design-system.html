@@ -1,0 +1,2422 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#F7F6F3">
+<title>PLAR Design System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&family=Geist+Mono:wght@400..600&family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+<style>
+/* ==========================================================================
+   TOKENS
+   ========================================================================== */
+:root {
+  color-scheme: light;
+
+  /* Tangerine accent scale */
+  --tangerine-50:  #FFF7EF;
+  --tangerine-100: #FFEBD6;
+  --tangerine-200: #FFD3AA;
+  --tangerine-300: #FFB474;
+  --tangerine-400: #FF9342;
+  --tangerine-500: #F5761A;
+  --tangerine-600: #C2550A;
+  --tangerine-700: #A8470B;
+  --tangerine-800: #8A3B0F;
+  --tangerine-900: #6F3211;
+  --tangerine-950: #3D1706;
+
+  /* Surfaces and labels (warm neutrals) */
+  --canvas:    #F7F6F3;
+  --surface:   #FFFFFF;
+  --surface-2: #FBFAF8;
+  --surface-3: #F1EFEB;
+  --label:     #1D1D1F;
+  --label-2:   #6B6B70;
+  --label-3:   #8E8E93;
+  --separator: rgba(29, 29, 31, 0.10);
+  --separator-strong: rgba(29, 29, 31, 0.16);
+  --border-strong: #8F8C87;
+  --fill-1: rgba(29, 29, 31, 0.05);
+  --fill-2: rgba(29, 29, 31, 0.08);
+  --fill-3: rgba(29, 29, 31, 0.12);
+
+  /* Accent roles */
+  --brand:         var(--tangerine-500);
+  --accent:        var(--tangerine-600);
+  --accent-hover:  var(--tangerine-700);
+  --accent-press:  var(--tangerine-800);
+  --accent-text:   var(--tangerine-700);
+  --accent-subtle: var(--tangerine-50);
+  --accent-soft:   var(--tangerine-100);
+  --accent-ink:    var(--tangerine-800);
+  --on-accent:     #FFFFFF;
+  --focus-ring:    rgba(194, 85, 10, 0.28);
+
+  /* Status */
+  --success: #1E7B34;  --success-subtle: #EAF6EC;
+  --warning: #7A5200;  --warning-subtle: #FFF6D9;
+  --danger:  #B42318;  --danger-subtle:  #FDECEA;
+  --info:    #1E6FB8;  --info-subtle:    #EAF2FB;
+
+  /* AI-assisted content */
+  --ai: #4B48C8;  --ai-subtle: #F6F5FF;  --ai-soft: #EFEEFD;  --ai-border: #C9C6F5;
+  --ai-gradient: linear-gradient(135deg, #F5761A 0%, #E2477F 50%, #5E5CE6 100%);
+
+  /* Neutral rating */
+  --neutral-chip: #ECEBE8;  --neutral-chip-ink: #3A3A3C;
+
+  /* Type */
+  --font-sans:  "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --font-serif: "Lora", "New York", Georgia, "Times New Roman", serif;
+  --font-mono:  "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* Spacing (4pt grid) */
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
+  --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-10: 40px;
+  --space-12: 48px; --space-16: 64px; --space-20: 80px; --space-24: 96px;
+
+  /* Shape */
+  --r-xs: 6px; --r-sm: 10px; --r-md: 14px; --r-lg: 20px; --r-xl: 28px; --r-full: 999px;
+
+  /* Elevation */
+  --elev-1: 0 1px 2px rgba(29, 29, 31, 0.04), 0 0 0 1px rgba(29, 29, 31, 0.05);
+  --elev-2: 0 6px 20px -6px rgba(29, 29, 31, 0.12), 0 2px 4px rgba(29, 29, 31, 0.04), 0 0 0 1px rgba(29, 29, 31, 0.05);
+  --elev-3: 0 28px 56px -16px rgba(29, 29, 31, 0.22), 0 10px 20px -10px rgba(29, 29, 31, 0.10), 0 0 0 1px rgba(29, 29, 31, 0.06);
+
+  /* Glass (navigation and control layer only) */
+  --glass-regular: rgba(255, 255, 255, 0.72);
+  --glass-thick:   rgba(255, 255, 255, 0.88);
+  --glass-clear:   rgba(255, 255, 255, 0.16);
+  --glass-edge:    rgba(255, 255, 255, 0.65);
+  --glass-blur:    saturate(180%) blur(24px);
+
+  /* Motion */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-spring:   cubic-bezier(0.34, 1.36, 0.64, 1);
+  --ease-enter:    cubic-bezier(0, 0, 0.2, 1);
+  --ease-exit:     cubic-bezier(0.4, 0, 1, 1);
+  --dur-1: 120ms; --dur-2: 200ms; --dur-3: 320ms; --dur-4: 480ms;
+}
+
+/* ==========================================================================
+   BASE
+   ========================================================================== */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 24px; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--canvas);
+  color: var(--label);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: -0.006em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+h1, h2, h3, h4, p { margin: 0; }
+a { color: var(--accent-text); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+button, input, select, textarea { font: inherit; color: inherit; letter-spacing: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 2px; border-radius: 6px; }
+::selection { background: var(--tangerine-200); color: var(--label); }
+svg.i { width: 20px; height: 20px; flex: none; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+svg.i.sm { width: 16px; height: 16px; }
+svg.i.xs { width: 14px; height: 14px; }
+svg.i.lg { width: 24px; height: 24px; }
+svg.i.f { fill: currentColor; stroke: none; }
+.mono { font-family: var(--font-mono); font-size: 12.5px; letter-spacing: 0; }
+.tabular { font-variant-numeric: tabular-nums; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+/* ==========================================================================
+   PAGE LAYOUT
+   ========================================================================== */
+.shell { display: grid; grid-template-columns: 264px minmax(0, 1fr); min-height: 100vh; }
+.side {
+  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  padding: 24px 16px 40px;
+  background: var(--glass-regular);
+  -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+  border-right: 1px solid var(--separator);
+}
+.side .brand { display: flex; align-items: center; gap: 10px; padding: 4px 10px 22px; }
+.mark {
+  width: 32px; height: 32px; border-radius: 9px; flex: none;
+  background: linear-gradient(140deg, #FFB474 0%, #F5761A 45%, #C2550A 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.45), 0 2px 6px -1px rgba(194,85,10,.45);
+  display: grid; place-items: center; color: #fff;
+}
+.mark svg { width: 18px; height: 18px; stroke: #fff; stroke-width: 2.2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.brand-name { font-weight: 650; font-size: 15px; letter-spacing: -0.015em; line-height: 18px; }
+.brand-sub { font-size: 12px; color: var(--label-2); line-height: 16px; }
+.side nav p {
+  margin: 18px 10px 6px; font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--label-2);
+}
+.side nav a {
+  display: flex; align-items: center; height: 34px; padding: 0 10px; border-radius: 8px;
+  color: var(--label); font-size: 14px; font-weight: 450; transition: background var(--dur-1) var(--ease-standard);
+}
+.side nav a:hover { background: var(--fill-1); text-decoration: none; }
+.side nav a.active { background: var(--accent-soft); color: var(--accent-ink); font-weight: 600; }
+
+.topnav { display: none; }
+main { min-width: 0; padding: 0 56px 120px; }
+.wrap { max-width: 1120px; margin: 0 auto; }
+
+/* Hero */
+.hero { position: relative; padding: 88px 0 72px; overflow: hidden; }
+.hero::before {
+  content: ""; position: absolute; inset: -20% -10% auto auto; width: 720px; height: 720px; pointer-events: none;
+  background: radial-gradient(closest-side, rgba(245,118,26,.20), rgba(255,180,116,.10) 45%, transparent 72%);
+  filter: blur(10px);
+}
+.hero-grid { position: relative; display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 56px; align-items: center; }
+.hero h1 {
+  font-family: var(--font-serif); font-weight: 600; font-size: 64px; line-height: 68px; letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+.hero h1 em { font-style: italic; color: var(--accent-text); font-weight: 500; }
+.hero .lead { margin-top: 22px; font-size: 19px; line-height: 30px; color: var(--label-2); max-width: 34em; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 28px; }
+.hero-art { position: relative; height: 420px; }
+.float { position: absolute; background: var(--surface); border-radius: var(--r-lg); box-shadow: var(--elev-3); }
+.float.aa { left: 0; top: 10px; width: 300px; padding: 26px 26px 22px; }
+.float.aa .pair { display: flex; align-items: baseline; gap: 18px; }
+.float.aa .g { font-family: var(--font-sans); font-size: 76px; font-weight: 600; letter-spacing: -0.05em; line-height: 1; }
+.float.aa .l { font-family: var(--font-serif); font-size: 76px; font-weight: 500; font-style: italic; letter-spacing: -0.03em; line-height: 1; color: var(--accent-text); }
+.float.aa .names { display: flex; justify-content: space-between; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--separator); font-size: 12px; color: var(--label-2); }
+.float.case { right: 0; top: 196px; width: 320px; padding: 20px; }
+.float.toast-demo { left: 40px; bottom: 6px; }
+.dot-orb { position: absolute; right: 40px; top: 0; width: 120px; height: 120px; border-radius: 50%;
+  background: radial-gradient(circle at 32% 30%, #FFD3AA, #F5761A 55%, #C2550A); box-shadow: 0 30px 60px -20px rgba(194,85,10,.55); }
+
+/* Sections */
+.section { padding: 96px 0 8px; }
+.section + .section { border-top: 1px solid var(--separator); margin-top: 72px; }
+.eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent-text); }
+.section h2 {
+  margin-top: 10px; font-family: var(--font-serif); font-weight: 600; font-size: 44px; line-height: 50px; letter-spacing: -0.025em;
+}
+.section > .wrap > .lead, .section .lead { margin-top: 14px; font-size: 18px; line-height: 28px; color: var(--label-2); max-width: 46em; }
+.sub { margin-top: 56px; }
+.sub h3 { font-size: 22px; line-height: 28px; font-weight: 600; letter-spacing: -0.018em; }
+.sub > p.desc { margin-top: 6px; color: var(--label-2); font-size: 15px; line-height: 22px; max-width: 52em; }
+.sub > .panel, .sub > .grid, .sub > .spec, .sub > .row-wrap { margin-top: 20px; }
+
+.panel { background: var(--surface); border-radius: var(--r-lg); box-shadow: var(--elev-1); padding: 28px; }
+.panel.canvas { background: var(--surface-2); }
+.panel-label { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--label-2); margin-bottom: 16px; }
+.grid { display: grid; gap: 20px; }
+.g2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.g3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.g4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.stack { display: flex; flex-direction: column; gap: 12px; }
+.note { font-size: 13px; line-height: 18px; color: var(--label-2); }
+.divider { height: 1px; background: var(--separator); margin: 24px 0; border: 0; }
+
+/* Spec table */
+.spec { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 20px; background: var(--surface); border-radius: var(--r-lg); overflow: hidden; box-shadow: var(--elev-1); }
+.spec th { text-align: left; font-weight: 500; color: var(--label-2); font-size: 13px; padding: 12px 18px; background: var(--surface-2); border-bottom: 1px solid var(--separator); }
+.spec td { padding: 13px 18px; border-bottom: 1px solid var(--separator); vertical-align: top; }
+.spec tr:last-child td { border-bottom: 0; }
+.spec code, .code-inline { font-family: var(--font-mono); font-size: 12.5px; background: var(--fill-1); padding: 2px 6px; border-radius: 5px; white-space: nowrap; }
+.table-scroll { overflow-x: auto; border-radius: var(--r-lg); }
+
+/* ==========================================================================
+   FOUNDATION SPECIMENS
+   ========================================================================== */
+.swatches { display: grid; grid-template-columns: repeat(11, minmax(0, 1fr)); gap: 8px; }
+.sw { border: 0; padding: 0; background: none; text-align: left; border-radius: var(--r-md); }
+.sw .chip { height: 96px; border-radius: var(--r-md); box-shadow: inset 0 0 0 1px rgba(29,29,31,.06); position: relative; transition: transform var(--dur-2) var(--ease-spring); }
+.sw:hover .chip { transform: translateY(-3px); }
+.sw .chip .key { position: absolute; left: 8px; top: 7px; font-size: 11px; font-weight: 600; font-family: var(--font-mono); }
+.sw .chip .star { position: absolute; right: 8px; top: 7px; font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 99px; background: rgba(255,255,255,.88); color: var(--label); }
+.sw .hex { display: block; margin-top: 8px; font-family: var(--font-mono); font-size: 11.5px; color: var(--label); }
+.sw .cr { display: block; font-size: 11px; color: var(--label-2); line-height: 15px; }
+.role-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+.role { display: flex; gap: 12px; align-items: center; padding: 12px; border-radius: var(--r-md); background: var(--surface); box-shadow: var(--elev-1); border: 0; text-align: left; }
+.role .c { width: 40px; height: 40px; border-radius: 10px; flex: none; box-shadow: inset 0 0 0 1px rgba(29,29,31,.08); }
+.role b { display: block; font-size: 13.5px; font-weight: 600; line-height: 18px; }
+.role span { display: block; font-size: 12px; color: var(--label-2); line-height: 16px; }
+.role .mono { font-size: 11px; color: var(--label-2); }
+
+.pairing { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.face { padding: 32px; border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--elev-1); position: relative; overflow: hidden; }
+.face .big { font-size: 120px; line-height: 1; letter-spacing: -0.05em; }
+.face.geist .big { font-family: var(--font-sans); font-weight: 600; }
+.face.lora .big { font-family: var(--font-serif); font-weight: 500; letter-spacing: -0.03em; }
+.face.lora .big i { color: var(--accent-text); }
+.face h4 { margin-top: 18px; font-size: 20px; font-weight: 600; letter-spacing: -0.015em; }
+.face p { margin-top: 6px; color: var(--label-2); font-size: 15px; line-height: 22px; }
+.face .glyphs { margin-top: 18px; font-size: 22px; line-height: 34px; color: var(--label); word-break: break-all; }
+.face.lora .glyphs { font-family: var(--font-serif); }
+.face .weights { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 15px; }
+
+.type-row { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 24px; align-items: baseline; padding: 22px 0; border-bottom: 1px solid var(--separator); }
+.type-row:last-child { border-bottom: 0; }
+.type-row .meta b { display: block; font-size: 14px; font-weight: 600; }
+.type-row .meta span { display: block; font-size: 12px; color: var(--label-2); line-height: 17px; font-family: var(--font-mono); }
+.type-row .meta em { display: block; margin-top: 4px; font-style: normal; font-size: 12px; color: var(--label-2); line-height: 16px; }
+.type-row .sample { min-width: 0; overflow-wrap: anywhere; }
+
+.space-row { display: grid; grid-template-columns: 80px 64px minmax(0, 1fr); align-items: center; gap: 16px; padding: 7px 0; font-size: 13px; }
+.space-row .bar { height: 14px; border-radius: 4px; background: linear-gradient(90deg, var(--tangerine-300), var(--tangerine-500)); }
+.radius-tile { aspect-ratio: 1.3; background: var(--accent-subtle); border: 1.5px solid var(--tangerine-300); display: grid; place-items: end start; padding: 14px; }
+.radius-tile b { font-size: 14px; font-weight: 600; display: block; }
+.radius-tile span { font-size: 12px; color: var(--label-2); }
+.elev-tile { height: 150px; border-radius: var(--r-lg); background: var(--surface); display: flex; flex-direction: column; justify-content: flex-end; padding: 18px; }
+.elev-tile b { font-size: 15px; } .elev-tile span { font-size: 13px; color: var(--label-2); }
+
+.glass-stage {
+  position: relative; border-radius: var(--r-xl); overflow: hidden; padding: 40px; min-height: 340px;
+  background:
+    radial-gradient(40% 60% at 15% 30%, #FFB474 0%, transparent 70%),
+    radial-gradient(35% 55% at 80% 20%, #F5761A 0%, transparent 70%),
+    radial-gradient(45% 60% at 60% 95%, #E2477F 0%, transparent 70%),
+    radial-gradient(40% 50% at 95% 85%, #5E5CE6 0%, transparent 70%),
+    #FFEBD6;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; align-items: center;
+}
+.glass-sample { border-radius: var(--r-lg); padding: 22px; min-height: 180px; display: flex; flex-direction: column; justify-content: space-between;
+  -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-edge); box-shadow: 0 10px 30px -12px rgba(29,29,31,.25); }
+.glass-sample b { font-size: 17px; font-weight: 600; }
+.glass-sample p { font-size: 13px; line-height: 18px; margin-top: 6px; }
+.glass-sample .mono { font-size: 11.5px; }
+.gs-regular { background: var(--glass-regular); }
+.gs-thick { background: var(--glass-thick); }
+.gs-clear { background: var(--glass-clear); color: #fff; border-color: rgba(255,255,255,.35); }
+.gs-clear p, .gs-clear .mono { color: rgba(255,255,255,.92); }
+
+.motion-track { position: relative; height: 44px; border-radius: var(--r-full); background: var(--fill-1); margin-top: 10px; }
+.motion-dot { position: absolute; left: 6px; top: 6px; width: 32px; height: 32px; border-radius: 50%; background: var(--brand); box-shadow: 0 4px 10px -2px rgba(194,85,10,.5); transition: left 900ms; }
+.motion-play .motion-dot { left: calc(100% - 38px); }
+.motion-item + .motion-item { margin-top: 18px; }
+.motion-item header { display: flex; justify-content: space-between; font-size: 14px; }
+.motion-item header span { color: var(--label-2); font-family: var(--font-mono); font-size: 12px; }
+
+.icon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 8px; }
+.icon-cell { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 18px 8px 14px; border-radius: var(--r-md); background: var(--surface-2); font-size: 11.5px; color: var(--label-2); }
+.icon-cell svg { width: 24px; height: 24px; color: var(--label); }
+.icon-cell .pair-icons { display: flex; gap: 14px; align-items: center; }
+.icon-cell .pair-icons svg.f { color: var(--accent-text); }
+.icon-cell.no-fill { opacity: .55; }
+.icon-sizes { display: flex; align-items: flex-end; gap: 28px; flex-wrap: wrap; }
+.icon-sizes figure { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 10px; font-size: 12px; color: var(--label-2); }
+.icon-sizes .duo { display: flex; gap: 10px; align-items: center; }
+.icon-tile { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 9px; color: #fff; }
+.toggle-ic { width: 44px; height: 44px; border-radius: 50%; border: 0; display: grid; place-items: center; background: var(--fill-1); color: var(--label-2); transition: background var(--dur-1), color var(--dur-1), transform var(--dur-2) var(--ease-spring); }
+.toggle-ic:hover { background: var(--fill-2); }
+.toggle-ic:active { transform: scale(.9); }
+.toggle-ic .on { display: none; }
+.toggle-ic[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent-text); }
+.toggle-ic[aria-pressed="true"] .on { display: block; }
+.toggle-ic[aria-pressed="true"] .off { display: none; }
+.navitem .on, .tabbar .on { display: none; }
+.navitem[aria-current="page"] .on, .tabbar [aria-current="page"] .on { display: block; }
+.navitem[aria-current="page"] .off, .tabbar [aria-current="page"] .off { display: none; }
+
+/* ==========================================================================
+   COMPONENTS
+   ========================================================================== */
+
+/* Buttons */
+.btn {
+  position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 44px; padding: 0 20px; border: 0; border-radius: var(--r-full);
+  font-size: 15px; font-weight: 600; letter-spacing: -0.01em; white-space: nowrap;
+  transition: background-color var(--dur-1) var(--ease-standard), transform var(--dur-1) var(--ease-standard), box-shadow var(--dur-2) var(--ease-standard), color var(--dur-1);
+  -webkit-tap-highlight-color: transparent;
+}
+.btn:active:not(:disabled) { transform: scale(0.97); }
+.btn:disabled, .btn[aria-disabled="true"] { opacity: 0.38; cursor: not-allowed; }
+.btn-primary { background: var(--accent); color: var(--on-accent); box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 1px 2px rgba(138,59,15,.25); }
+.btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
+.btn-primary:active:not(:disabled) { background: var(--accent-press); }
+.btn-secondary { background: var(--accent-soft); color: var(--accent-ink); }
+.btn-secondary:hover:not(:disabled) { background: var(--tangerine-200); }
+.btn-neutral { background: var(--fill-1); color: var(--label); }
+.btn-neutral:hover:not(:disabled) { background: var(--fill-2); }
+.btn-bordered { background: var(--surface); color: var(--label); box-shadow: inset 0 0 0 1px var(--separator-strong), 0 1px 2px rgba(29,29,31,.05); }
+.btn-bordered:hover:not(:disabled) { background: var(--surface-2); }
+.btn-plain { background: transparent; color: var(--accent-text); padding: 0 12px; }
+.btn-plain:hover:not(:disabled) { background: var(--accent-subtle); }
+.btn-destructive { background: var(--danger-subtle); color: var(--danger); }
+.btn-destructive:hover:not(:disabled) { background: #FAD9D5; }
+.btn-danger-fill { background: var(--danger); color: #fff; }
+.btn-dark { background: var(--label); color: #fff; }
+.btn-lg { height: 52px; padding: 0 26px; font-size: 17px; }
+.btn-sm { height: 32px; padding: 0 14px; font-size: 13px; gap: 6px; }
+.btn-sm svg.i { width: 16px; height: 16px; }
+.btn-block { width: 100%; border-radius: var(--r-sm); }
+.btn .spinner { display: none; }
+.btn.is-loading { pointer-events: none; }
+.btn.is-loading .spinner { display: inline-block; }
+.btn.is-loading .btn-icon { display: none; }
+.icon-btn { width: 44px; height: 44px; padding: 0; border-radius: 50%; }
+.icon-btn.sm { width: 32px; height: 32px; }
+.spinner { width: 16px; height: 16px; border-radius: 50%; border: 2px solid currentColor; border-right-color: transparent; animation: spin 700ms linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.btn-matrix { display: grid; grid-template-columns: 140px repeat(4, minmax(0, 1fr)); align-items: center; gap: 14px 16px; }
+.btn-matrix .h { font-size: 12px; color: var(--label-2); font-weight: 500; }
+
+/* Form fields */
+.field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.field > label, .field-label { font-size: 14px; font-weight: 550; line-height: 20px; }
+.field .opt { font-weight: 400; color: var(--label-2); }
+.help { font-size: 13px; line-height: 18px; color: var(--label-2); }
+.err { display: flex; align-items: center; gap: 6px; font-size: 13px; line-height: 18px; color: var(--danger); }
+.input, .select, .textarea {
+  width: 100%; height: 44px; padding: 0 14px; border-radius: var(--r-sm);
+  background: var(--surface); border: 1px solid var(--border-strong);
+  font-size: 16px; color: var(--label); outline: none;
+  transition: border-color var(--dur-1), box-shadow var(--dur-2) var(--ease-standard);
+}
+.input::placeholder, .textarea::placeholder { color: var(--label-2); opacity: 0.75; }
+.input:hover, .select:hover, .textarea:hover { border-color: #6F6C67; }
+.input:focus, .select:focus, .textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 4px var(--focus-ring); }
+.input[aria-invalid="true"] { border-color: var(--danger); }
+.input[aria-invalid="true"]:focus { box-shadow: 0 0 0 4px rgba(180,35,24,.18); }
+.input:disabled { background: var(--surface-3); border-color: var(--separator-strong); color: var(--label-2); cursor: not-allowed; }
+.textarea { height: auto; min-height: 112px; padding: 12px 14px; line-height: 24px; resize: vertical; }
+.select { appearance: none; -webkit-appearance: none; padding-right: 40px; cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B6B70' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center; }
+.affix { position: relative; }
+.affix > svg.i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--label-2); pointer-events: none; }
+.affix > .input { padding-left: 42px; }
+.search { height: 40px; border: 0; background: var(--fill-1); border-radius: var(--r-full); padding-left: 40px; font-size: 15px; }
+.search:hover { background: var(--fill-2); }
+.search:focus { background: var(--surface); box-shadow: 0 0 0 1px var(--accent), 0 0 0 5px var(--focus-ring); }
+.affix .kbd { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); }
+.kbd { font-family: var(--font-mono); font-size: 11px; padding: 2px 6px; border-radius: 5px; background: var(--surface); box-shadow: inset 0 0 0 1px var(--separator-strong); color: var(--label-2); }
+.field-row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+
+/* Checkbox / radio */
+.check { display: flex; gap: 12px; align-items: flex-start; min-height: 44px; padding: 10px 0; cursor: pointer; }
+.check input { appearance: none; -webkit-appearance: none; margin: 1px 0 0; width: 22px; height: 22px; flex: none;
+  border: 1.5px solid var(--border-strong); background: var(--surface); border-radius: 7px; cursor: pointer;
+  display: grid; place-items: center; transition: background var(--dur-1), border-color var(--dur-1), transform var(--dur-1) var(--ease-spring); }
+.check input[type="radio"] { border-radius: 50%; }
+.check input:hover { border-color: var(--accent); }
+.check input:active { transform: scale(0.9); }
+.check input:checked { background: var(--accent); border-color: var(--accent); }
+.check input[type="checkbox"]:checked::after { content: ""; width: 12px; height: 12px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center/contain no-repeat; }
+.check input[type="checkbox"]:indeterminate { background: var(--accent); border-color: var(--accent); }
+.check input[type="checkbox"]:indeterminate::after { content: ""; width: 10px; height: 2.5px; border-radius: 2px; background: #fff; }
+.check input[type="radio"]:checked::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #fff; }
+.check input:disabled { opacity: 0.4; cursor: not-allowed; }
+.check b { display: block; font-size: 15px; font-weight: 500; line-height: 22px; }
+.check span { display: block; font-size: 13px; color: var(--label-2); line-height: 18px; }
+
+/* Switch */
+.switch { position: relative; width: 51px; height: 31px; border-radius: var(--r-full); border: 0; padding: 0; flex: none;
+  background: #E3E1DD; transition: background var(--dur-2) var(--ease-standard); }
+.switch::after { content: ""; position: absolute; top: 2px; left: 2px; width: 27px; height: 27px; border-radius: 50%; background: #fff;
+  box-shadow: 0 3px 8px rgba(0,0,0,.15), 0 1px 1px rgba(0,0,0,.16), 0 0 0 .5px rgba(0,0,0,.04); transition: transform var(--dur-3) var(--ease-spring); }
+.switch[aria-checked="true"] { background: var(--accent); }
+.switch[aria-checked="true"]::after { transform: translateX(20px); }
+.switch:disabled { opacity: 0.4; cursor: not-allowed; }
+.switch-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 52px; }
+.switch-row b { display: block; font-size: 15px; font-weight: 500; }
+.switch-row span { display: block; font-size: 13px; color: var(--label-2); }
+
+/* Segmented control */
+.segmented { display: inline-flex; padding: 3px; gap: 2px; border-radius: var(--r-full); background: var(--fill-2); }
+.segmented button { height: 34px; padding: 0 16px; border: 0; border-radius: var(--r-full); background: transparent; font-size: 14px; font-weight: 500; color: var(--label);
+  transition: background var(--dur-2) var(--ease-standard), box-shadow var(--dur-2); }
+.segmented button[aria-checked="true"] { background: var(--surface); font-weight: 600; box-shadow: 0 2px 6px rgba(29,29,31,.10), 0 0 0 .5px rgba(29,29,31,.06); }
+.segmented.lg button { height: 40px; padding: 0 22px; font-size: 15px; }
+
+/* Slider */
+.range { -webkit-appearance: none; appearance: none; width: 100%; height: 28px; background: transparent; --p: 50%; }
+.range::-webkit-slider-runnable-track { height: 6px; border-radius: 99px; background: linear-gradient(90deg, var(--accent) var(--p), #E3E1DD var(--p)); }
+.range::-moz-range-track { height: 6px; border-radius: 99px; background: #E3E1DD; }
+.range::-moz-range-progress { height: 6px; border-radius: 99px; background: var(--accent); }
+.range::-webkit-slider-thumb { -webkit-appearance: none; width: 26px; height: 26px; margin-top: -10px; border-radius: 50%; background: #fff; box-shadow: 0 3px 8px rgba(0,0,0,.15), 0 0 0 .5px rgba(0,0,0,.08); }
+.range::-moz-range-thumb { width: 26px; height: 26px; border: 0; border-radius: 50%; background: #fff; box-shadow: 0 3px 8px rgba(0,0,0,.15), 0 0 0 .5px rgba(0,0,0,.08); }
+
+/* Time slots */
+.slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+.slot { height: 44px; border-radius: var(--r-sm); border: 0; background: var(--surface); box-shadow: inset 0 0 0 1px var(--separator-strong); font-size: 14px; font-weight: 500; font-variant-numeric: tabular-nums;
+  transition: background var(--dur-1), box-shadow var(--dur-1), color var(--dur-1); }
+.slot:hover { box-shadow: inset 0 0 0 1.5px var(--accent); }
+.slot[aria-pressed="true"] { background: var(--accent); color: #fff; box-shadow: none; }
+.slot:disabled { color: var(--label-3); background: var(--surface-3); box-shadow: none; text-decoration: line-through; cursor: not-allowed; }
+
+/* Dropzone */
+.dropzone { border: 1.5px dashed var(--tangerine-300); background: var(--accent-subtle); border-radius: var(--r-lg); padding: 32px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.dropzone .ic { width: 52px; height: 52px; border-radius: 16px; background: var(--surface); box-shadow: var(--elev-2); display: grid; place-items: center; color: var(--accent-text); margin-bottom: 6px; }
+.dropzone b { font-size: 16px; font-weight: 600; }
+.file { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: var(--r-md); background: var(--surface); box-shadow: var(--elev-1); }
+.file .fi { width: 36px; height: 36px; border-radius: 9px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent-ink); flex: none; }
+.file .meta { flex: 1; min-width: 0; }
+.file .meta b { display: block; font-size: 14px; font-weight: 550; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.file .meta span { display: block; font-size: 12px; color: var(--label-2); }
+.file .bar { height: 4px; border-radius: 99px; background: var(--fill-2); margin-top: 6px; overflow: hidden; }
+.file .bar i { display: block; height: 100%; width: 64%; border-radius: inherit; background: var(--accent); }
+
+/* Badges */
+.badge { display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 10px; border-radius: var(--r-full); font-size: 12px; font-weight: 550; line-height: 1; white-space: nowrap; }
+.badge svg.i { width: 13px; height: 13px; stroke-width: 2.2; }
+.b-neutral { background: var(--fill-1); color: var(--neutral-chip-ink); }
+.b-accent { background: var(--accent-soft); color: var(--accent-ink); }
+.b-success { background: var(--success-subtle); color: var(--success); }
+.b-warning { background: var(--warning-subtle); color: var(--warning); }
+.b-danger { background: var(--danger-subtle); color: var(--danger); }
+.b-info { background: var(--info-subtle); color: var(--info); }
+.b-solid { background: var(--accent); color: #fff; }
+.b-outline { background: transparent; color: var(--label-2); box-shadow: inset 0 0 0 1px var(--separator-strong); }
+.badge-lg { height: 28px; padding: 0 12px; font-size: 13px; }
+.b-ai { background: var(--ai-soft); color: var(--ai); }
+.b-ai .spark { width: 13px; height: 13px; }
+.count { display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 99px; background: var(--accent); color: #fff; font-size: 11px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.tag { display: inline-flex; align-items: center; gap: 4px; height: 30px; padding: 0 6px 0 12px; border-radius: var(--r-full); background: var(--surface); box-shadow: inset 0 0 0 1px var(--separator-strong); font-size: 13px; font-weight: 500; }
+.tag button { width: 22px; height: 22px; border: 0; border-radius: 50%; background: transparent; display: grid; place-items: center; color: var(--label-2); }
+.tag button:hover { background: var(--fill-2); color: var(--label); }
+
+/* Avatars */
+.avatar { width: 40px; height: 40px; border-radius: 50%; display: inline-grid; place-items: center; font-size: 14px; font-weight: 600; flex: none; position: relative; letter-spacing: 0; }
+.avatar.sm { width: 28px; height: 28px; font-size: 11px; }
+.avatar.lg { width: 56px; height: 56px; font-size: 19px; }
+.avatar.xl { width: 72px; height: 72px; font-size: 24px; }
+.av-1 { background: var(--tangerine-100); color: var(--tangerine-800); }
+.av-2 { background: #E7E6FB; color: #3E3BA8; }
+.av-3 { background: #E3F1EC; color: #1F6A50; }
+.av-4 { background: #F6E6EC; color: #9A2E55; }
+.av-5 { background: #EDE8E0; color: #5C4A2E; }
+.avatar .presence { position: absolute; right: -1px; bottom: -1px; width: 12px; height: 12px; border-radius: 50%; background: #34C759; border: 2.5px solid var(--surface); }
+.avatar-group { display: flex; }
+.avatar-group .avatar { box-shadow: 0 0 0 2.5px var(--surface); }
+.avatar-group .avatar + .avatar { margin-left: -10px; }
+
+/* Cards and lists */
+.card { background: var(--surface); border-radius: var(--r-lg); box-shadow: var(--elev-1); }
+.card-pad { padding: 22px; }
+.card.interactive { transition: box-shadow var(--dur-2) var(--ease-standard), transform var(--dur-2) var(--ease-standard); cursor: pointer; }
+.card.interactive:hover { box-shadow: var(--elev-2); transform: translateY(-2px); }
+.stat .label { font-size: 13px; font-weight: 500; color: var(--label-2); display: flex; align-items: center; gap: 6px; }
+.stat .val { margin-top: 8px; font-size: 32px; line-height: 38px; font-weight: 600; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.stat .val small { font-size: 17px; font-weight: 500; color: var(--label-2); letter-spacing: -0.01em; }
+.stat .hint { margin-top: 4px; font-size: 13px; color: var(--label-2); display: flex; align-items: center; gap: 6px; }
+.trend-up { color: var(--success); font-weight: 600; }
+.spark-line { margin-top: 12px; width: 100%; height: 36px; }
+
+.case-card .top { display: flex; align-items: center; gap: 12px; }
+.case-card .name { font-size: 16px; font-weight: 600; letter-spacing: -0.012em; }
+.case-card .prog { font-size: 13px; color: var(--label-2); }
+.case-card .progress { margin-top: 18px; }
+.case-card .foot { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--separator); display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+
+.inset-list { background: var(--surface); border-radius: var(--r-md); box-shadow: var(--elev-1); overflow: hidden; }
+.inset-list .li { display: flex; align-items: center; gap: 14px; min-height: 56px; padding: 10px 16px; position: relative; transition: background var(--dur-1); }
+.inset-list a.li, .inset-list button.li { color: inherit; width: 100%; border: 0; background: transparent; text-align: left; }
+.inset-list a.li:hover, .inset-list button.li:hover { background: var(--surface-2); text-decoration: none; }
+.inset-list .li + .li::before { content: ""; position: absolute; top: 0; left: 62px; right: 0; height: 1px; background: var(--separator); }
+.inset-list .li-ic { width: 32px; height: 32px; border-radius: 9px; display: grid; place-items: center; flex: none; color: #fff; }
+.inset-list .li-body { flex: 1; min-width: 0; }
+.inset-list .li-body b { display: block; font-size: 15px; font-weight: 500; line-height: 20px; }
+.inset-list .li-body span { display: block; font-size: 13px; color: var(--label-2); line-height: 18px; }
+.inset-list .li-trail { display: flex; align-items: center; gap: 8px; color: var(--label-2); font-size: 14px; }
+.list-head { font-size: 13px; color: var(--label-2); padding: 0 16px 8px; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 500; }
+
+/* Table */
+.dtable { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 14px; min-width: 720px; }
+.dtable th { text-align: left; font-weight: 500; font-size: 13px; color: var(--label-2); padding: 0 16px; height: 44px; border-bottom: 1px solid var(--separator); white-space: nowrap; }
+.dtable th button { border: 0; background: none; padding: 0; color: inherit; font-weight: 500; display: inline-flex; align-items: center; gap: 4px; }
+.dtable td { padding: 0 16px; height: 56px; border-bottom: 1px solid var(--separator); white-space: nowrap; }
+.dtable tbody tr { transition: background var(--dur-1); }
+.dtable tbody tr:hover { background: var(--surface-2); }
+.dtable tbody tr[aria-selected="true"] { background: var(--accent-subtle); }
+.dtable tbody tr:last-child td { border-bottom: 0; }
+.dtable .num { text-align: right; font-variant-numeric: tabular-nums; }
+.dtable .who { display: flex; align-items: center; gap: 10px; }
+.dtable .who b { font-weight: 550; display: block; }
+.dtable .who span { font-size: 12px; color: var(--label-2); display: block; line-height: 16px; }
+.dtable .check { min-height: 0; padding: 0; }
+.table-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--separator); flex-wrap: wrap; }
+
+/* Navigation */
+.topbar { display: flex; align-items: center; gap: 16px; height: 56px; padding: 0 16px; border-radius: var(--r-md);
+  background: var(--glass-regular); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+  box-shadow: 0 0 0 1px var(--separator), 0 8px 24px -12px rgba(29,29,31,.18); }
+.topbar .brand-name { font-size: 14px; }
+.topbar .mark { width: 28px; height: 28px; border-radius: 8px; }
+.topbar .mark svg { width: 15px; height: 15px; }
+.nav-stage { padding: 20px; border-radius: var(--r-xl); background: linear-gradient(180deg, #FFF1E2 0%, var(--canvas) 100%); }
+.mini-app { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 16px; margin-top: 16px; min-height: 300px; }
+.mini-side { border-radius: var(--r-md); padding: 12px; background: var(--glass-regular); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); box-shadow: 0 0 0 1px var(--separator); }
+.mini-side p { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--label-2); padding: 8px 10px 6px; }
+.navitem { display: flex; align-items: center; gap: 10px; height: 38px; padding: 0 10px; border-radius: 9px; font-size: 14px; font-weight: 500; color: var(--label); width: 100%; border: 0; background: transparent; text-align: left; }
+.navitem svg.i { width: 18px; height: 18px; color: var(--label-2); }
+.navitem:hover { background: var(--fill-1); }
+.navitem[aria-current="page"] { background: var(--accent-soft); color: var(--accent-ink); font-weight: 600; }
+.navitem[aria-current="page"] svg.i { color: var(--accent-text); }
+.navitem .count { margin-left: auto; }
+.navitem .soon { margin-left: auto; font-size: 11px; color: var(--label-2); font-weight: 500; }
+.mini-main { border-radius: var(--r-md); background: var(--surface); box-shadow: var(--elev-1); padding: 22px; }
+
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--separator); overflow-x: auto; }
+.tab { position: relative; height: 44px; padding: 0 14px; border: 0; background: transparent; font-size: 15px; font-weight: 500; color: var(--label-2); white-space: nowrap; display: inline-flex; align-items: center; gap: 8px; }
+.tab:hover { color: var(--label); }
+.tab[aria-selected="true"] { color: var(--label); font-weight: 600; }
+.tab[aria-selected="true"]::after { content: ""; position: absolute; left: 10px; right: 10px; bottom: -1px; height: 2.5px; border-radius: 2px; background: var(--accent); }
+.tabpanel { padding-top: 18px; font-size: 15px; color: var(--label-2); }
+
+.crumbs { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; font-size: 14px; color: var(--label-2); }
+.crumbs a { color: var(--label-2); }
+.crumbs a:hover { color: var(--accent-text); }
+.crumbs [aria-current] { color: var(--label); font-weight: 550; }
+.crumbs svg.i { width: 14px; height: 14px; color: var(--label-3); }
+
+.pager { display: flex; align-items: center; gap: 4px; }
+.pager button { min-width: 36px; height: 36px; border: 0; border-radius: 10px; background: transparent; font-size: 14px; font-weight: 500; font-variant-numeric: tabular-nums; display: grid; place-items: center; }
+.pager button:hover { background: var(--fill-1); }
+.pager button[aria-current="page"] { background: var(--label); color: #fff; }
+.pager button:disabled { color: var(--label-3); cursor: not-allowed; background: transparent; }
+
+.phone { width: 300px; border-radius: 40px; padding: 10px; background: #1D1D1F; box-shadow: var(--elev-3); margin: 0 auto; }
+.phone-screen { border-radius: 31px; overflow: hidden; background: var(--canvas); height: 300px; display: flex; flex-direction: column; position: relative; }
+.phone-screen .ps-body { flex: 1; padding: 44px 18px 0; }
+.phone-screen .ps-body h4 { font-family: var(--font-serif); font-size: 26px; font-weight: 600; letter-spacing: -0.02em; }
+.phone-screen .ps-body p { font-size: 13px; color: var(--label-2); margin-top: 2px; }
+.tabbar { display: grid; grid-template-columns: repeat(4, 1fr); padding: 8px 6px 18px; background: var(--glass-thick); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); border-top: 1px solid var(--separator); }
+.tabbar button { border: 0; background: none; display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 10.5px; font-weight: 500; color: var(--label-2); padding: 4px 0; }
+.tabbar button[aria-current="page"] { color: var(--accent-text); }
+.tabbar svg.i { width: 22px; height: 22px; }
+
+/* Feedback */
+.alert { display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border-radius: var(--r-md); font-size: 14px; line-height: 20px; }
+.alert svg.i { margin-top: 1px; }
+.alert b { display: block; font-weight: 600; font-size: 14.5px; }
+.alert .grow { flex: 1; min-width: 0; }
+.alert .acts { margin-top: 10px; display: flex; gap: 8px; }
+.a-info { background: var(--info-subtle); color: #164F84; } .a-info svg.i { color: var(--info); }
+.a-success { background: var(--success-subtle); color: #165A27; } .a-success svg.i { color: var(--success); }
+.a-warning { background: var(--warning-subtle); color: #5E3F00; } .a-warning svg.i { color: var(--warning); }
+.a-danger { background: var(--danger-subtle); color: #8A1B12; } .a-danger svg.i { color: var(--danger); }
+.a-accent { background: var(--accent-subtle); color: var(--accent-ink); box-shadow: inset 0 0 0 1px var(--tangerine-200); } .a-accent svg.i { color: var(--accent-text); }
+.banner { display: flex; align-items: center; gap: 14px; padding: 12px 16px; border-radius: var(--r-md); background: var(--label); color: #fff; font-size: 14px; }
+.banner .btn { margin-left: auto; }
+
+.toast { display: inline-flex; align-items: center; gap: 10px; padding: 0 8px 0 16px; height: 48px; border-radius: var(--r-full);
+  background: rgba(29, 29, 31, 0.86); color: #fff; font-size: 14px; font-weight: 500;
+  -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); box-shadow: 0 14px 34px -10px rgba(0,0,0,.4); }
+.toast .ok { width: 22px; height: 22px; border-radius: 50%; background: var(--brand); display: grid; place-items: center; }
+.toast .ok svg.i { width: 13px; height: 13px; stroke-width: 3; stroke: #fff; }
+.toast .btn-plain { color: var(--tangerine-300); height: 34px; }
+.toast .btn-plain:hover { background: rgba(255,255,255,.1); }
+#toast-host { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 100; pointer-events: none; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+#toast-host .toast { pointer-events: auto; animation: toast-in var(--dur-4) var(--ease-spring) both; }
+#toast-host .toast.out { animation: toast-out var(--dur-2) var(--ease-exit) both; }
+@keyframes toast-in { from { opacity: 0; transform: translateY(16px) scale(.96); } }
+@keyframes toast-out { to { opacity: 0; transform: translateY(8px) scale(.98); } }
+
+.tooltip { position: relative; display: inline-block; padding: 7px 11px; border-radius: 9px; background: rgba(29,29,31,.92); color: #fff; font-size: 12.5px; font-weight: 500; line-height: 16px; }
+.tooltip::after { content: ""; position: absolute; left: 50%; bottom: -5px; width: 10px; height: 10px; background: inherit; transform: translateX(-50%) rotate(45deg); border-radius: 2px; }
+
+.empty { text-align: center; padding: 40px 24px; display: flex; flex-direction: column; align-items: center; }
+.empty .art { width: 88px; height: 88px; border-radius: 26px; display: grid; place-items: center; background: linear-gradient(150deg, var(--tangerine-50), var(--tangerine-100)); color: var(--accent-text); margin-bottom: 18px; box-shadow: inset 0 0 0 1px var(--tangerine-200); }
+.empty .art svg.i { width: 36px; height: 36px; stroke-width: 1.5; }
+.empty h4 { font-size: 20px; font-weight: 600; letter-spacing: -0.015em; }
+.empty p { margin-top: 6px; color: var(--label-2); font-size: 15px; max-width: 30em; }
+.empty .btn { margin-top: 20px; }
+
+.skel { background: linear-gradient(90deg, var(--fill-1) 0%, var(--fill-2) 40%, var(--fill-1) 80%); background-size: 300% 100%; animation: shimmer 1.6s ease-in-out infinite; border-radius: 8px; }
+@keyframes shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+
+/* Overlays */
+.menu { width: 240px; padding: 6px; border-radius: var(--r-md); background: var(--glass-thick); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); box-shadow: var(--elev-3); }
+.menu button { width: 100%; display: flex; align-items: center; gap: 10px; height: 36px; padding: 0 10px; border: 0; border-radius: 8px; background: transparent; font-size: 14px; text-align: left; }
+.menu button:hover, .menu button.hl { background: var(--accent); color: #fff; }
+.menu button:hover svg.i, .menu button.hl svg.i { color: #fff; }
+.menu button svg.i { width: 17px; height: 17px; color: var(--label-2); }
+.menu button .kbd-t { margin-left: auto; font-size: 12px; color: var(--label-2); }
+.menu button:hover .kbd-t, .menu button.hl .kbd-t { color: rgba(255,255,255,.8); }
+.menu hr { border: 0; height: 1px; background: var(--separator); margin: 5px 8px; }
+.menu .danger { color: var(--danger); }
+.menu .danger svg.i { color: var(--danger); }
+.menu .danger:hover { background: var(--danger); color: #fff; }
+.popover { width: 300px; padding: 18px; border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--elev-3); position: relative; }
+.popover::before { content: ""; position: absolute; top: -6px; left: 28px; width: 14px; height: 14px; background: var(--surface); transform: rotate(45deg); border-radius: 3px; box-shadow: -1px -1px 0 rgba(29,29,31,.05); }
+
+dialog { border: 0; padding: 0; color: var(--label); background: transparent; max-width: calc(100vw - 32px); }
+dialog::backdrop { background: rgba(29, 29, 31, 0.32); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
+.modal { width: 440px; border-radius: var(--r-xl); background: var(--surface); box-shadow: var(--elev-3); padding: 28px; }
+dialog[open] .modal { animation: pop-in var(--dur-4) var(--ease-spring) both; }
+@keyframes pop-in { from { opacity: 0; transform: scale(.94) translateY(8px); } }
+.modal .m-ic { width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent-text); }
+.modal h4 { margin-top: 18px; font-size: 22px; font-weight: 600; letter-spacing: -0.018em; line-height: 28px; }
+.modal p { margin-top: 8px; color: var(--label-2); font-size: 15px; line-height: 22px; }
+.modal .acts { margin-top: 24px; display: flex; gap: 10px; justify-content: flex-end; }
+dialog.sheet { margin: 0 0 0 auto; height: 100vh; max-height: 100vh; width: 440px; }
+.sheet-body { height: 100%; background: var(--glass-thick); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); border-left: 1px solid var(--separator); box-shadow: var(--elev-3); display: flex; flex-direction: column; }
+dialog.sheet[open] .sheet-body { animation: sheet-in var(--dur-4) var(--ease-standard) both; }
+@keyframes sheet-in { from { transform: translateX(40px); opacity: 0; } }
+.sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 20px; border-bottom: 1px solid var(--separator); }
+.sheet-head h4 { font-size: 17px; font-weight: 600; }
+.sheet-content { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+.sheet-foot { padding: 16px 20px; border-top: 1px solid var(--separator); display: flex; gap: 10px; justify-content: flex-end; }
+
+/* Progress */
+.progress { height: 8px; border-radius: 99px; background: var(--fill-2); overflow: hidden; }
+.progress > i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--tangerine-500), var(--accent)); }
+.progress.thin { height: 4px; }
+.progress-meta { display: flex; justify-content: space-between; font-size: 13px; color: var(--label-2); margin-bottom: 8px; }
+.progress-meta b { color: var(--label); font-weight: 600; }
+.ring { --v: 72; width: 96px; height: 96px; border-radius: 50%; display: grid; place-items: center;
+  background: conic-gradient(var(--accent) calc(var(--v) * 1%), var(--fill-2) 0); position: relative; }
+.ring::before { content: ""; position: absolute; inset: 9px; border-radius: 50%; background: var(--surface); }
+.ring span { position: relative; font-size: 20px; font-weight: 650; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.ring.sm { width: 44px; height: 44px; } .ring.sm::before { inset: 5px; } .ring.sm span { font-size: 12px; }
+.steps { display: flex; align-items: flex-start; }
+.steps .st { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; position: relative; font-size: 12.5px; color: var(--label-2); text-align: center; }
+.steps .st::before { content: ""; position: absolute; top: 13px; left: calc(-50% + 18px); right: calc(50% + 18px); height: 2px; background: var(--fill-3); border-radius: 2px; }
+.steps .st:first-child::before { display: none; }
+.steps .st.done::before, .steps .st.cur::before { background: var(--accent); }
+.steps .bub { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 600; background: var(--surface); box-shadow: inset 0 0 0 1.5px var(--fill-3); color: var(--label-2); }
+.steps .done .bub { background: var(--accent); color: #fff; box-shadow: none; }
+.steps .done .bub svg.i { width: 15px; height: 15px; stroke-width: 3; }
+.steps .cur .bub { box-shadow: inset 0 0 0 2px var(--accent), 0 0 0 5px var(--focus-ring); color: var(--accent-text); }
+.steps .cur { color: var(--label); font-weight: 600; }
+
+/* ==========================================================================
+   PLAR PATTERNS
+   ========================================================================== */
+.spark { width: 16px; height: 16px; flex: none; }
+.ai-card { border-radius: var(--r-lg); background: var(--ai-subtle); border: 1.5px dashed var(--ai-border); padding: 20px 22px; position: relative; transition: background var(--dur-3) var(--ease-standard), border-color var(--dur-3); }
+.ai-card .ai-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.ai-card .ai-body { margin-top: 12px; font-family: var(--font-serif); font-size: 17px; line-height: 28px; color: var(--label); }
+.ai-card .ai-body[contenteditable="true"] { outline: none; background: var(--surface); border-radius: 10px; padding: 10px 12px; margin-left: -12px; margin-right: -12px; box-shadow: 0 0 0 1px var(--ai-border), 0 0 0 4px rgba(75,72,200,.12); }
+.ai-card .cites { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 6px; }
+.cite { display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 9px; border-radius: 7px; background: var(--surface); box-shadow: inset 0 0 0 1px var(--ai-border); font-size: 12px; font-weight: 500; color: var(--ai); border: 0; }
+.cite:hover { background: var(--ai-soft); }
+.ai-card .ai-acts { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.ai-card.accepted { background: var(--surface); border: 1.5px solid transparent; box-shadow: var(--elev-1); }
+.ai-card.dismissed { opacity: .55; }
+.ai-card .done-note { display: none; align-items: center; gap: 6px; font-size: 13px; color: var(--label-2); }
+.ai-card.accepted .done-note, .ai-card.dismissed .done-note { display: inline-flex; }
+.ai-card.accepted .ai-acts .act, .ai-card.dismissed .ai-acts .act { display: none; }
+.ai-card.accepted .b-ai .lbl::after { content: " · accepted"; }
+.ai-glow { position: relative; }
+.ai-glow::before { content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1.5px; background: var(--ai-gradient); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; }
+
+.comment-sugg { display: flex; gap: 12px; padding: 14px; border-radius: var(--r-md); background: var(--surface); box-shadow: var(--elev-1); align-items: flex-start; }
+.comment-sugg .rank { width: 26px; height: 26px; border-radius: 8px; background: var(--ai-soft); color: var(--ai); font-size: 12px; font-weight: 650; display: grid; place-items: center; flex: none; }
+.comment-sugg p { font-size: 14px; line-height: 21px; }
+.comment-sugg .src { margin-top: 4px; font-size: 12px; color: var(--label-2); }
+.comment-sugg .btn { margin-left: auto; flex: none; }
+
+.rating { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 10px; font-size: 14px; font-weight: 700; letter-spacing: 0; }
+.rating.o { background: var(--accent); color: #fff; }
+.rating.s { background: var(--accent-soft); color: var(--accent-ink); }
+.rating.i { background: var(--neutral-chip); color: var(--neutral-chip-ink); }
+.rating.n { background: transparent; color: var(--label-2); box-shadow: inset 0 0 0 1.5px var(--border-strong); border: 0; outline: 1.5px dashed transparent; }
+.rating.n { box-shadow: none; border: 1.5px dashed var(--border-strong); }
+.rating-key { display: flex; flex-wrap: wrap; gap: 20px; }
+.rating-key > div { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+.rating-key b { display: block; font-weight: 600; }
+.rating-key span { display: block; font-size: 12px; color: var(--label-2); }
+.rate-pick { display: inline-flex; gap: 6px; padding: 4px; border-radius: 14px; background: var(--fill-1); }
+.rate-pick button { height: 40px; min-width: 128px; padding: 0 14px; border: 0; border-radius: 10px; background: transparent; font-size: 14px; font-weight: 550; display: inline-flex; align-items: center; gap: 8px; color: var(--label); transition: background var(--dur-2), box-shadow var(--dur-2), color var(--dur-2); }
+.rate-pick button .rating { width: 24px; height: 24px; font-size: 12px; border-radius: 7px; }
+.rate-pick button:hover { background: var(--surface); }
+.rate-pick button[aria-checked="true"] { background: var(--surface); box-shadow: 0 2px 8px rgba(29,29,31,.10), 0 0 0 1.5px var(--accent); }
+
+.rubric { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 14px; min-width: 560px; }
+.rubric th { font-weight: 500; font-size: 13px; color: var(--label-2); text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--separator); }
+.rubric th.c { text-align: center; width: 120px; }
+.rubric td { padding: 10px 14px; border-bottom: 1px solid var(--separator); line-height: 20px; }
+.rubric tr:last-child td { border-bottom: 0; }
+.rubric td.c { text-align: center; }
+.tri { width: 96px; height: 34px; border: 0; border-radius: 9px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 5px; transition: background var(--dur-2), color var(--dur-2); }
+.tri[data-state="0"] { background: var(--fill-1); color: var(--label-2); }
+.tri[data-state="1"] { background: var(--tangerine-100); color: var(--accent-ink); }
+.tri[data-state="2"] { background: var(--accent); color: #fff; }
+.tri svg.i { width: 14px; height: 14px; stroke-width: 2.5; }
+
+.timeline { position: relative; padding-left: 4px; }
+.tl { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 16px; position: relative; padding-bottom: 26px; }
+.tl:last-child { padding-bottom: 0; }
+.tl::before { content: ""; position: absolute; left: 13px; top: 30px; bottom: 2px; width: 2px; border-radius: 2px; background: var(--fill-3); }
+.tl:last-child::before { display: none; }
+.tl.done::before { background: var(--accent); }
+.tl .node { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--surface); box-shadow: inset 0 0 0 1.5px var(--fill-3); position: relative; z-index: 1; }
+.tl.done .node { background: var(--accent); box-shadow: none; color: #fff; }
+.tl.done .node svg.i { width: 15px; height: 15px; stroke-width: 3; }
+.tl.cur .node { box-shadow: inset 0 0 0 2px var(--accent), 0 0 0 5px var(--focus-ring); }
+.tl.cur .node::after { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+.tl b { display: block; font-size: 15px; font-weight: 600; line-height: 22px; }
+.tl.future b { color: var(--label-2); font-weight: 500; }
+.tl span { display: block; font-size: 13px; color: var(--label-2); line-height: 18px; }
+.tl .tl-card { margin-top: 10px; }
+
+.room { border-radius: var(--r-xl); background: #141416; padding: 16px; color: #fff; position: relative; overflow: hidden; }
+.room-top { display: flex; align-items: center; justify-content: space-between; padding: 4px 6px 14px; font-size: 13px; color: rgba(255,255,255,.75); }
+.rec { display: inline-flex; align-items: center; gap: 8px; height: 30px; padding: 0 12px; border-radius: 99px; background: rgba(255,255,255,.08); color: #fff; font-weight: 600; font-size: 13px; }
+.rec i { width: 9px; height: 9px; border-radius: 50%; background: #FF453A; box-shadow: 0 0 0 4px rgba(255,69,58,.25); animation: pulse 1.8s ease-in-out infinite; }
+@keyframes pulse { 50% { box-shadow: 0 0 0 7px rgba(255,69,58,0); } }
+.tiles { display: grid; grid-template-columns: 1.6fr 1fr; grid-template-rows: 1fr 1fr; gap: 8px; height: 380px; }
+.tile { border-radius: var(--r-lg); position: relative; overflow: hidden; display: grid; place-items: center; }
+.tile.main { grid-row: span 2; background: radial-gradient(80% 90% at 50% 30%, #4A3426 0%, #231915 70%); }
+.tile.t2 { background: radial-gradient(90% 90% at 50% 30%, #2D2E44 0%, #17171F 70%); }
+.tile.t3 { background: radial-gradient(90% 90% at 50% 30%, #243A35 0%, #141C1A 70%); }
+.tile.speaking { box-shadow: inset 0 0 0 2.5px var(--tangerine-400); }
+.tile .avatar { width: 84px; height: 84px; font-size: 28px; }
+.tile.main .avatar { width: 120px; height: 120px; font-size: 40px; }
+.tile .nm { position: absolute; left: 12px; bottom: 12px; display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 11px; border-radius: 99px; font-size: 12.5px; font-weight: 550;
+  background: rgba(255,255,255,.14); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); border: 1px solid rgba(255,255,255,.18); }
+.tile .nm svg.i { width: 13px; height: 13px; }
+.captions { position: absolute; left: 50%; bottom: 96px; transform: translateX(-50%); max-width: 80%; padding: 8px 14px; border-radius: 10px; background: rgba(0,0,0,.7); font-size: 15px; line-height: 22px; text-align: center; }
+.controls { position: absolute; left: 50%; bottom: 28px; transform: translateX(-50%); display: flex; gap: 10px; padding: 8px; border-radius: 99px;
+  background: rgba(255,255,255,.14); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); border: 1px solid rgba(255,255,255,.18); box-shadow: 0 20px 40px -12px rgba(0,0,0,.5); }
+.cbtn { width: 48px; height: 48px; border-radius: 50%; border: 0; display: grid; place-items: center; color: #fff; background: rgba(255,255,255,.12); transition: background var(--dur-1); }
+.cbtn:hover { background: rgba(255,255,255,.22); }
+.cbtn[aria-pressed="true"] { background: #fff; color: #1D1D1F; }
+.cbtn.end { background: #FF453A; width: 64px; border-radius: 99px; }
+.cbtn.end:hover { background: #E5352B; }
+
+.idv { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 0; border-radius: var(--r-xl); overflow: hidden; background: var(--surface); box-shadow: var(--elev-2); }
+.idv-cam { background: radial-gradient(90% 90% at 50% 40%, #3A3330 0%, #151312 75%); min-height: 360px; position: relative; display: grid; place-items: center; }
+.idv-frame { width: 72%; aspect-ratio: 1.586; border-radius: 18px; border: 2.5px solid rgba(255,255,255,.9); box-shadow: 0 0 0 999px rgba(0,0,0,.35); position: relative; }
+.idv-frame::before, .idv-frame::after { content: ""; position: absolute; width: 28px; height: 28px; border: 4px solid var(--tangerine-400); }
+.idv-frame::before { left: -4px; top: -4px; border-right: 0; border-bottom: 0; border-top-left-radius: 18px; }
+.idv-frame::after { right: -4px; bottom: -4px; border-left: 0; border-top: 0; border-bottom-right-radius: 18px; }
+.idv-card { position: absolute; inset: 14% 10%; border-radius: 10px; background: linear-gradient(135deg, rgba(255,255,255,.22), rgba(255,255,255,.08)); display: flex; gap: 10%; align-items: center; padding: 0 8%; }
+.idv-card .ph { width: 28%; aspect-ratio: .8; border-radius: 6px; background: rgba(255,255,255,.25); }
+.idv-card .ln { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.idv-card .ln i { height: 7px; border-radius: 4px; background: rgba(255,255,255,.3); }
+.idv-hints { position: absolute; top: 16px; left: 16px; right: 16px; display: flex; gap: 6px; flex-wrap: wrap; }
+.idv-hints .h { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 11px; border-radius: 99px; font-size: 12px; font-weight: 550; color: #fff;
+  background: rgba(255,255,255,.14); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); border: 1px solid rgba(255,255,255,.2); }
+.idv-hints .h svg.i { width: 13px; height: 13px; stroke-width: 2.4; }
+.idv-hints .h.ok svg.i { color: #6EE7A0; }
+.idv-hints .h.wait svg.i { color: var(--tangerine-300); }
+.idv-side { padding: 32px; display: flex; flex-direction: column; gap: 16px; }
+.idv-side h4 { font-family: var(--font-serif); font-size: 28px; line-height: 34px; font-weight: 600; letter-spacing: -0.02em; }
+.idv-side .steps-list { display: flex; flex-direction: column; gap: 10px; font-size: 14.5px; }
+.idv-side .steps-list div { display: flex; gap: 10px; align-items: flex-start; }
+.idv-side .steps-list .n { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 650; background: var(--accent-soft); color: var(--accent-ink); flex: none; }
+.checking { display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: var(--r-md); background: var(--surface-2); box-shadow: inset 0 0 0 1px var(--separator); font-size: 14px; }
+.checking .spinner { width: 18px; height: 18px; color: var(--accent); }
+.privacy { display: flex; gap: 10px; font-size: 13px; color: var(--label-2); line-height: 19px; }
+.privacy svg.i { color: var(--success); width: 18px; height: 18px; }
+
+.doc-stage { padding: 40px; border-radius: var(--r-xl); background: linear-gradient(180deg, #ECEAE6, #E3E0DB); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px; align-items: start; }
+.page { background: #fff; aspect-ratio: 8.5 / 11; border-radius: 4px; box-shadow: 0 30px 60px -24px rgba(29,29,31,.35), 0 0 0 1px rgba(29,29,31,.06); overflow: hidden; display: flex; flex-direction: column; font-size: 9.5px; line-height: 14px; color: var(--label); }
+.page.cover .band { background: linear-gradient(155deg, #3D1706 0%, #6F3211 55%, #A8470B 100%); padding: 36px 30px 28px; color: #fff; position: relative; overflow: hidden; flex: 0 0 58%; display: flex; flex-direction: column; justify-content: flex-end; }
+.page.cover .band::after { content: ""; position: absolute; right: -60px; top: -60px; width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #FFB474, #F5761A 50%, transparent 72%); opacity: .8; }
+.page.cover .band .k { font-size: 8px; letter-spacing: .14em; text-transform: uppercase; color: var(--tangerine-200); font-weight: 600; position: relative; }
+.page.cover .band h5 { margin: 8px 0 0; font-family: var(--font-serif); font-size: 26px; line-height: 30px; font-weight: 600; letter-spacing: -0.02em; position: relative; }
+.page.cover .band p { margin-top: 8px; font-size: 10px; line-height: 15px; color: rgba(255,255,255,.82); position: relative; max-width: 80%; }
+.page.cover .meta { padding: 22px 30px; display: flex; flex-direction: column; gap: 10px; font-size: 9px; color: var(--label-2); flex: 1; }
+.page.cover .meta .brandline { margin-top: auto; display: flex; align-items: center; gap: 8px; color: var(--label); font-weight: 600; font-size: 9.5px; }
+.page.cover .meta .brandline .mark { width: 18px; height: 18px; border-radius: 5px; }
+.page.cover .meta .brandline .mark svg { width: 10px; height: 10px; }
+.page.body { padding: 28px 30px; gap: 8px; }
+.page.body .rh { display: flex; justify-content: space-between; font-size: 7.5px; color: var(--label-2); padding-bottom: 8px; border-bottom: .5px solid var(--separator); }
+.page.body h6 { margin: 10px 0 0; font-family: var(--font-serif); font-size: 15px; line-height: 19px; font-weight: 600; letter-spacing: -0.01em; }
+.page.body .h3 { margin: 6px 0 0; font-size: 10px; font-weight: 600; color: var(--accent-ink); }
+.page.body p { font-size: 8.5px; line-height: 13px; color: #3A3A3C; }
+.page.body table { width: 100%; border-collapse: collapse; font-size: 7.8px; margin-top: 4px; }
+.page.body th { text-align: left; background: var(--canvas); font-weight: 600; padding: 4px 6px; }
+.page.body td { padding: 4px 6px; border-bottom: .5px solid var(--separator); }
+.page.body .rating { width: 15px; height: 15px; font-size: 7.5px; border-radius: 4px; }
+.page.body .callout { background: var(--accent-subtle); border-radius: 6px; padding: 7px 9px; font-size: 8px; line-height: 12px; color: var(--accent-ink); }
+.page.body .pf { margin-top: auto; display: flex; justify-content: space-between; font-size: 7px; color: var(--label-2); padding-top: 6px; border-top: .5px solid var(--separator); }
+
+.email { max-width: 420px; margin: 0 auto; background: var(--canvas); border-radius: var(--r-lg); padding: 22px; box-shadow: inset 0 0 0 1px var(--separator); }
+.email .mail { background: #fff; border-radius: var(--r-md); padding: 24px; box-shadow: var(--elev-1); }
+.email .mail h5 { margin: 14px 0 0; font-family: var(--font-serif); font-size: 22px; line-height: 28px; font-weight: 600; letter-spacing: -0.015em; }
+.email .mail p { margin-top: 10px; font-size: 14.5px; line-height: 22px; color: #3A3A3C; }
+.email .mail .btn { margin-top: 18px; }
+.email .fine { margin-top: 14px; text-align: center; font-size: 11.5px; color: var(--label-2); }
+
+.dodont { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.dd { border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--elev-1); overflow: hidden; }
+.dd header { display: flex; align-items: center; gap: 8px; padding: 12px 18px; font-size: 13px; font-weight: 650; }
+.dd.do header { background: var(--success-subtle); color: var(--success); }
+.dd.dont header { background: var(--fill-1); color: var(--label-2); }
+.dd ul { margin: 0; padding: 14px 18px 18px 36px; font-size: 14.5px; line-height: 24px; }
+.dd li + li { margin-top: 6px; }
+.dd q { font-style: normal; }
+.checklist { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; }
+.checklist div { display: flex; gap: 10px; align-items: flex-start; font-size: 14.5px; line-height: 21px; }
+.checklist svg.i { color: var(--success); width: 18px; height: 18px; margin-top: 2px; }
+
+.code { position: relative; border-radius: var(--r-lg); background: #1D1B19; color: #EDE9E3; overflow: hidden; }
+.code header { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px 10px 18px; border-bottom: 1px solid rgba(255,255,255,.08); font-size: 13px; color: rgba(237,233,227,.7); }
+.code header .btn { color: #fff; background: rgba(255,255,255,.1); }
+.code header .btn:hover { background: rgba(255,255,255,.18); }
+.code pre { margin: 0; padding: 18px; max-height: 460px; overflow: auto; font-family: var(--font-mono); font-size: 12.5px; line-height: 20px; }
+.code .c-k { color: #FFB474; } .code .c-v { color: #E8D5C0; } .code .c-c { color: #8A847C; }
+
+footer.site { margin-top: 120px; padding: 40px 0 20px; border-top: 1px solid var(--separator); display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; font-size: 13px; color: var(--label-2); }
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+@media (max-width: 1180px) {
+  main { padding: 0 32px 100px; }
+  .swatches { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .g4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .btn-matrix { grid-template-columns: 120px repeat(2, minmax(0, 1fr)); }
+  .btn-matrix .hide-md { display: none; }
+}
+@media (max-width: 960px) {
+  .shell { grid-template-columns: minmax(0, 1fr); }
+  .side { display: none; }
+  .topnav { display: block; position: sticky; top: 0; z-index: 50; background: var(--glass-thick); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); border-bottom: 1px solid var(--separator); }
+  .topnav .tn-brand { display: flex; align-items: center; gap: 10px; padding: 12px 16px 6px; }
+  .topnav .tn-links { display: flex; gap: 4px; overflow-x: auto; padding: 4px 12px 10px; scrollbar-width: none; }
+  .topnav .tn-links::-webkit-scrollbar { display: none; }
+  .topnav .tn-links a { flex: none; height: 32px; padding: 0 12px; display: inline-flex; align-items: center; border-radius: 99px; font-size: 13.5px; font-weight: 500; color: var(--label); background: var(--fill-1); }
+  .topnav .tn-links a.active { background: var(--accent); color: #fff; }
+  html { scroll-padding-top: 110px; }
+  .hero-grid { grid-template-columns: minmax(0, 1fr); }
+  .hero-art { height: 400px; max-width: 520px; }
+  .g3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .glass-stage { grid-template-columns: minmax(0, 1fr); }
+  .doc-stage { grid-template-columns: minmax(0, 1fr); padding: 24px; }
+  .idv { grid-template-columns: minmax(0, 1fr); }
+  .mini-app { grid-template-columns: minmax(0, 1fr); }
+  .mini-side { display: none; }
+}
+@media (max-width: 680px) {
+  main { padding: 0 16px 80px; }
+  .hero { padding: 48px 0 40px; }
+  .hero h1 { font-size: 42px; line-height: 46px; }
+  .hero .lead { font-size: 17px; line-height: 26px; }
+  .hero-art { height: 360px; }
+  .float.aa { width: 250px; padding: 20px; }
+  .float.aa .g, .float.aa .l { font-size: 60px; }
+  .float.case { width: 270px; top: 140px; }
+  .float.toast-demo { left: 0; }
+  .section { padding-top: 64px; }
+  .section + .section { margin-top: 48px; }
+  .section h2 { font-size: 34px; line-height: 40px; }
+  .section .lead { font-size: 16px; line-height: 25px; }
+  .sub { margin-top: 40px; }
+  .panel { padding: 20px; }
+  .swatches { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .g2, .g3, .g4, .pairing, .dodont, .checklist { grid-template-columns: minmax(0, 1fr); }
+  .face .big { font-size: 88px; }
+  .type-row { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .btn-matrix { grid-template-columns: minmax(0, 1fr); }
+  .btn-matrix .h { display: none; }
+  .tiles { height: 300px; grid-template-columns: 1fr; grid-template-rows: 1fr; }
+  .tile.t2, .tile.t3 { display: none; }
+  .captions { bottom: 92px; font-size: 13px; }
+  .rate-pick { flex-wrap: wrap; }
+  .rate-pick button { min-width: 0; flex: 1; }
+  dialog.sheet { width: 100vw; }
+  .doc-stage { padding: 16px; }
+  .glass-stage { padding: 20px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; animation-iteration-count: 1 !important; transition-duration: 1ms !important; scroll-behavior: auto !important; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .side, .topbar, .mini-side, .menu, .sheet-body, .tabbar, .topnav { background: var(--surface) !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- Icon sprite (Lucide-style, 24px grid, 1.75 stroke) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="ai-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F5761A"/><stop offset=".5" stop-color="#E2477F"/><stop offset="1" stop-color="#5E5CE6"/></linearGradient>
+  </defs>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+  <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+  <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7.5"/><path d="m20.5 20.5-4.2-4.2"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M12 16v-4.5"/><path d="M12 8h.01"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2.5"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4.5"/><path d="M20 21a8 8 0 0 0-16 0"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-video" viewBox="0 0 24 24"><path d="m16 13 5.2 3.5a.5.5 0 0 0 .8-.4V7.9a.5.5 0 0 0-.8-.4L16 11"/><rect x="2" y="6" width="14" height="12" rx="2.5"/></symbol>
+  <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v3"/></symbol>
+  <symbol id="i-mic-off" viewBox="0 0 24 24"><path d="M2 2l20 20"/><path d="M18.89 13.23A7 7 0 0 0 19 12v-2"/><path d="M5 10v2a7 7 0 0 0 12 5"/><path d="M15 9.34V5a3 3 0 0 0-5.68-1.33"/><path d="M9 9v3a3 3 0 0 0 5.12 2.12"/><path d="M12 19v3"/></symbol>
+  <symbol id="i-phone-off" viewBox="0 0 24 24"><path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.42 19.42 0 0 1-3.33-2.67m-2.67-3.34a19.79 19.79 0 0 1-3.07-8.63A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91"/><path d="M22 2 2 22"/></symbol>
+  <symbol id="i-captions" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M7 15h4"/><path d="M15 15h2"/><path d="M7 11h2"/><path d="M13 11h4"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M12 6.5V12l3.5 2"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="14" height="14" rx="2.5"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></symbol>
+  <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+  <symbol id="i-arrow-up-right" viewBox="0 0 24 24"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22v-9h6v9"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 21v-7"/><path d="M4 10V3"/><path d="M12 21v-9"/><path d="M12 8V3"/><path d="M20 21v-5"/><path d="M20 12V3"/><path d="M2 14h4"/><path d="M10 8h4"/><path d="M18 16h4"/></symbol>
+  <symbol id="i-inbox" viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></symbol>
+  <symbol id="i-message" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
+  <symbol id="i-check-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="m8.5 12 2.5 2.5 4.5-5"/></symbol>
+  <symbol id="i-pencil" viewBox="0 0 24 24"><path d="M21.17 6.81a1 1 0 0 0-3.99-3.99L3.84 16.17a2 2 0 0 0-.5.83l-1.32 4.35a.5.5 0 0 0 .62.62l4.35-1.32a2 2 0 0 0 .83-.5z"/><path d="m15 5 4 4"/></symbol>
+  <symbol id="i-id" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2.5"/><circle cx="8" cy="12" r="2.5"/><path d="M14 10h4"/><path d="M14 14h4"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2.5"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.06 12.35a1 1 0 0 1 0-.7 10.75 10.75 0 0 1 19.88 0 1 1 0 0 1 0 .7 10.75 10.75 0 0 1-19.88 0"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></symbol>
+  <symbol id="i-graduation" viewBox="0 0 24 24"><path d="M21.42 10.92a1 1 0 0 0-.02-1.84L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.83l8.57 3.91a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></symbol>
+  <symbol id="i-filter" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M7 12h10"/><path d="M10 18h4"/></symbol>
+  <symbol id="i-sort" viewBox="0 0 24 24"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><circle cx="12" cy="12" r="5.5"/><circle cx="12" cy="12" r="1.5"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M14.54 21.69a.5.5 0 0 0 .94-.03l6.5-19a.5.5 0 0 0-.64-.64l-19 6.5a.5.5 0 0 0-.02.94l7.93 3.18a2 2 0 0 1 1.11 1.11z"/><path d="m21.85 2.15-10.94 10.93"/></symbol>
+  <symbol id="i-history" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 2.5c.5 4.6 2.9 7 7.5 7.5-4.6.5-7 2.9-7.5 7.5-.5-4.6-2.9-7-7.5-7.5 4.6-.5 7-2.9 7.5-7.5Z"/><path d="M19 15.5c.2 1.9 1.1 2.8 3 3-1.9.2-2.8 1.1-3 3-.2-1.9-1.1-2.8-3-3 1.9-.2 2.8-1.1 3-3Z"/></symbol>
+
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M11.53 2.3a.53.53 0 0 1 .94 0l2.31 4.68a2.12 2.12 0 0 0 1.6 1.16l5.16.76a.53.53 0 0 1 .3.9l-3.74 3.64a2.12 2.12 0 0 0-.61 1.88l.88 5.14a.53.53 0 0 1-.77.56l-4.62-2.43a2.12 2.12 0 0 0-1.97 0L6.4 21.01a.53.53 0 0 1-.77-.56l.88-5.14a2.12 2.12 0 0 0-.61-1.88L2.16 9.8a.53.53 0 0 1 .3-.91l5.16-.75a2.12 2.12 0 0 0 1.6-1.16z"/></symbol>
+  <symbol id="i-bookmark" viewBox="0 0 24 24"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></symbol>
+  <symbol id="i-x-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></symbol>
+
+  <!-- Filled set: same 24px grid and metrics as the outline set. Details are cut out (even-odd) so they work on any background. -->
+  <symbol id="f-home" viewBox="0 0 24 24"><path d="M10.9 2.9a1.75 1.75 0 0 1 2.2 0l7.26 6.02c.4.33.64.83.64 1.35v9.23A2.5 2.5 0 0 1 18.5 22H15v-6.25c0-.69-.56-1.25-1.25-1.25h-3.5c-.69 0-1.25.56-1.25 1.25V22H5.5A2.5 2.5 0 0 1 3 19.5v-9.23c0-.52.23-1.02.64-1.35z"/></symbol>
+  <symbol id="f-folder" viewBox="0 0 24 24"><path d="M2 6.5A2.5 2.5 0 0 1 4.5 4h4.38a2 2 0 0 1 1.6.8l1.05 1.4a2 2 0 0 0 1.6.8h6.37A2.5 2.5 0 0 1 22 9.5v8a2.5 2.5 0 0 1-2.5 2.5h-15A2.5 2.5 0 0 1 2 17.5z"/></symbol>
+  <symbol id="f-file" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M6.5 2h7.09c.53 0 1.04.21 1.42.59l4.4 4.4c.38.38.59.89.59 1.42V19.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2zM8 12.25h8v1.5H8zm0 4h6v1.5H8z"/></symbol>
+  <symbol id="f-book" viewBox="0 0 24 24"><path d="M2 4.5A1.5 1.5 0 0 1 3.5 3H8a4 4 0 0 1 3.25 1.67V20.5A3.5 3.5 0 0 0 8.5 19h-5A1.5 1.5 0 0 1 2 17.5z"/><path d="M22 4.5A1.5 1.5 0 0 0 20.5 3H16a4 4 0 0 0-3.25 1.67V20.5A3.5 3.5 0 0 1 15.5 19h5a1.5 1.5 0 0 0 1.5-1.5z"/></symbol>
+  <symbol id="f-calendar" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M5.5 4h13A2.5 2.5 0 0 1 21 6.5v13a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 19.5v-13A2.5 2.5 0 0 1 5.5 4zM4.75 9.5v9.75c0 .41.34.75.75.75h13c.41 0 .75-.34.75-.75V9.5zM7 12h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2zm-8 4h2v2H7zm4 0h2v2h-2z"/><path d="M7.25 2h1.5v4h-1.5zm8 0h1.5v4h-1.5z"/></symbol>
+  <symbol id="f-clock" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm-.9 4.5v6.1l4.1 2.37.9-1.56-3.2-1.85V6.5z"/></symbol>
+  <symbol id="f-bell" viewBox="0 0 24 24"><path d="M12 2.5A6.5 6.5 0 0 0 5.5 9c0 3.6-.9 5.9-1.8 7.2-.5.7 0 1.8.9 1.8h14.8c.9 0 1.4-1.1.9-1.8-.9-1.3-1.8-3.6-1.8-7.2A6.5 6.5 0 0 0 12 2.5z"/><path d="M9.5 19.5h5a2.5 2.5 0 0 1-5 0z"/></symbol>
+  <symbol id="f-inbox" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M7.24 4h9.52a2 2 0 0 1 1.79 1.11l3.25 6.49c.13.28.2.58.2.89V18a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-5.5c0-.31.07-.62.2-.89l3.25-6.5A2 2 0 0 1 7.24 4zm-.12 2.1L4.6 11.25h3.9l1.5 2.5h4l1.5-2.5h3.9L16.88 6.1a.5.5 0 0 0-.45-.35H7.57a.5.5 0 0 0-.45.35z"/></symbol>
+  <symbol id="f-message" viewBox="0 0 24 24"><path d="M5 3h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H8l-4.17 3.61A.5.5 0 0 1 3 20.23V5a2 2 0 0 1 2-2z"/></symbol>
+  <symbol id="f-user" viewBox="0 0 24 24"><circle cx="12" cy="7.25" r="4.75"/><path d="M4 20.25C4 16.8 7.58 14 12 14s8 2.8 8 6.25c0 .97-.78 1.75-1.75 1.75H5.75C4.78 22 4 21.22 4 20.25z"/></symbol>
+  <symbol id="f-users" viewBox="0 0 24 24"><circle cx="9" cy="7.5" r="4"/><path d="M1.5 19.5c0-3.04 3.36-5.5 7.5-5.5s7.5 2.46 7.5 5.5c0 .83-.67 1.5-1.5 1.5H3c-.83 0-1.5-.67-1.5-1.5z"/><circle cx="17" cy="8" r="3"/><path d="M17.7 14.1c2.84.37 4.8 2.2 4.8 4.65 0 .69-.56 1.25-1.25 1.25H18.4c.06-.24.1-.49.1-.75 0-1.97-.88-3.79-2.3-5.1.48-.05.98-.06 1.5-.05z"/></symbol>
+  <symbol id="f-graduation" viewBox="0 0 24 24"><path d="M11.17 3.68a2 2 0 0 1 1.66 0l8.57 3.9a1 1 0 0 1 0 1.83l-8.57 3.91a2 2 0 0 1-1.66 0L2.6 9.41a1 1 0 0 1 0-1.83z"/><path d="M6 12.2l4.55 2.07a3.5 3.5 0 0 0 2.9 0L18 12.2V16c0 1.66-2.69 3-6 3s-6-1.34-6-3z"/><path d="M22 8.5v6" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></symbol>
+  <symbol id="f-video" viewBox="0 0 24 24"><path d="M2 8.5A2.5 2.5 0 0 1 4.5 6h9A2.5 2.5 0 0 1 16 8.5v7a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 2 15.5z"/><path d="M17 10.2l4.2-2.8a.5.5 0 0 1 .8.42v8.36a.5.5 0 0 1-.8.42L17 13.8z"/></symbol>
+  <symbol id="f-mic" viewBox="0 0 24 24"><path d="M9 5a3 3 0 0 1 6 0v6a3 3 0 0 1-6 0z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v3.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></symbol>
+  <symbol id="f-id" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M4.5 4h15A2.5 2.5 0 0 1 22 6.5v11a2.5 2.5 0 0 1-2.5 2.5h-15A2.5 2.5 0 0 1 2 17.5v-11A2.5 2.5 0 0 1 4.5 4zM8 8.3a2.2 2.2 0 1 0 0 4.4 2.2 2.2 0 0 0 0-4.4zM4.6 16.6c.38-1.66 1.76-2.6 3.4-2.6s3.02.94 3.4 2.6zM14 9.25h5v1.5h-5zm0 4h3.5v1.5H14z"/></symbol>
+  <symbol id="f-shield" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M11.24 2.28a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1v7c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72zM10.6 15.2l5.99-6-1.05-1.06-4.94 4.94-2.14-2.14L7.4 12z"/></symbol>
+  <symbol id="f-lock" viewBox="0 0 24 24"><path d="M7 10V7a5 5 0 0 1 10 0v3" fill="none" stroke="currentColor" stroke-width="2"/><path fill-rule="evenodd" d="M5.5 10h13A2.5 2.5 0 0 1 21 12.5v7a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 19.5v-7A2.5 2.5 0 0 1 5.5 10zm5.6 4.5v3.5h1.8v-3.5z"/></symbol>
+  <symbol id="f-eye" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 4.5c4.6 0 8.6 2.9 10.1 7a1.4 1.4 0 0 1 0 1c-1.5 4.1-5.5 7-10.1 7s-8.6-2.9-10.1-7a1.4 1.4 0 0 1 0-1C3.4 7.4 7.4 4.5 12 4.5zm0 4a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm0 2a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z"/></symbol>
+  <symbol id="f-pencil" viewBox="0 0 24 24"><path d="M17.18 2.82a2.82 2.82 0 0 1 3.99 3.99L8.2 19.8a2 2 0 0 1-.83.5l-4.35 1.32a.5.5 0 0 1-.62-.62l1.32-4.35a2 2 0 0 1 .5-.83z"/></symbol>
+  <symbol id="f-trash" viewBox="0 0 24 24"><path d="M9 2.5h6A1.5 1.5 0 0 1 16.5 4v1H21v1.75H3V5h4.5V4A1.5 1.5 0 0 1 9 2.5z"/><path d="M5 8h14l-.86 12.13A2 2 0 0 1 16.14 22H7.86a2 2 0 0 1-2-1.87z"/></symbol>
+  <symbol id="f-star" viewBox="0 0 24 24"><path d="M11.1 2.9a1 1 0 0 1 1.8 0l2.4 4.9 5.4.8a1 1 0 0 1 .55 1.7l-3.9 3.8.92 5.37a1 1 0 0 1-1.45 1.05L12 18l-4.82 2.53a1 1 0 0 1-1.45-1.05l.92-5.37-3.9-3.8a1 1 0 0 1 .55-1.7l5.4-.8z"/></symbol>
+  <symbol id="f-bookmark" viewBox="0 0 24 24"><path d="M6.5 2h11A1.5 1.5 0 0 1 19 3.5v17.1a.75.75 0 0 1-1.18.6L12 17l-5.82 4.2A.75.75 0 0 1 5 20.6V3.5A1.5 1.5 0 0 1 6.5 2z"/></symbol>
+  <symbol id="f-check-circle" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm-1.5 14.1 6.6-6.6-1.2-1.2-5.4 5.4-2.4-2.4-1.2 1.2z"/></symbol>
+  <symbol id="f-info" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm-.9 8.5V17h1.8v-6.5zM12 6.6a1.15 1.15 0 1 0 0 2.3 1.15 1.15 0 0 0 0-2.3z"/></symbol>
+  <symbol id="f-alert" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M10.27 3.5a2 2 0 0 1 3.46 0l8 13.9A2 2 0 0 1 20 20.4H4a2 2 0 0 1-1.73-3zM11.1 8.5v6h1.8v-6zm.9 7.4a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2z"/></symbol>
+  <symbol id="f-x-circle" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zM8.46 7.4 7.4 8.46 10.94 12 7.4 15.54l1.06 1.06L12 13.06l3.54 3.54 1.06-1.06L13.06 12l3.54-3.54-1.06-1.06L12 10.94z"/></symbol>
+  <symbol id="f-target" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm0 4.25a5.75 5.75 0 1 0 0 11.5 5.75 5.75 0 0 0 0-11.5zm0 2a3.75 3.75 0 1 1 0 7.5 3.75 3.75 0 0 1 0-7.5z"/></symbol>
+</svg>
+
+<div class="shell">
+  <aside class="side" aria-label="Design system contents">
+    <div class="brand">
+      <span class="mark"><svg viewBox="0 0 24 24"><path d="M5 19V5h7a4.5 4.5 0 0 1 0 9H5"/><path d="M13 14l5 5"/></svg></span>
+      <div><div class="brand-name">PLAR Platform</div><div class="brand-sub">Design System</div></div>
+    </div>
+    <nav id="sidenav">
+      <a href="#overview">Overview</a>
+      <p>Foundations</p>
+      <a href="#principles">Principles</a>
+      <a href="#colour">Colour</a>
+      <a href="#typography">Typography</a>
+      <a href="#layout">Spacing and layout</a>
+      <a href="#shape">Shape and depth</a>
+      <a href="#motion">Motion</a>
+      <a href="#icons">Iconography</a>
+      <p>Components</p>
+      <a href="#buttons">Buttons</a>
+      <a href="#inputs">Text input</a>
+      <a href="#selection">Selection controls</a>
+      <a href="#badges">Badges and avatars</a>
+      <a href="#cards">Cards and lists</a>
+      <a href="#tables">Tables</a>
+      <a href="#navigation">Navigation</a>
+      <a href="#feedback">Feedback</a>
+      <a href="#overlays">Overlays</a>
+      <a href="#progress">Progress</a>
+      <p>PLAR patterns</p>
+      <a href="#ai">AI-assisted content</a>
+      <a href="#ratings">Ratings and rubric</a>
+      <a href="#timeline">Case timeline</a>
+      <a href="#interview">Interview room</a>
+      <a href="#idv">ID verification</a>
+      <a href="#documents">Documents and email</a>
+      <p>Guidance</p>
+      <a href="#voice">Voice and content</a>
+      <a href="#a11y">Accessibility</a>
+      <a href="#tokens">Tokens</a>
+    </nav>
+  </aside>
+
+  <div class="topnav">
+    <div class="tn-brand">
+      <span class="mark" style="width:28px;height:28px;border-radius:8px"><svg viewBox="0 0 24 24" style="width:15px;height:15px"><path d="M5 19V5h7a4.5 4.5 0 0 1 0 9H5"/><path d="M13 14l5 5"/></svg></span>
+      <div class="brand-name">PLAR Design System</div>
+    </div>
+    <div class="tn-links" id="topnav-links"></div>
+  </div>
+
+  <main id="main">
+  <div class="wrap">
+
+  <!-- ================= OVERVIEW ================= -->
+  <section class="hero" id="overview">
+    <div class="hero-grid">
+      <div>
+        <p class="eyebrow">PLAR Platform · Design System</p>
+        <h1 style="margin-top:14px">Warm, clear and <em>quietly</em> confident.</h1>
+        <p class="lead">One visual language for the platform, its reports and its emails. It follows Apple's Human Interface Guidelines for clarity and depth. It uses Geist for the interface, Lora for reading and headlines, and a tangerine accent that feels encouraging rather than loud.</p>
+        <div class="chips">
+          <span class="badge badge-lg b-accent"><span class="dot" style="background:var(--brand)"></span>Tangerine accent</span>
+          <span class="badge badge-lg b-neutral">Geist + Lora</span>
+          <span class="badge badge-lg b-neutral">Light theme</span>
+          <span class="badge badge-lg b-success"><svg class="i"><use href="#i-check"/></svg>WCAG 2.2 AA</span>
+        </div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="dot-orb"></div>
+        <div class="float aa">
+          <div class="pair"><span class="g">Aa</span><span class="l">Aa</span></div>
+          <div class="names"><span>Geist · Interface</span><span>Lora · Reading</span></div>
+        </div>
+        <div class="float case case-card">
+          <div class="top">
+            <span class="avatar av-2">AN</span>
+            <div style="min-width:0"><div class="name">A. Nguyen</div><div class="prog">Bachelor of General Studies</div></div>
+            <span class="badge b-accent" style="margin-left:auto">In review</span>
+          </div>
+          <div class="progress-meta" style="margin-top:16px"><span>Portfolio</span><b>5 of 7 sections</b></div>
+          <div class="progress"><i style="width:71%"></i></div>
+        </div>
+        <div class="float toast-demo" style="background:none;box-shadow:none">
+          <div class="toast"><span class="ok"><svg class="i"><use href="#i-check"/></svg></span>Feedback sent to your advisor</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PRINCIPLES ================= -->
+  <section class="section" id="principles">
+    <p class="eyebrow">01 · Foundations</p>
+    <h2>Principles</h2>
+    <p class="lead">Seven ideas guide every decision. When two options look equally good, choose the one that fits these best.</p>
+    <div class="sub grid g3">
+      <div class="card card-pad"><div class="eyebrow" style="color:var(--label-2)">1</div><h3 style="margin-top:8px;font-size:18px;font-weight:600">Content first</h3><p class="note" style="margin-top:6px;font-size:14px;line-height:21px">Portfolios, evidence and reports are the content. The interface frames them quietly, and controls float above them.</p></div>
+      <div class="card card-pad"><div class="eyebrow" style="color:var(--label-2)">2</div><h3 style="margin-top:8px;font-size:18px;font-weight:600">Clear hierarchy</h3><p class="note" style="margin-top:6px;font-size:14px;line-height:21px">Size, weight and position show what matters most. Each view has one primary action.</p></div>
+      <div class="card card-pad"><div class="eyebrow" style="color:var(--label-2)">3</div><h3 style="margin-top:8px;font-size:18px;font-weight:600">Calm by design</h3><p class="note" style="margin-top:6px;font-size:14px;line-height:21px">Students can feel exposed during PLAR. No alarming colours, countdowns or judgemental words. An Inconclusive rating is grey, never red.</p></div>
+      <div class="card card-pad"><div class="eyebrow" style="color:var(--label-2)">4</div><h3 style="margin-top:8px;font-size:18px;font-weight:600">Depth with restraint</h3><p class="note" style="margin-top:6px;font-size:14px;line-height:21px">Glass is only for navigation and controls. Content always sits on solid surfaces.</p></div>
+      <div class="card card-pad"><div class="eyebrow" style="color:var(--label-2)">5</div><h3 style="margin-top:8px;font-size:18px;font-weight:600">AI is always labelled</h3><p class="note" style="margin-top:6px;font-size:14px;line-height:21px">AI suggestions carry a marker and stay in draft style until a person accepts them. People make every decision.</p></div>
+      <div class="card card-pad"><div class="eyebrow" style="color:var(--label-2)">6</div><h3 style="margin-top:8px;font-size:18px;font-weight:600">Accessible by default</h3><p class="note" style="margin-top:6px;font-size:14px;line-height:21px">WCAG 2.2 AA is the minimum. Every colour pair on this page has been checked, and targets are at least 44px.</p></div>
+    </div>
+    <div class="sub card card-pad" style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">
+      <div class="eyebrow" style="color:var(--label-2)">7</div>
+      <div style="flex:1;min-width:240px"><h3 style="font-size:18px;font-weight:600">One system everywhere</h3><p class="note" style="margin-top:4px;font-size:14px;line-height:21px">The same tokens drive the app, PDFs, reports, proposals and emails, so they always look like one product.</p></div>
+      <a class="btn btn-secondary btn-sm" href="#tokens">See the tokens <svg class="i"><use href="#i-arrow-right"/></svg></a>
+    </div>
+  </section>
+
+  <!-- ================= COLOUR ================= -->
+  <section class="section" id="colour">
+    <p class="eyebrow">02 · Foundations</p>
+    <h2>Colour</h2>
+    <p class="lead">A warm, neutral canvas with one accent. Tangerine marks action and progress, and it should cover only a small part of any screen. Select a swatch to copy its value.</p>
+
+    <div class="sub">
+      <h3>Tangerine scale</h3>
+      <p class="desc"><b>500</b> is the brand tangerine for illustration, charts and gradients. <b>600</b> is the accent fill for buttons, switches and selection, with white text at 4.57:1. <b>700</b> is for accent text and links on any light surface. Never set text in 500 or lighter on white.</p>
+      <div class="panel"><div class="swatches" id="tangerine-swatches"></div></div>
+    </div>
+
+    <div class="sub">
+      <h3>Neutrals and roles</h3>
+      <p class="desc">Warm greys pair with tangerine better than cool ones. Use role tokens in code, never raw hex values.</p>
+      <div class="role-grid" id="neutral-roles"></div>
+    </div>
+
+    <div class="sub">
+      <h3>Status and AI</h3>
+      <p class="desc">Use status colours sparingly, and always with an icon and a label, never colour alone. Warning is amber-brown so it doesn't look like the accent. AI uses its own indigo so a suggestion can never be mistaken for a person's work.</p>
+      <div class="role-grid" id="status-roles"></div>
+    </div>
+
+    <div class="sub">
+      <h3>Contrast pairs</h3>
+      <p class="desc">Measured ratios for the pairs used most. AA needs 4.5:1 for body text and 3:1 for large text and UI shapes.</p>
+      <div class="table-scroll"><table class="spec" id="contrast-table">
+        <thead><tr><th>Sample</th><th>Foreground</th><th>Background</th><th>Ratio</th><th>Result</th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+    </div>
+
+    <div class="sub">
+      <h3>Data visualisation</h3>
+      <p class="desc">Sequential charts use the tangerine ramp. Categorical charts use up to six hues in this order. Always add direct labels or patterns.</p>
+      <div class="grid g2" style="margin-top:20px">
+        <div class="panel">
+          <div class="panel-label">Sequential</div>
+          <div style="display:flex;height:44px;border-radius:12px;overflow:hidden">
+            <span style="flex:1;background:#FFEBD6"></span><span style="flex:1;background:#FFB474"></span><span style="flex:1;background:#F5761A"></span><span style="flex:1;background:#A8470B"></span><span style="flex:1;background:#6F3211"></span>
+          </div>
+          <div style="display:flex;align-items:flex-end;gap:10px;height:120px;margin-top:22px" aria-label="Example bar chart">
+            <span style="flex:1;height:30%;background:#FFD3AA;border-radius:6px 6px 2px 2px"></span>
+            <span style="flex:1;height:48%;background:#FFB474;border-radius:6px 6px 2px 2px"></span>
+            <span style="flex:1;height:62%;background:#FF9342;border-radius:6px 6px 2px 2px"></span>
+            <span style="flex:1;height:80%;background:#F5761A;border-radius:6px 6px 2px 2px"></span>
+            <span style="flex:1;height:100%;background:#C2550A;border-radius:6px 6px 2px 2px"></span>
+            <span style="flex:1;height:70%;background:#A8470B;border-radius:6px 6px 2px 2px"></span>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-label">Categorical</div>
+          <div class="stack" style="gap:10px" id="cat-list"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TYPOGRAPHY ================= -->
+  <section class="section" id="typography">
+    <p class="eyebrow">03 · Foundations</p>
+    <h2>Typography</h2>
+    <p class="lead">Two typefaces in the roles Apple gives SF Pro and New York. Geist, a clean grotesque, runs the interface. Lora, a warm contemporary serif, carries headlines and long-form reading, where a human voice matters.</p>
+
+    <div class="sub pairing">
+      <div class="face geist">
+        <div class="big">Ag</div>
+        <h4>Geist</h4>
+        <p>For the interface: labels, buttons, tables, forms and body text in the app. Weights 400, 500, 600 and 700. Geist Mono is used for IDs, timestamps and code.</p>
+        <div class="weights"><span style="font-weight:400">Regular</span><span style="font-weight:500">Medium</span><span style="font-weight:600">Semibold</span><span style="font-weight:700">Bold</span><span style="font-family:var(--font-mono)">Mono</span></div>
+        <div class="glyphs">ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789 &amp;@%</div>
+      </div>
+      <div class="face lora">
+        <div class="big">A<i>g</i></div>
+        <h4 style="font-family:var(--font-serif)">Lora</h4>
+        <p>For headlines, page titles, documents, feedback letters and long-form reading such as portfolio sections. Weights 400, 500 and 600, with italics for emphasis.</p>
+        <div class="weights" style="font-family:var(--font-serif)"><span>Regular</span><span style="font-weight:500">Medium</span><span style="font-weight:600">Semibold</span><span style="font-style:italic">Italic</span></div>
+        <div class="glyphs">ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789 &amp;</div>
+      </div>
+    </div>
+
+    <div class="sub">
+      <h3>Type scale</h3>
+      <p class="desc">Based on Apple's text styles and adjusted for the web. Larger sizes use tighter tracking. Body text never goes below 16px in the app.</p>
+      <div class="panel" style="padding-top:6px;padding-bottom:6px" id="type-scale"></div>
+    </div>
+
+    <div class="sub grid g2">
+      <div class="panel">
+        <div class="panel-label">Pairing in practice · interface</div>
+        <p class="eyebrow">Assessor workspace</p>
+        <h3 style="margin-top:6px;font-family:var(--font-serif);font-size:32px;line-height:38px;font-weight:600;letter-spacing:-0.022em">Good morning, Jordan.</h3>
+        <p style="margin-top:6px;color:var(--label-2)">Two interviews this week and one report waiting for your review.</p>
+        <div class="row" style="margin-top:18px"><button class="btn btn-primary">Open report</button><button class="btn btn-neutral">View schedule</button></div>
+      </div>
+      <div class="panel">
+        <div class="panel-label">Pairing in practice · reading</div>
+        <p style="font-family:var(--font-serif);font-size:18px;line-height:30px">In my role as a team lead, I learned to resolve conflict by listening first. When two colleagues disagreed about a schedule, I met with each of them, wrote down what mattered to both, and proposed a rota they could each accept.</p>
+        <p class="note" style="margin-top:12px">Portfolio excerpt (synthetic) · Lora Regular 18/30</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= LAYOUT ================= -->
+  <section class="section" id="layout">
+    <p class="eyebrow">04 · Foundations</p>
+    <h2>Spacing and layout</h2>
+    <p class="lead">Everything sits on a 4-point grid. Generous space is part of the calm. When in doubt, add space instead of a line.</p>
+    <div class="sub grid g2">
+      <div class="panel">
+        <div class="panel-label">Spacing scale</div>
+        <div id="space-scale"></div>
+      </div>
+      <div class="stack" style="gap:20px">
+        <table class="spec">
+          <thead><tr><th>Layout</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Breakpoints</td><td><code>640</code> <code>768</code> <code>1024</code> <code>1280</code></td></tr>
+            <tr><td>Content width</td><td>1120px max; reading text 68ch max</td></tr>
+            <tr><td>Grid</td><td>12 columns; 24px gutters (16px on phones)</td></tr>
+            <tr><td>Page margins</td><td>16px phone · 32px tablet · 56px desktop</td></tr>
+            <tr><td>Top bar</td><td>56px, glass, sticky</td></tr>
+            <tr><td>Sidebar</td><td>260px, glass; collapses to tabs below 1024px</td></tr>
+            <tr><td>Touch targets</td><td>44 × 44px minimum (32px only in dense desktop tables)</td></tr>
+          </tbody>
+        </table>
+        <div class="panel canvas">
+          <div class="panel-label">12-column grid</div>
+          <div style="display:grid;grid-template-columns:repeat(12,1fr);gap:8px;height:64px">
+            <span style="background:var(--tangerine-100);border-radius:5px"></span><span style="background:var(--tangerine-100);border-radius:5px"></span><span style="background:var(--tangerine-100);border-radius:5px"></span><span style="background:var(--tangerine-100);border-radius:5px"></span><span style="background:var(--tangerine-100);border-radius:5px"></span><span style="background:var(--tangerine-100);border-radius:5px"></span><span style="background:var(--tangerine-100);border-radius:5px"></span><span style="background:var(--tangerine-100);border-radius:5px"></span><span style="background:var(--tangerine-100);border-radius:5px"></span><span style="background:var(--tangerine-100);border-radius:5px"></span><span style="background:var(--tangerine-100);border-radius:5px"></span><span style="background:var(--tangerine-100);border-radius:5px"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SHAPE & DEPTH ================= -->
+  <section class="section" id="shape">
+    <p class="eyebrow">05 · Foundations</p>
+    <h2>Shape and depth</h2>
+    <p class="lead">Continuous, rounded corners and soft shadows. Nested corners shrink by the padding between them, so curves stay concentric.</p>
+    <div class="sub">
+      <h3>Corner radii</h3>
+      <div class="grid g4" style="margin-top:20px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))">
+        <div class="radius-tile" style="border-radius:6px"><div><b>xs · 6</b><span>Chips, kbd</span></div></div>
+        <div class="radius-tile" style="border-radius:10px"><div><b>sm · 10</b><span>Inputs, stacked buttons</span></div></div>
+        <div class="radius-tile" style="border-radius:14px"><div><b>md · 14</b><span>List groups, menus</span></div></div>
+        <div class="radius-tile" style="border-radius:20px"><div><b>lg · 20</b><span>Cards, sheets</span></div></div>
+        <div class="radius-tile" style="border-radius:28px"><div><b>xl · 28</b><span>Modals, hero panels</span></div></div>
+        <div class="radius-tile" style="border-radius:999px;aspect-ratio:2.2;place-items:center"><div style="text-align:center"><b>full</b><span>Pills, capsule buttons</span></div></div>
+      </div>
+    </div>
+    <div class="sub">
+      <h3>Elevation</h3>
+      <p class="desc">Three levels only. Each shadow includes a hairline ring, so edges stay crisp on the warm canvas.</p>
+      <div class="grid g3" style="margin-top:20px">
+        <div class="elev-tile" style="box-shadow:var(--elev-1)"><b>Level 1</b><span>Cards, list groups, table containers</span></div>
+        <div class="elev-tile" style="box-shadow:var(--elev-2)"><b>Level 2</b><span>Hover, raised cards, dropdown buttons</span></div>
+        <div class="elev-tile" style="box-shadow:var(--elev-3)"><b>Level 3</b><span>Menus, popovers, modals, sheets</span></div>
+      </div>
+    </div>
+    <div class="sub">
+      <h3>Glass materials</h3>
+      <p class="desc">Glass marks the layer that floats above content: top bars, sidebars, toolbars, menus, sheets, toasts and the interview controls. It is never used for content. It falls back to a solid surface when the device asks for reduced transparency.</p>
+      <div class="glass-stage" style="margin-top:20px">
+        <div class="glass-sample gs-regular"><div><b>Regular</b><p>Top bars and sidebars. White at 72%, with blur and saturation.</p></div><span class="mono">--glass-regular</span></div>
+        <div class="glass-sample gs-thick"><div><b>Thick</b><p>Menus, sheets, mobile tab bars. White at 88% for easy reading.</p></div><span class="mono">--glass-thick</span></div>
+        <div class="glass-sample gs-clear"><div><b>Clear</b><p>Over video and photos only. Interview controls and name labels.</p></div><span class="mono">--glass-clear</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= MOTION ================= -->
+  <section class="section" id="motion">
+    <p class="eyebrow">06 · Foundations</p>
+    <h2>Motion</h2>
+    <p class="lead">Motion explains where things come from and where they go. It is quick and physical, and it never delays someone's work. When reduced motion is on, movement becomes a simple fade.</p>
+    <div class="sub grid g2">
+      <div class="panel">
+        <div class="row" style="justify-content:space-between"><div class="panel-label" style="margin:0">Easing curves</div><button class="btn btn-secondary btn-sm" id="play-motion"><svg class="i"><use href="#i-arrow-right"/></svg>Play</button></div>
+        <div style="margin-top:18px" id="motion-demo">
+          <div class="motion-item"><header><b>Standard</b><span>cubic-bezier(.2, 0, 0, 1)</span></header><div class="motion-track"><i class="motion-dot" style="transition-timing-function:var(--ease-standard)"></i></div></div>
+          <div class="motion-item"><header><b>Spring</b><span>cubic-bezier(.34, 1.36, .64, 1)</span></header><div class="motion-track"><i class="motion-dot" style="transition-timing-function:var(--ease-spring)"></i></div></div>
+          <div class="motion-item"><header><b>Enter</b><span>cubic-bezier(0, 0, .2, 1)</span></header><div class="motion-track"><i class="motion-dot" style="transition-timing-function:var(--ease-enter)"></i></div></div>
+          <div class="motion-item"><header><b>Exit</b><span>cubic-bezier(.4, 0, 1, 1)</span></header><div class="motion-track"><i class="motion-dot" style="transition-timing-function:var(--ease-exit)"></i></div></div>
+        </div>
+      </div>
+      <table class="spec">
+        <thead><tr><th>Token</th><th>Duration</th><th>Use</th></tr></thead>
+        <tbody>
+          <tr><td><code>--dur-1</code></td><td>120ms</td><td>Hover, press, colour changes</td></tr>
+          <tr><td><code>--dur-2</code></td><td>200ms</td><td>Switches, segmented controls, tabs</td></tr>
+          <tr><td><code>--dur-3</code></td><td>320ms</td><td>Accepting AI content, expanding rows</td></tr>
+          <tr><td><code>--dur-4</code></td><td>480ms</td><td>Modals, sheets, toasts (with spring)</td></tr>
+          <tr><td>Press</td><td>scale 0.97</td><td>Buttons and tappable cards</td></tr>
+          <tr><td>Never</td><td>—</td><td>Bounces on errors, looping decoration, parallax under text</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= ICONS ================= -->
+  <section class="section" id="icons">
+    <p class="eyebrow">07 · Foundations</p>
+    <h2>Iconography</h2>
+    <p class="lead">Two styles from one family, drawn on the same 24px grid so they swap without shifting. Outline is the default voice: light and calm. Filled marks something as chosen, on, or worth a glance. Icons support labels. They don't replace them, except for familiar controls that have an accessible name.</p>
+
+    <div class="sub">
+      <h3>Outline and filled pairs</h3>
+      <p class="desc">Outline uses a 1.75px stroke with rounded ends, matching Geist's weight. Filled versions cut their details out of a solid shape, so they read clearly at 14–16px and on coloured tiles. Action icons such as upload, download, search and close stay outline only.</p>
+      <div class="panel" style="margin-top:20px">
+        <div class="row" style="justify-content:space-between;margin-bottom:18px">
+          <div class="segmented" role="radiogroup" aria-label="Icon style" id="icon-style">
+            <button role="radio" aria-checked="true" data-style="pairs">Pairs</button><button role="radio" aria-checked="false" data-style="outline">Outline</button><button role="radio" aria-checked="false" data-style="filled">Filled</button>
+          </div>
+          <span class="note" id="icon-count"></span>
+        </div>
+        <div class="icon-grid" id="icon-grid"></div>
+      </div>
+    </div>
+
+    <div class="sub">
+      <h3>When to use each</h3>
+      <p class="desc">Use filled icons sparingly. They work because most icons on the screen are outline.</p>
+      <div class="table-scroll" style="margin-top:20px"><table class="spec">
+        <thead><tr><th>Situation</th><th>Style</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td><b>Navigation, not selected</b></td><td><span class="badge b-neutral">Outline</span></td><td><span class="row" style="gap:8px"><svg class="i"><use href="#i-home"/></svg><svg class="i"><use href="#i-folder"/></svg><svg class="i"><use href="#i-calendar"/></svg></span></td></tr>
+          <tr><td><b>Navigation, selected</b>: sidebar item and mobile tab bar. The icon fills while the label goes semibold.</td><td><span class="badge b-accent">Filled</span></td><td><span class="row" style="gap:8px;color:var(--accent-text)"><svg class="i f"><use href="#f-home"/></svg><svg class="i f"><use href="#f-folder"/></svg><svg class="i f"><use href="#f-calendar"/></svg></span></td></tr>
+          <tr><td><b>Toggles that are on</b>: saved, starred, microphone live</td><td><span class="badge b-accent">Filled</span></td><td><span class="row" style="gap:8px"><svg class="i"><use href="#i-mic"/></svg>→<svg class="i f" style="color:var(--accent-text)"><use href="#f-mic"/></svg></span></td></tr>
+          <tr><td><b>Status in badges, alerts and validation</b>: small sizes need a solid shape</td><td><span class="badge b-accent">Filled</span></td><td><span class="row" style="gap:8px"><svg class="i f" style="color:var(--success)"><use href="#f-check-circle"/></svg><svg class="i f" style="color:var(--info)"><use href="#f-info"/></svg><svg class="i f" style="color:var(--warning)"><use href="#f-clock"/></svg><svg class="i f" style="color:var(--danger)"><use href="#f-alert"/></svg></span></td></tr>
+          <tr><td><b>White glyphs on coloured tiles</b>: settings rows, empty states, app tiles</td><td><span class="badge b-accent">Filled</span></td><td><span class="row" style="gap:8px"><span class="icon-tile" style="background:#F5761A"><svg class="i sm f"><use href="#f-user"/></svg></span><span class="icon-tile" style="background:#5E5CE6"><svg class="i sm f"><use href="#f-graduation"/></svg></span><span class="icon-tile" style="background:#2F7FC1"><svg class="i sm f"><use href="#f-calendar"/></svg></span></span></td></tr>
+          <tr><td><b>Actions in buttons and toolbars</b>, inline in text, form fields</td><td><span class="badge b-neutral">Outline</span></td><td><span class="row" style="gap:8px"><svg class="i"><use href="#i-upload"/></svg><svg class="i"><use href="#i-search"/></svg><svg class="i"><use href="#i-pencil"/></svg><svg class="i"><use href="#i-x"/></svg></span></td></tr>
+          <tr><td><b>Interview controls</b>: outline on glass, filled when the control is on</td><td><span class="badge b-neutral">Both</span></td><td><span class="row" style="gap:8px"><svg class="i"><use href="#i-captions"/></svg><svg class="i f"><use href="#f-target"/></svg></span></td></tr>
+          <tr><td><b>AI marker</b>: always the filled sparkle with the gradient</td><td><span class="badge b-ai">Filled</span></td><td><svg class="i" style="stroke:none;fill:url(#ai-g)"><use href="#i-spark"/></svg></td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <div class="sub grid g2">
+      <div class="panel">
+        <div class="panel-label">Try it · selection fills the icon</div>
+        <div class="mini-side" style="background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--separator)" id="fill-nav">
+          <button class="navitem" aria-current="page"><svg class="i off"><use href="#i-home"/></svg><svg class="i f on"><use href="#f-home"/></svg>Overview</button>
+          <button class="navitem"><svg class="i off"><use href="#i-folder"/></svg><svg class="i f on"><use href="#f-folder"/></svg>Assessments</button>
+          <button class="navitem"><svg class="i off"><use href="#i-calendar"/></svg><svg class="i f on"><use href="#f-calendar"/></svg>Interviews</button>
+          <button class="navitem"><svg class="i off"><use href="#i-message"/></svg><svg class="i f on"><use href="#f-message"/></svg>Feedback</button>
+        </div>
+        <p class="note" style="margin-top:12px">Select an item. The fill gives a second cue beyond colour, which helps people who can't see the tangerine highlight well.</p>
+      </div>
+      <div class="panel">
+        <div class="panel-label">Try it · toggles</div>
+        <div class="row" style="gap:12px">
+          <button class="toggle-ic" aria-pressed="false" aria-label="Star this case" data-toggle><svg class="i off"><use href="#i-star"/></svg><svg class="i f on"><use href="#f-star"/></svg></button>
+          <button class="toggle-ic" aria-pressed="true" aria-label="Bookmark evidence" data-toggle><svg class="i off"><use href="#i-bookmark"/></svg><svg class="i f on"><use href="#f-bookmark"/></svg></button>
+          <button class="toggle-ic" aria-pressed="false" aria-label="Microphone" data-toggle><svg class="i off"><use href="#i-mic"/></svg><svg class="i f on"><use href="#f-mic"/></svg></button>
+          <button class="toggle-ic" aria-pressed="false" aria-label="Notifications" data-toggle><svg class="i off"><use href="#i-bell"/></svg><svg class="i f on"><use href="#f-bell"/></svg></button>
+        </div>
+        <hr class="divider">
+        <div class="panel-label">Sizes</div>
+        <div class="icon-sizes">
+          <figure><div class="duo"><svg class="i" style="width:14px;height:14px"><use href="#i-check-circle"/></svg><svg class="i f" style="width:14px;height:14px"><use href="#f-check-circle"/></svg></div>14 · badges</figure>
+          <figure><div class="duo"><svg class="i sm"><use href="#i-check-circle"/></svg><svg class="i sm f"><use href="#f-check-circle"/></svg></div>16 · small buttons</figure>
+          <figure><div class="duo"><svg class="i"><use href="#i-check-circle"/></svg><svg class="i f"><use href="#f-check-circle"/></svg></div>20 · default</figure>
+          <figure><div class="duo"><svg class="i lg"><use href="#i-check-circle"/></svg><svg class="i lg f"><use href="#f-check-circle"/></svg></div>24 · tab bar</figure>
+        </div>
+      </div>
+    </div>
+
+    <div class="sub dodont">
+      <div class="dd do"><header><svg class="i sm f"><use href="#f-check-circle"/></svg>Do</header><ul><li>Swap outline for filled in the same spot when something becomes selected or turns on</li><li>Use filled for status at 14–16px, where strokes look thin</li><li>Keep one style per group of controls at rest</li></ul></div>
+      <div class="dd dont"><header><svg class="i sm f"><use href="#f-x-circle"/></svg>Don't</header><ul><li>Fill icons just for decoration or to add colour</li><li>Mix outline and filled side by side in one toolbar</li><li>Rely on the fill alone. Selection also changes colour and weight</li></ul></div>
+    </div>
+  </section>
+
+  <!-- ================= BUTTONS ================= -->
+  <section class="section" id="buttons">
+    <p class="eyebrow">08 · Components</p>
+    <h2>Buttons</h2>
+    <p class="lead">Capsule buttons in a row, rounded rectangles when stacked. One primary button per view. Labels are verbs that say exactly what will happen.</p>
+
+    <div class="sub panel">
+      <div class="btn-matrix">
+        <span class="h"></span><span class="h">Large · 52</span><span class="h">Default · 44</span><span class="h hide-md">Small · 32</span><span class="h hide-md">Disabled</span>
+        <span class="h" style="color:var(--label)"><b>Primary</b></span>
+        <div><button class="btn btn-primary btn-lg">Submit report</button></div>
+        <div><button class="btn btn-primary">Start interview</button></div>
+        <div class="hide-md"><button class="btn btn-primary btn-sm">Save</button></div>
+        <div class="hide-md"><button class="btn btn-primary" disabled>Submit</button></div>
+        <span class="h" style="color:var(--label)"><b>Secondary</b></span>
+        <div><button class="btn btn-secondary btn-lg">Add evidence</button></div>
+        <div><button class="btn btn-secondary">Request changes</button></div>
+        <div class="hide-md"><button class="btn btn-secondary btn-sm">Add</button></div>
+        <div class="hide-md"><button class="btn btn-secondary" disabled>Add</button></div>
+        <span class="h" style="color:var(--label)"><b>Neutral</b></span>
+        <div><button class="btn btn-neutral btn-lg">Back</button></div>
+        <div><button class="btn btn-neutral">Cancel</button></div>
+        <div class="hide-md"><button class="btn btn-neutral btn-sm">Cancel</button></div>
+        <div class="hide-md"><button class="btn btn-neutral" disabled>Cancel</button></div>
+        <span class="h" style="color:var(--label)"><b>Bordered</b></span>
+        <div><button class="btn btn-bordered btn-lg">Preview</button></div>
+        <div><button class="btn btn-bordered"><svg class="i"><use href="#i-download"/></svg>Download PDF</button></div>
+        <div class="hide-md"><button class="btn btn-bordered btn-sm">Export</button></div>
+        <div class="hide-md"><button class="btn btn-bordered" disabled>Export</button></div>
+        <span class="h" style="color:var(--label)"><b>Plain</b></span>
+        <div><button class="btn btn-plain btn-lg">Learn more</button></div>
+        <div><button class="btn btn-plain">View all cases<svg class="i"><use href="#i-chevron-right"/></svg></button></div>
+        <div class="hide-md"><button class="btn btn-plain btn-sm">Edit</button></div>
+        <div class="hide-md"><button class="btn btn-plain" disabled>Edit</button></div>
+        <span class="h" style="color:var(--label)"><b>Destructive</b></span>
+        <div><button class="btn btn-destructive btn-lg">Withdraw</button></div>
+        <div><button class="btn btn-destructive"><svg class="i"><use href="#i-trash"/></svg>Remove file</button></div>
+        <div class="hide-md"><button class="btn btn-destructive btn-sm">Remove</button></div>
+        <div class="hide-md"><button class="btn btn-destructive" disabled>Remove</button></div>
+      </div>
+    </div>
+
+    <div class="sub grid g3">
+      <div class="panel">
+        <div class="panel-label">With icons and loading</div>
+        <div class="stack">
+          <div class="row"><button class="btn btn-primary"><svg class="i"><use href="#i-send"/></svg>Send feedback</button></div>
+          <div class="row"><button class="btn btn-primary" data-loading><span class="spinner"></span><svg class="i btn-icon"><use href="#i-check"/></svg>Approve portfolio</button></div>
+          <p class="note">Select “Approve portfolio” to see the loading state. The label stays, and a spinner takes the icon's place.</p>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-label">Icon buttons</div>
+        <div class="row">
+          <button class="btn btn-neutral icon-btn" aria-label="Search"><svg class="i"><use href="#i-search"/></svg></button>
+          <button class="btn btn-neutral icon-btn" aria-label="Notifications"><svg class="i"><use href="#i-bell"/></svg></button>
+          <button class="btn btn-primary icon-btn" aria-label="Add"><svg class="i"><use href="#i-plus"/></svg></button>
+          <button class="btn btn-plain icon-btn" aria-label="More"><svg class="i"><use href="#i-more"/></svg></button>
+          <button class="btn btn-bordered icon-btn sm" aria-label="Edit"><svg class="i sm"><use href="#i-pencil"/></svg></button>
+        </div>
+        <p class="note" style="margin-top:14px">Each icon button needs an accessible name. Hit area stays 44px even when the visible circle is 32px.</p>
+      </div>
+      <div class="panel">
+        <div class="panel-label">Stacked (sheets and mobile)</div>
+        <div class="stack" style="gap:10px">
+          <button class="btn btn-primary btn-lg btn-block">Book interview</button>
+          <button class="btn btn-neutral btn-lg btn-block">Not now</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= INPUTS ================= -->
+  <section class="section" id="inputs">
+    <p class="eyebrow">09 · Components</p>
+    <h2>Text input</h2>
+    <p class="lead">Labels sit above fields, always visible. Helper text explains the format before someone gets it wrong. Errors say what to do next, not what went wrong.</p>
+    <div class="sub grid g2">
+      <div class="panel stack" style="gap:20px">
+        <div class="field"><label for="f1">Full name</label><input id="f1" class="input" placeholder="As it appears on your ID" value="Alex Morgan"></div>
+        <div class="field"><label for="f2">Email <span class="opt">(TRU or personal)</span></label>
+          <div class="affix"><svg class="i"><use href="#i-message"/></svg><input id="f2" class="input" type="email" placeholder="name@example.com"></div>
+          <span class="help">We'll send interview reminders here.</span></div>
+        <div class="field"><label for="f3">Student number</label><input id="f3" class="input" value="T00-12" aria-invalid="true" aria-describedby="f3e">
+          <span class="err" id="f3e"><svg class="i sm f"><use href="#f-alert"/></svg>Enter all 9 characters, for example T00123456.</span></div>
+        <div class="field"><label for="f4">Program</label><input id="f4" class="input" value="Bachelor of General Studies" disabled><span class="help">Set by your advisor.</span></div>
+      </div>
+      <div class="panel stack" style="gap:20px">
+        <div class="field"><label for="f5">Competency area</label>
+          <select id="f5" class="select"><option>Communication</option><option>Problem solving</option><option>Teamwork</option><option>Leadership</option></select></div>
+        <div class="field">
+          <div class="field-row"><label for="f6">Comment for the student</label><span class="help tabular" id="f6c">118 / 1000</span></div>
+          <textarea id="f6" class="textarea" maxlength="1000">Your example of leading the scheduling change is clear. Adding one sentence on what you would do differently would strengthen it.</textarea>
+        </div>
+        <div class="field"><span class="field-label">Search</span>
+          <div class="affix"><svg class="i"><use href="#i-search"/></svg><input class="input search" placeholder="Search cases, students, files" aria-label="Search"><span class="kbd">⌘K</span></div></div>
+      </div>
+    </div>
+    <div class="sub grid g2">
+      <div class="panel">
+        <div class="panel-label">File upload</div>
+        <div class="dropzone">
+          <div class="ic"><svg class="i lg"><use href="#i-upload"/></svg></div>
+          <b>Drop evidence files here</b>
+          <span class="note">PDF, Word, images or video · up to 500 MB each</span>
+          <button class="btn btn-bordered btn-sm" style="margin-top:8px">Choose files</button>
+        </div>
+      </div>
+      <div class="panel stack">
+        <div class="panel-label" style="margin:0">Uploaded files</div>
+        <div class="file"><span class="fi"><svg class="i"><use href="#i-file"/></svg></span><div class="meta"><b>Reference letter – Community Centre.pdf</b><span>1.2 MB · Uploaded</span></div><span class="badge b-success"><svg class="i f"><use href="#f-check-circle"/></svg>Ready</span></div>
+        <div class="file"><span class="fi"><svg class="i"><use href="#i-video"/></svg></span><div class="meta"><b>Workshop recording.mp4</b><span>212 of 330 MB</span><div class="bar"><i></i></div></div><button class="btn btn-plain icon-btn sm" aria-label="Cancel upload"><svg class="i sm"><use href="#i-x"/></svg></button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SELECTION ================= -->
+  <section class="section" id="selection">
+    <p class="eyebrow">10 · Components</p>
+    <h2>Selection controls</h2>
+    <p class="lead">Use switches for settings that apply right away, checkboxes for choices that are saved with a form, and segmented controls for two to four views of the same thing.</p>
+    <div class="sub grid g3">
+      <div class="panel">
+        <div class="panel-label">Checkboxes</div>
+        <label class="check"><input type="checkbox" checked><div><b>Evidence listing complete</b><span>Every item has a caption</span></div></label>
+        <label class="check"><input type="checkbox" id="indet"><div><b>Competencies drafted</b><span>3 of 7 selected</span></div></label>
+        <label class="check"><input type="checkbox"><div><b>Reference letters attached</b></div></label>
+        <label class="check"><input type="checkbox" disabled><div><b style="color:var(--label-2)">Advisor sign-off</b><span>Available after review</span></div></label>
+      </div>
+      <div class="panel">
+        <div class="panel-label">Radio buttons</div>
+        <label class="check"><input type="radio" name="lvl" checked><div><b>Lower level</b><span>First- and second-year credit</span></div></label>
+        <label class="check"><input type="radio" name="lvl"><div><b>Upper level</b><span>Third- and fourth-year credit</span></div></label>
+        <label class="check"><input type="radio" name="lvl"><div><b>Not sure yet</b><span>Your advisor will help you decide</span></div></label>
+      </div>
+      <div class="panel">
+        <div class="panel-label">Switches</div>
+        <div class="switch-row"><div><b>Email reminders</b><span>Two days before each due date</span></div><button class="switch" role="switch" aria-checked="true" aria-label="Email reminders"></button></div>
+        <div class="switch-row"><div><b>Live captions</b><span>In the interview room</span></div><button class="switch" role="switch" aria-checked="false" aria-label="Live captions"></button></div>
+        <div class="switch-row"><div><b>AI comment suggestions</b><span>Staff only</span></div><button class="switch" role="switch" aria-checked="true" aria-label="AI comment suggestions"></button></div>
+        <div class="switch-row"><div><b style="color:var(--label-2)">Share with assessors</b><span>Locked until approval</span></div><button class="switch" role="switch" aria-checked="false" disabled aria-label="Share with assessors"></button></div>
+      </div>
+    </div>
+    <div class="sub grid g2">
+      <div class="panel stack" style="gap:18px">
+        <div class="panel-label" style="margin:0">Segmented controls</div>
+        <div class="segmented" role="radiogroup" aria-label="View"><button role="radio" aria-checked="true">Overview</button><button role="radio" aria-checked="false">Evidence</button><button role="radio" aria-checked="false">History</button></div>
+        <div class="segmented lg" role="radiogroup" aria-label="Level"><button role="radio" aria-checked="false">Lower level</button><button role="radio" aria-checked="true">Upper level</button></div>
+        <div class="field" style="margin-top:6px">
+          <div class="field-row"><label for="r1">Text size in reading view</label><span class="help tabular" id="r1v">18 px</span></div>
+          <input id="r1" type="range" class="range" min="14" max="24" value="18">
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-label">Time slots · interview booking</div>
+        <p style="font-weight:600;font-size:15px">Tuesday, 12 November</p>
+        <p class="note" style="margin-bottom:12px">All times Pacific. Each interview takes about an hour.</p>
+        <div class="slots" id="slots">
+          <button class="slot" aria-pressed="false">9:00</button><button class="slot" aria-pressed="true">10:00</button><button class="slot" disabled>11:00</button>
+          <button class="slot" aria-pressed="false">13:00</button><button class="slot" aria-pressed="false">14:30</button><button class="slot" disabled>16:00</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= BADGES ================= -->
+  <section class="section" id="badges">
+    <p class="eyebrow">11 · Components</p>
+    <h2>Badges and avatars</h2>
+    <p class="lead">Status pills pair an icon with a short label. Avatars use initials on warm tints, and we never show a photo without consent.</p>
+    <div class="sub grid g2">
+      <div class="panel stack" style="gap:18px">
+        <div class="panel-label" style="margin:0">Status</div>
+        <div class="row" style="gap:8px">
+          <span class="badge b-neutral"><svg class="i f"><use href="#f-clock"/></svg>Not started</span>
+          <span class="badge b-accent"><svg class="i f"><use href="#f-eye"/></svg>In review</span>
+          <span class="badge b-success"><svg class="i f"><use href="#f-check-circle"/></svg>Approved</span>
+          <span class="badge b-warning"><svg class="i f"><use href="#f-clock"/></svg>Due in 5 days</span>
+          <span class="badge b-info"><svg class="i f"><use href="#f-info"/></svg>Update</span>
+          <span class="badge b-danger"><svg class="i f"><use href="#f-alert"/></svg>Upload failed</span>
+        </div>
+        <div class="row" style="gap:8px">
+          <span class="badge b-solid">New</span>
+          <span class="badge b-outline">Draft</span>
+          <span class="badge b-ai"><svg class="spark" style="stroke:none;fill:url(#ai-g)"><use href="#i-spark"/></svg><span class="lbl">AI draft</span></span>
+          <span class="badge b-ai"><svg class="spark" style="stroke:none;fill:url(#ai-g)"><use href="#i-spark"/></svg>Suggested</span>
+          <span style="display:inline-flex;align-items:center;gap:6px;font-size:14px">Inbox <span class="count">3</span></span>
+        </div>
+        <div class="row" style="gap:8px" id="tags">
+          <span class="tag">Communication<button aria-label="Remove Communication"><svg class="i xs"><use href="#i-x"/></svg></button></span>
+          <span class="tag">Teamwork<button aria-label="Remove Teamwork"><svg class="i xs"><use href="#i-x"/></svg></button></span>
+          <span class="tag">Leadership<button aria-label="Remove Leadership"><svg class="i xs"><use href="#i-x"/></svg></button></span>
+        </div>
+        <p class="note">Red appears only for system errors and destructive actions. It is never used for student progress or ratings.</p>
+      </div>
+      <div class="panel stack" style="gap:20px">
+        <div class="panel-label" style="margin:0">Avatars</div>
+        <div class="row" style="gap:14px">
+          <span class="avatar xl av-1">AM</span><span class="avatar lg av-2">JR</span><span class="avatar av-3">KT<span class="presence"></span></span><span class="avatar av-4">LC</span><span class="avatar sm av-5">PO</span>
+        </div>
+        <div class="row" style="gap:16px">
+          <div class="avatar-group"><span class="avatar av-1">AM</span><span class="avatar av-2">JR</span><span class="avatar av-3">KT</span><span class="avatar av-5" style="font-size:12px">+2</span></div>
+          <span class="note">Assessment panel</span>
+        </div>
+        <div class="row" style="gap:12px">
+          <span class="avatar av-2">JR</span>
+          <div><div style="font-weight:600;font-size:15px">Jordan Rivera</div><div class="note">Assessor · Chair</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CARDS ================= -->
+  <section class="section" id="cards">
+    <p class="eyebrow">12 · Components</p>
+    <h2>Cards and lists</h2>
+    <p class="lead">Cards group one idea. Inset grouped lists hold settings and case details. Rows are at least 56px and use a chevron when they lead somewhere.</p>
+    <div class="sub grid g3">
+      <div class="card card-pad stat">
+        <div class="label"><svg class="i sm"><use href="#i-folder"/></svg>Open cases</div>
+        <div class="val">41</div>
+        <div class="hint"><span class="trend-up">+6</span> since last month</div>
+        <svg class="spark-line" viewBox="0 0 200 36" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="sl" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#F5761A" stop-opacity=".25"/><stop offset="1" stop-color="#F5761A" stop-opacity="0"/></linearGradient></defs><path d="M0 28 L25 24 L50 26 L75 18 L100 20 L125 12 L150 14 L175 8 L200 6 L200 36 L0 36Z" fill="url(#sl)"/><path d="M0 28 L25 24 L50 26 L75 18 L100 20 L125 12 L150 14 L175 8 L200 6" fill="none" stroke="#C2550A" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>
+      </div>
+      <div class="card card-pad stat">
+        <div class="label"><svg class="i sm"><use href="#i-clock"/></svg>Median turnaround</div>
+        <div class="val">19 <small>days</small></div>
+        <div class="hint">Interview to result</div>
+        <div style="display:flex;gap:4px;margin-top:16px;align-items:flex-end;height:36px" aria-hidden="true">
+          <span style="flex:1;height:60%;background:var(--tangerine-100);border-radius:3px"></span><span style="flex:1;height:75%;background:var(--tangerine-100);border-radius:3px"></span><span style="flex:1;height:55%;background:var(--tangerine-100);border-radius:3px"></span><span style="flex:1;height:90%;background:var(--tangerine-200);border-radius:3px"></span><span style="flex:1;height:70%;background:var(--tangerine-200);border-radius:3px"></span><span style="flex:1;height:50%;background:var(--tangerine-300);border-radius:3px"></span><span style="flex:1;height:45%;background:var(--accent);border-radius:3px"></span>
+        </div>
+      </div>
+      <div class="card card-pad stat" style="display:flex;align-items:center;gap:18px">
+        <div class="ring" style="--v:71"><span>71%</span></div>
+        <div><div class="label">Portfolio progress</div><div style="font-size:17px;font-weight:600;margin-top:4px">5 of 7 sections</div><div class="hint">Evidence listing next</div></div>
+      </div>
+    </div>
+    <div class="sub grid g2">
+      <div class="card card-pad case-card interactive" tabindex="0">
+        <div class="top">
+          <span class="avatar lg av-1">TM</span>
+          <div style="min-width:0;flex:1"><div class="name">T. Morgan</div><div class="prog">Bachelor of Business Administration · Upper level</div></div>
+          <button class="btn btn-plain icon-btn sm" aria-label="More actions"><svg class="i"><use href="#i-more"/></svg></button>
+        </div>
+        <div class="progress">
+          <div class="progress-meta"><span>Portfolio</span><b>Ready for approval</b></div>
+          <div class="progress"><i style="width:100%"></i></div>
+        </div>
+        <div class="foot">
+          <span class="badge b-success"><svg class="i f"><use href="#f-check-circle"/></svg>Checklist complete</span>
+          <div class="avatar-group"><span class="avatar sm av-2">JR</span><span class="avatar sm av-3">KT</span></div>
+        </div>
+      </div>
+      <div>
+        <div class="list-head">Case details</div>
+        <div class="inset-list">
+          <a class="li" href="#cards"><span class="li-ic" style="background:#F5761A"><svg class="i sm f"><use href="#f-user"/></svg></span><div class="li-body"><b>Student</b><span>A. Nguyen · T00123456</span></div><span class="li-trail"><svg class="i sm"><use href="#i-chevron-right"/></svg></span></a>
+          <a class="li" href="#cards"><span class="li-ic" style="background:#5E5CE6"><svg class="i sm f"><use href="#f-graduation"/></svg></span><div class="li-body"><b>Program</b><span>Bachelor of General Studies</span></div><span class="li-trail">Upper level<svg class="i sm"><use href="#i-chevron-right"/></svg></span></a>
+          <a class="li" href="#cards"><span class="li-ic" style="background:#2F7FC1"><svg class="i sm f"><use href="#f-calendar"/></svg></span><div class="li-body"><b>Due date</b><span>12 March</span></div><span class="li-trail"><span class="badge b-neutral">14 weeks</span><svg class="i sm"><use href="#i-chevron-right"/></svg></span></a>
+          <div class="li"><span class="li-ic" style="background:#1E7B34"><svg class="i sm f"><use href="#f-bell"/></svg></span><div class="li-body"><b>Reminders</b></div><button class="switch" role="switch" aria-checked="true" aria-label="Reminders"></button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TABLES ================= -->
+  <section class="section" id="tables">
+    <p class="eyebrow">13 · Components</p>
+    <h2>Tables</h2>
+    <p class="lead">Hairline rows, no vertical rules, 56px rows. Numbers are right-aligned and tabular. Hovering a row highlights it, and selected rows turn tangerine.</p>
+    <div class="sub card" style="overflow:hidden">
+      <div class="table-bar">
+        <div class="segmented" role="radiogroup" aria-label="Filter"><button role="radio" aria-checked="true">All</button><button role="radio" aria-checked="false">Needs review</button><button role="radio" aria-checked="false">Scheduled</button></div>
+        <div class="row" style="gap:8px"><button class="btn btn-neutral btn-sm"><svg class="i"><use href="#i-filter"/></svg>Filter</button><button class="btn btn-primary btn-sm"><svg class="i"><use href="#i-plus"/></svg>New case</button></div>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="dtable">
+          <thead><tr>
+            <th style="width:44px"><label class="check"><input type="checkbox" aria-label="Select all"></label></th>
+            <th><button>Student <svg class="i xs"><use href="#i-sort"/></svg></button></th><th>Program</th><th>Stage</th><th>Advisor</th><th class="num">Evidence</th><th class="num">Days open</th><th></th>
+          </tr></thead>
+          <tbody>
+            <tr><td><label class="check"><input type="checkbox" aria-label="Select A. Nguyen"></label></td><td><div class="who"><span class="avatar sm av-2">AN</span><div><b>A. Nguyen</b><span>T00123456</span></div></div></td><td>General Studies</td><td><span class="badge b-accent"><svg class="i f"><use href="#f-eye"/></svg>In review</span></td><td>S. Patel</td><td class="num">19</td><td class="num">34</td><td><button class="btn btn-plain icon-btn sm" aria-label="Open"><svg class="i sm"><use href="#i-chevron-right"/></svg></button></td></tr>
+            <tr aria-selected="true"><td><label class="check"><input type="checkbox" checked aria-label="Select J. Rivera"></label></td><td><div class="who"><span class="avatar sm av-1">JR</span><div><b>J. Rivera</b><span>T00456789</span></div></div></td><td>Business Admin</td><td><span class="badge b-neutral"><svg class="i f"><use href="#f-calendar"/></svg>Interview booked</span></td><td>M. Laurent</td><td class="num">22</td><td class="num">61</td><td><button class="btn btn-plain icon-btn sm" aria-label="Open"><svg class="i sm"><use href="#i-chevron-right"/></svg></button></td></tr>
+            <tr><td><label class="check"><input type="checkbox" aria-label="Select K. Thompson"></label></td><td><div class="who"><span class="avatar sm av-3">KT</span><div><b>K. Thompson</b><span>T00987654</span></div></div></td><td>Communication</td><td><span class="badge b-warning"><svg class="i f"><use href="#f-clock"/></svg>Due in 5 days</span></td><td>S. Patel</td><td class="num">16</td><td class="num">88</td><td><button class="btn btn-plain icon-btn sm" aria-label="Open"><svg class="i sm"><use href="#i-chevron-right"/></svg></button></td></tr>
+            <tr><td><label class="check"><input type="checkbox" aria-label="Select L. Chen"></label></td><td><div class="who"><span class="avatar sm av-4">LC</span><div><b>L. Chen</b><span>T00246810</span></div></div></td><td>General Studies</td><td><span class="badge b-success"><svg class="i f"><use href="#f-check-circle"/></svg>Result released</span></td><td>M. Laurent</td><td class="num">24</td><td class="num">102</td><td><button class="btn btn-plain icon-btn sm" aria-label="Open"><svg class="i sm"><use href="#i-chevron-right"/></svg></button></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-bar" style="border-bottom:0;border-top:1px solid var(--separator)">
+        <span class="note">1 selected · 4 of 41 cases</span>
+        <div class="pager"><button disabled aria-label="Previous page"><svg class="i sm"><use href="#i-chevron-left"/></svg></button><button aria-current="page">1</button><button>2</button><button>3</button><button disabled>…</button><button>11</button><button aria-label="Next page"><svg class="i sm"><use href="#i-chevron-right"/></svg></button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= NAVIGATION ================= -->
+  <section class="section" id="navigation">
+    <p class="eyebrow">14 · Components</p>
+    <h2>Navigation</h2>
+    <p class="lead">A glass top bar and sidebar float over the content. Each role sees only its own sections. Items that aren't ready yet stay visible and say when they're coming.</p>
+    <div class="sub nav-stage">
+      <div class="topbar">
+        <span class="mark"><svg viewBox="0 0 24 24"><path d="M5 19V5h7a4.5 4.5 0 0 1 0 9H5"/><path d="M13 14l5 5"/></svg></span>
+        <span class="brand-name">PLAR Platform</span>
+        <div class="affix" style="flex:1;max-width:380px;margin:0 auto"><svg class="i sm"><use href="#i-search"/></svg><input class="input search" style="height:36px" placeholder="Search cases" aria-label="Search cases"></div>
+        <button class="btn btn-plain icon-btn sm" aria-label="Notifications" style="color:var(--label-2)"><svg class="i"><use href="#i-bell"/></svg></button>
+        <span class="avatar sm av-2">JR</span>
+      </div>
+      <div class="mini-app">
+        <nav class="mini-side" aria-label="Example sidebar">
+          <p>Assessor</p>
+          <button class="navitem" aria-current="page"><svg class="i off"><use href="#i-home"/></svg><svg class="i f on"><use href="#f-home"/></svg>Overview</button>
+          <button class="navitem"><svg class="i off"><use href="#i-folder"/></svg><svg class="i f on"><use href="#f-folder"/></svg>Assessments<span class="count">3</span></button>
+          <button class="navitem"><svg class="i off"><use href="#i-calendar"/></svg><svg class="i f on"><use href="#f-calendar"/></svg>Interviews</button>
+          <button class="navitem"><svg class="i off"><use href="#i-file"/></svg><svg class="i f on"><use href="#f-file"/></svg>Reports</button>
+          <button class="navitem" disabled style="color:var(--label-2)"><svg class="i"><use href="#i-history"/></svg>Archive<span class="soon">Later</span></button>
+        </nav>
+        <div class="mini-main">
+          <nav class="crumbs" aria-label="Breadcrumb"><a href="#navigation">Assessments</a><svg class="i"><use href="#i-chevron-right"/></svg><a href="#navigation">J. Rivera</a><svg class="i"><use href="#i-chevron-right"/></svg><span aria-current="page">Preliminary ratings</span></nav>
+          <h3 style="margin-top:10px;font-size:26px;font-weight:600;letter-spacing:-0.02em;font-family:var(--font-serif)">Preliminary ratings</h3>
+          <div class="tabs" role="tablist" style="margin-top:14px" data-tabs>
+            <button class="tab" role="tab" aria-selected="true" data-panel="tp1">Competencies <span class="count" style="background:var(--fill-2);color:var(--label)">7</span></button>
+            <button class="tab" role="tab" aria-selected="false" data-panel="tp2">Evidence</button>
+            <button class="tab" role="tab" aria-selected="false" data-panel="tp3">Notes</button>
+          </div>
+          <div class="tabpanel" id="tp1">Rate each competency on its own. Your co-assessor's ratings stay hidden until you both submit.</div>
+          <div class="tabpanel" id="tp2" hidden>22 evidence items, grouped by competency.</div>
+          <div class="tabpanel" id="tp3" hidden>Private notes are visible to the assessment panel only.</div>
+        </div>
+      </div>
+    </div>
+    <div class="sub grid g2" style="align-items:center">
+      <div>
+        <h3>Mobile tab bar</h3>
+        <p class="desc" style="margin-top:6px;color:var(--label-2);font-size:15px;line-height:22px">Students on phones get a bottom tab bar with up to four destinations, in thick glass. The selected tab uses the accent text colour. Labels are always shown.</p>
+      </div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="ps-body"><h4>Your portfolio</h4><p>5 of 7 sections drafted</p><div class="progress" style="margin-top:14px"><i style="width:71%"></i></div>
+            <div class="alert a-accent" style="margin-top:16px;font-size:13px;padding:10px 12px"><svg class="i sm f"><use href="#f-message"/></svg><div class="grow">New feedback on Communication</div></div></div>
+          <div class="tabbar">
+            <button aria-current="page"><svg class="i off"><use href="#i-home"/></svg><svg class="i f on"><use href="#f-home"/></svg>Home</button>
+            <button><svg class="i off"><use href="#i-book"/></svg><svg class="i f on"><use href="#f-book"/></svg>Portfolio</button>
+            <button><svg class="i off"><use href="#i-message"/></svg><svg class="i f on"><use href="#f-message"/></svg>Feedback</button>
+            <button><svg class="i off"><use href="#i-calendar"/></svg><svg class="i f on"><use href="#f-calendar"/></svg>Interview</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FEEDBACK ================= -->
+  <section class="section" id="feedback">
+    <p class="eyebrow">15 · Components</p>
+    <h2>Feedback</h2>
+    <p class="lead">Messages are short, specific and kind. Say what happened and what to do next. Don't use a toast for anything someone must not miss.</p>
+    <div class="sub grid g2">
+      <div class="stack">
+        <div class="alert a-info"><svg class="i f"><use href="#f-info"/></svg><div class="grow"><b>Your advisor is reviewing two sections</b>You'll get an email when the feedback is ready, usually within five business days.</div></div>
+        <div class="alert a-success"><svg class="i f"><use href="#f-check-circle"/></svg><div class="grow"><b>Portfolio submitted</b>Thank you. We'll contact you to book your interview.</div></div>
+        <div class="alert a-warning"><svg class="i f"><use href="#f-clock"/></svg><div class="grow"><b>Two weeks until your due date</b>You can ask your advisor for an extension if you need one.<div class="acts"><button class="btn btn-bordered btn-sm">Ask about an extension</button></div></div></div>
+        <div class="alert a-danger"><svg class="i f"><use href="#f-alert"/></svg><div class="grow"><b>That file didn't upload</b>Check your connection and try again. Your other files are safe.<div class="acts"><button class="btn btn-bordered btn-sm">Try again</button></div></div></div>
+      </div>
+      <div class="stack" style="gap:20px">
+        <div class="banner"><svg class="i"><use href="#i-calendar"/></svg><span>Interview room opens 15 minutes before your start time.</span><button class="btn btn-primary btn-sm">Test my camera</button></div>
+        <div class="panel">
+          <div class="panel-label">Toast</div>
+          <div class="row"><button class="btn btn-secondary" id="toast-btn">Show a toast</button><span class="note">Glass capsule, bottom centre, 4 seconds, with an optional undo.</span></div>
+        </div>
+        <div class="panel">
+          <div class="panel-label">Tooltip</div>
+          <div class="row" style="gap:24px;padding-top:6px"><span class="tooltip">Visible to staff only</span><span class="tooltip">⌘K Search</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="sub grid g2">
+      <div class="card empty">
+        <div class="art"><svg class="i"><use href="#i-inbox"/></svg></div>
+        <h4>No feedback yet</h4>
+        <p>When your advisor comments on a section, it will appear here. Most feedback arrives within five business days.</p>
+        <button class="btn btn-secondary">Keep writing</button>
+      </div>
+      <div class="card card-pad" aria-hidden="true">
+        <div class="panel-label">Loading skeleton</div>
+        <div class="row" style="gap:12px;flex-wrap:nowrap"><div class="skel" style="width:44px;height:44px;border-radius:50%;flex:none"></div><div style="flex:1"><div class="skel" style="height:14px;width:60%"></div><div class="skel" style="height:12px;width:40%;margin-top:8px"></div></div></div>
+        <div class="skel" style="height:12px;margin-top:22px"></div><div class="skel" style="height:12px;margin-top:10px;width:92%"></div><div class="skel" style="height:12px;margin-top:10px;width:70%"></div>
+        <div class="row" style="gap:10px;margin-top:22px"><div class="skel" style="height:36px;width:120px;border-radius:99px"></div><div class="skel" style="height:36px;width:90px;border-radius:99px"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= OVERLAYS ================= -->
+  <section class="section" id="overlays">
+    <p class="eyebrow">16 · Components</p>
+    <h2>Overlays</h2>
+    <p class="lead">Menus and popovers stay close to their trigger. Sheets show detail without losing your place. Modals are only for confirming actions that can't be undone, and their button names the action.</p>
+    <div class="sub grid g3" style="align-items:start">
+      <div class="panel canvas" style="display:grid;place-items:center;padding:36px 20px">
+        <div class="menu" role="menu" aria-label="Example menu">
+          <button role="menuitem"><svg class="i"><use href="#i-eye"/></svg>Open case<span class="kbd-t">↵</span></button>
+          <button role="menuitem" class="hl"><svg class="i"><use href="#i-pencil"/></svg>Edit details<span class="kbd-t">⌘E</span></button>
+          <button role="menuitem"><svg class="i"><use href="#i-users"/></svg>Assign assessors</button>
+          <button role="menuitem"><svg class="i"><use href="#i-download"/></svg>Download portfolio</button>
+          <hr>
+          <button role="menuitem" class="danger"><svg class="i"><use href="#i-trash"/></svg>Withdraw case</button>
+        </div>
+      </div>
+      <div class="panel canvas" style="display:grid;place-items:center;padding:36px 20px">
+        <div class="popover">
+          <div class="row" style="gap:10px;flex-wrap:nowrap"><span class="avatar av-3">KT</span><div><b style="font-size:15px">K. Thompson</b><div class="note">Chair · 3 active assessments</div></div></div>
+          <p style="margin-top:12px;font-size:14px;line-height:20px;color:var(--label-2)">Available Tue and Thu mornings. Expertise: communication, adult education.</p>
+          <div class="row" style="margin-top:14px;gap:8px"><button class="btn btn-primary btn-sm">Assign</button><button class="btn btn-neutral btn-sm">View profile</button></div>
+        </div>
+      </div>
+      <div class="panel stack" style="gap:14px">
+        <div class="panel-label" style="margin:0">Try them</div>
+        <button class="btn btn-primary" data-open="dlg-modal">Open confirmation</button>
+        <button class="btn btn-bordered" data-open="dlg-sheet">Open side sheet</button>
+        <p class="note">Press Escape or select outside to close. Focus returns to the button that opened it.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PROGRESS ================= -->
+  <section class="section" id="progress">
+    <p class="eyebrow">17 · Components</p>
+    <h2>Progress</h2>
+    <p class="lead">Show progress as steps completed, not as time running out. For students, a due date stays neutral until seven days before, then turns amber. It never turns red.</p>
+    <div class="sub grid g2">
+      <div class="panel stack" style="gap:22px">
+        <div><div class="progress-meta"><span>Portfolio sections</span><b>5 of 7</b></div><div class="progress"><i style="width:71%"></i></div></div>
+        <div><div class="progress-meta"><span>Uploading 3 files</span><b>42%</b></div><div class="progress thin"><i style="width:42%"></i></div></div>
+        <div class="row" style="gap:20px"><div class="ring" style="--v:71"><span>71%</span></div><div class="ring sm" style="--v:40"><span>2/5</span></div><span class="spinner" style="width:22px;height:22px;color:var(--accent)"></span><span class="note">Spinner for waits under ~4 seconds</span></div>
+      </div>
+      <div class="panel stack" style="gap:24px">
+        <div class="panel-label" style="margin:0">Step indicator</div>
+        <div class="steps">
+          <div class="st done"><span class="bub"><svg class="i"><use href="#i-check"/></svg></span>Intake</div>
+          <div class="st done"><span class="bub"><svg class="i"><use href="#i-check"/></svg></span>Portfolio</div>
+          <div class="st cur"><span class="bub">3</span>Approval</div>
+          <div class="st"><span class="bub">4</span>Interview</div>
+          <div class="st"><span class="bub">5</span>Result</div>
+        </div>
+        <div class="row" style="gap:8px"><span class="badge b-neutral"><svg class="i f"><use href="#f-calendar"/></svg>Due 12 March</span><span class="badge b-warning"><svg class="i f"><use href="#f-clock"/></svg>Due in 5 days</span><span class="note">Due-date chip: neutral, then amber</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= AI ================= -->
+  <section class="section" id="ai">
+    <p class="eyebrow">18 · PLAR patterns</p>
+    <h2>AI-assisted content</h2>
+    <p class="lead">AI drafts and suggests, and people decide. Every AI block uses the indigo marker and a dashed draft style, and links to its sources. Nothing AI-written reaches a student until a staff member accepts it. Try the actions below.</p>
+    <div class="sub grid g2" style="align-items:start">
+      <div class="ai-card" id="ai-card">
+        <div class="ai-head">
+          <span class="badge b-ai"><svg class="spark" style="stroke:none;fill:url(#ai-g)"><use href="#i-spark"/></svg><span class="lbl">AI draft</span></span>
+          <span class="note">Feedback on Communication · Section 2</span>
+        </div>
+        <p class="ai-body" id="ai-body">Your example of leading the scheduling change shows clear, two-way communication. To strengthen it, add a sentence on how you checked that both colleagues understood the final plan, and what you would do differently next time.</p>
+        <div class="cites">
+          <button class="cite"><svg class="i xs"><use href="#i-link"/></svg>Demonstration of Learning p.4</button>
+          <button class="cite"><svg class="i xs"><use href="#i-link"/></svg>Evidence 7 · Reference letter</button>
+        </div>
+        <div class="ai-acts">
+          <button class="btn btn-primary btn-sm act" data-ai="accept"><svg class="i"><use href="#i-check"/></svg>Accept</button>
+          <button class="btn btn-bordered btn-sm act" data-ai="edit"><svg class="i"><use href="#i-pencil"/></svg><span>Edit</span></button>
+          <button class="btn btn-plain btn-sm act" data-ai="dismiss">Dismiss</button>
+          <span class="done-note"><svg class="i sm"><use href="#i-history"/></svg><span id="ai-note">Accepted by you · just now · recorded in the audit log</span></span>
+          <button class="btn btn-plain btn-sm" data-ai="reset" style="margin-left:auto">Reset demo</button>
+        </div>
+      </div>
+      <div class="stack">
+        <div class="row" style="justify-content:space-between"><b style="font-size:15px">Suggested standard comments</b><span class="badge b-ai"><svg class="spark" style="stroke:none;fill:url(#ai-g)"><use href="#i-spark"/></svg>Suggested</span></div>
+        <div class="comment-sugg"><span class="rank">1</span><div><p>Explain the “why” behind each evidence item, not just what it is.</p><div class="src">Evidence Description and Listing</div></div><button class="btn btn-secondary btn-sm">Insert</button></div>
+        <div class="comment-sugg"><span class="rank">2</span><div><p>Link each example back to the competency statement it supports.</p><div class="src">Demonstration of Learning</div></div><button class="btn btn-secondary btn-sm">Insert</button></div>
+        <div class="comment-sugg"><span class="rank">3</span><div><p>Add a reflection on what you would do differently next time.</p><div class="src">Demonstration of Learning</div></div><button class="btn btn-secondary btn-sm">Insert</button></div>
+      </div>
+    </div>
+    <div class="sub dodont">
+      <div class="dd do"><header><svg class="i sm f"><use href="#f-check-circle"/></svg>Do</header><ul><li>Label every AI block, even after a small edit</li><li>Link each claim to the passage it came from</li><li>Show staff a “Needs review” flag when the AI isn't sure</li></ul></div>
+      <div class="dd dont"><header><svg class="i sm f"><use href="#f-x-circle"/></svg>Don't</header><ul><li>Show confidence scores or percentages to students</li><li>Use tangerine for AI content, because it would look like a person's action</li><li>Auto-insert AI text into anything a student will see</li></ul></div>
+    </div>
+  </section>
+
+  <!-- ================= RATINGS ================= -->
+  <section class="section" id="ratings">
+    <p class="eyebrow">19 · PLAR patterns</p>
+    <h2>Ratings and rubric</h2>
+    <p class="lead">Competency ratings appear in staff views and in the final report. Inconclusive is neutral grey, because it doesn't mean the student lacks the competency.</p>
+    <div class="sub panel">
+      <div class="rating-key">
+        <div><span class="rating o">O</span><div><b>Outstanding</b><span>Accent fill</span></div></div>
+        <div><span class="rating s">S</span><div><b>Satisfactory</b><span>Soft tangerine</span></div></div>
+        <div><span class="rating i">I</span><div><b>Inconclusive</b><span>Neutral grey, never red</span></div></div>
+        <div><span class="rating n">–</span><div><b>Not yet rated</b><span>Dashed outline</span></div></div>
+      </div>
+      <hr class="divider">
+      <div class="panel-label">Rating selector</div>
+      <p style="font-weight:600">Communication: explains ideas clearly to different audiences</p>
+      <div class="rate-pick" role="radiogroup" aria-label="Rating for Communication" style="margin-top:12px">
+        <button role="radio" aria-checked="false"><span class="rating o">O</span>Outstanding</button>
+        <button role="radio" aria-checked="true"><span class="rating s">S</span>Satisfactory</button>
+        <button role="radio" aria-checked="false"><span class="rating i">I</span>Inconclusive</button>
+      </div>
+    </div>
+    <div class="sub card" style="overflow:hidden">
+      <div class="table-bar"><b style="font-size:15px">Rubric · Problem solving</b><span class="note">Select a cell to cycle: not shown → partly shown → fully shown</span></div>
+      <div style="overflow-x:auto;padding:4px 8px 8px">
+        <table class="rubric">
+          <thead><tr><th>Criterion</th><th class="c">Chair</th><th class="c">Writer</th></tr></thead>
+          <tbody>
+            <tr><td>Identifies the problem and its causes</td><td class="c"><button class="tri" data-state="2"></button></td><td class="c"><button class="tri" data-state="2"></button></td></tr>
+            <tr><td>Considers more than one solution</td><td class="c"><button class="tri" data-state="1"></button></td><td class="c"><button class="tri" data-state="2"></button></td></tr>
+            <tr><td>Explains how the outcome was evaluated</td><td class="c"><button class="tri" data-state="0"></button></td><td class="c"><button class="tri" data-state="1"></button></td></tr>
+            <tr><td>Reflects on what they learned</td><td class="c"><button class="tri" data-state="1"></button></td><td class="c"><button class="tri" data-state="1"></button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TIMELINE ================= -->
+  <section class="section" id="timeline">
+    <p class="eyebrow">20 · PLAR patterns</p>
+    <h2>Case timeline</h2>
+    <p class="lead">The student's journey as a vertical list of steps. Completed steps are tangerine checkmarks, the current step has a ring, and future steps are neutral. It shows what's next, never how much time is left.</p>
+    <div class="sub grid g2" style="align-items:start">
+      <div class="panel timeline">
+        <div class="tl done"><span class="node"><svg class="i"><use href="#i-check"/></svg></span><div><b>Intake and readiness</b><span>Completed 4 September</span></div></div>
+        <div class="tl done"><span class="node"><svg class="i"><use href="#i-check"/></svg></span><div><b>Portfolio development</b><span>7 sections · 19 evidence items</span></div></div>
+        <div class="tl cur"><span class="node"></span><div><b>Advisor approval</b><span>Your advisor is doing a final check</span>
+          <div class="tl-card alert a-accent" style="font-size:13.5px"><svg class="i sm f"><use href="#f-info"/></svg><div class="grow">No action needed from you right now.</div></div></div></div>
+        <div class="tl future"><span class="node"></span><div><b>Discussion of Learning (interview)</b><span>We'll invite you to book a time</span></div></div>
+        <div class="tl future"><span class="node"></span><div><b>Result and credit</b><span>Shared in your assessment report</span></div></div>
+      </div>
+      <div class="panel">
+        <div class="panel-label">Activity log (staff)</div>
+        <div class="inset-list" style="box-shadow:none;background:transparent">
+          <div class="li" style="padding-left:0"><span class="avatar sm av-1">SP</span><div class="li-body"><b style="font-size:14px">S. Patel approved 2 sections</b><span class="mono">2026-10-28 · 14:02</span></div></div>
+          <div class="li" style="padding-left:0"><span class="avatar sm" style="background:var(--ai-soft);color:var(--ai)"><svg class="spark" style="stroke:none;fill:url(#ai-g)"><use href="#i-spark"/></svg></span><div class="li-body"><b style="font-size:14px">AI draft accepted with edits by S. Patel</b><span class="mono">2026-10-28 · 13:47</span></div></div>
+          <div class="li" style="padding-left:0"><span class="avatar sm av-2">AN</span><div class="li-body"><b style="font-size:14px">A. Nguyen uploaded 3 files</b><span class="mono">2026-10-27 · 19:15</span></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= INTERVIEW ================= -->
+  <section class="section" id="interview">
+    <p class="eyebrow">21 · PLAR patterns</p>
+    <h2>Interview room</h2>
+    <p class="lead">The one dark space in the product, so faces stand out and nothing else competes. Controls are a clear-glass capsule. The recording indicator is the only place a student sees red, because it is a status that matters legally.</p>
+    <div class="sub room" aria-label="Interview room example">
+      <div class="room-top"><span class="rec"><i></i>Recording</span><span>Discussion of Learning · 00:24:18</span></div>
+      <div class="tiles">
+        <div class="tile main speaking"><span class="avatar av-1">AN</span><span class="nm"><svg class="i"><use href="#i-mic"/></svg>A. Nguyen</span></div>
+        <div class="tile t2"><span class="avatar av-2">JR</span><span class="nm"><svg class="i"><use href="#i-mic-off"/></svg>J. Rivera · Chair</span></div>
+        <div class="tile t3"><span class="avatar av-3">KT</span><span class="nm"><svg class="i"><use href="#i-mic-off"/></svg>K. Thompson</span></div>
+      </div>
+      <div class="captions">…so I set up a weekly check-in where everyone could raise concerns early.</div>
+      <div class="controls">
+        <button class="cbtn" aria-label="Mute" aria-pressed="false" data-toggle><svg class="i"><use href="#i-mic"/></svg></button>
+        <button class="cbtn" aria-label="Camera" aria-pressed="false" data-toggle><svg class="i"><use href="#i-video"/></svg></button>
+        <button class="cbtn" aria-label="Captions" aria-pressed="true" data-toggle><svg class="i"><use href="#i-captions"/></svg></button>
+        <button class="cbtn" aria-label="Competency tracker" aria-pressed="false" data-toggle><svg class="i"><use href="#i-target"/></svg></button>
+        <button class="cbtn end" aria-label="Leave interview"><svg class="i"><use href="#i-phone-off"/></svg></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ID VERIFICATION ================= -->
+  <section class="section" id="idv">
+    <p class="eyebrow">22 · PLAR patterns</p>
+    <h2>ID verification</h2>
+    <p class="lead">Before the interview, the student holds their photo ID up to the camera. AI helps with the check, and a person makes the decision. The language stays neutral: “Checking…”, never “Failed”.</p>
+    <div class="sub idv">
+      <div class="idv-cam" aria-label="Camera preview with ID guide frame">
+        <div class="idv-hints"><span class="h ok"><svg class="i f"><use href="#f-check-circle"/></svg>Good lighting</span><span class="h ok"><svg class="i f"><use href="#f-check-circle"/></svg>In focus</span><span class="h wait"><svg class="i"><use href="#i-sun"/></svg>Tilt slightly to reduce glare</span></div>
+        <div class="idv-frame"><div class="idv-card"><span class="ph"></span><span class="ln"><i style="width:80%"></i><i style="width:60%"></i><i style="width:70%"></i></span></div></div>
+      </div>
+      <div class="idv-side">
+        <span class="badge b-accent" style="align-self:flex-start"><svg class="i f"><use href="#f-id"/></svg>Step 1 of 2</span>
+        <h4>Show your photo ID</h4>
+        <div class="steps-list">
+          <div><span class="n">1</span>Hold your ID inside the frame.</div>
+          <div><span class="n">2</span>Keep it still until the corners turn orange.</div>
+          <div><span class="n">3</span>Avoid glare from windows or lamps.</div>
+        </div>
+        <div class="checking"><span class="spinner"></span><div><b style="font-size:14px">Checking…</b><div class="note">This usually takes a few seconds.</div></div></div>
+        <div class="privacy"><svg class="i f"><use href="#f-shield"/></svg><span>Your ID is used only to confirm who you are, and only the people on your assessment can see it. <a href="#idv">Learn how we protect your ID</a></span></div>
+        <p class="note">If we can't confirm it here, your advisor will confirm your identity with you instead.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= DOCUMENTS ================= -->
+  <section class="section" id="documents">
+    <p class="eyebrow">23 · PLAR patterns</p>
+    <h2>Documents and email</h2>
+    <p class="lead">PDFs, reports and proposals use the same tokens. Lora carries titles and headings, and Geist carries body text and tables. Glass doesn't exist in print, so it becomes soft tangerine tints. Pages are US Letter with 0.75-inch margins.</p>
+    <div class="sub doc-stage">
+      <div class="page cover">
+        <div class="band"><span class="k">Proposal</span><h5>AI-assisted PLAR Platform</h5><p>Features and capabilities for the Competency-based Portfolio process</p></div>
+        <div class="meta">
+          <div><b style="color:var(--label);font-weight:600">Prepared by</b><br>Platform team</div>
+          <div><b style="color:var(--label);font-weight:600">Date</b><br>October 2026</div>
+          <div class="brandline"><span class="mark"><svg viewBox="0 0 24 24"><path d="M5 19V5h7a4.5 4.5 0 0 1 0 9H5"/><path d="M13 14l5 5"/></svg></span>PLAR Platform</div>
+        </div>
+      </div>
+      <div class="page body">
+        <div class="rh"><span>Assessment Report</span><span>Confidential – contains student information</span></div>
+        <h6>Summary of ratings</h6>
+        <p>The assessment panel reviewed the portfolio and the Discussion of Learning. Ratings reflect the evidence presented for each competency.</p>
+        <table>
+          <thead><tr><th>Competency</th><th>Rating</th><th>Credit</th></tr></thead>
+          <tbody>
+            <tr><td>Communication</td><td><span class="rating o">O</span></td><td>3</td></tr>
+            <tr><td>Problem solving</td><td><span class="rating s">S</span></td><td>3</td></tr>
+            <tr><td>Teamwork</td><td><span class="rating s">S</span></td><td>3</td></tr>
+            <tr><td>Leadership</td><td><span class="rating i">I</span></td><td>—</td></tr>
+          </tbody>
+        </table>
+        <div class="h3">Next steps</div>
+        <p>An Inconclusive rating means the evidence did not yet show this competency. It is not a judgement of ability.</p>
+        <div class="callout">Questions about this report? Contact your PLAR advisor.</div>
+        <div class="pf"><span>PLAR Platform</span><span>Page 2 of 6</span></div>
+      </div>
+    </div>
+    <div class="sub grid g2" style="align-items:center">
+      <div class="email">
+        <div class="mail">
+          <div class="row" style="gap:8px"><span class="mark" style="width:24px;height:24px;border-radius:7px"><svg viewBox="0 0 24 24" style="width:13px;height:13px"><path d="M5 19V5h7a4.5 4.5 0 0 1 0 9H5"/><path d="M13 14l5 5"/></svg></span><b style="font-size:13px">PLAR Platform</b></div>
+          <h5>Your feedback is ready</h5>
+          <p>Hi Alex, your advisor has added comments to the Communication section of your portfolio. Take your time reading them. There's no deadline attached.</p>
+          <a class="btn btn-primary" href="#documents" style="text-decoration:none">Read your feedback</a>
+        </div>
+        <p class="fine">Thompson Rivers University Open Learning · Kamloops, BC</p>
+      </div>
+      <table class="spec">
+        <thead><tr><th>Print element</th><th>Specification</th></tr></thead>
+        <tbody>
+          <tr><td>Fonts</td><td>Lora 600 for titles; Geist 400/600 for body; both embedded</td></tr>
+          <tr><td>Print scale (pt)</td><td>Cover 30/36 · H1 20/26 · H2 15/20 · Body 10.5/15.5 · Caption 8.5/12</td></tr>
+          <tr><td>Cover</td><td>Deep tangerine band (950 → 700) with a sunrise orb; no version or audience line</td></tr>
+          <tr><td>Tables</td><td>Hairline rules, canvas header, no vertical lines</td></tr>
+          <tr><td>Callouts</td><td>Tangerine-50 panel, 6pt corners, ink text</td></tr>
+          <tr><td>Email</td><td>600px column, white card on canvas, one capsule button, plain-text version always included</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= VOICE ================= -->
+  <section class="section" id="voice">
+    <p class="eyebrow">24 · Guidance</p>
+    <h2>Voice and content</h2>
+    <p class="lead">Plain Canadian English. Encouraging, neutral and specific. Write the way a good advisor speaks.</p>
+    <div class="sub dodont">
+      <div class="dd do"><header><svg class="i sm f"><use href="#f-check-circle"/></svg>Do</header><ul>
+        <li><q>Add one sentence on what you'd do differently.</q></li>
+        <li>Name the action on buttons: <q>Book interview</q>, <q>Release result</q></li>
+        <li>Spell out <q>Demonstration of Learning</q> and <q>Discussion of Learning</q> for students</li>
+        <li>Use Canadian spelling: colour, centre, program</li>
+      </ul></div>
+      <div class="dd dont"><header><svg class="i sm f"><use href="#f-x-circle"/></svg>Don't</header><ul>
+        <li><q>Your answer is weak and incomplete.</q></li>
+        <li><q>OK</q>, <q>Yes</q> or <q>Submit</q> with no object</li>
+        <li>Acronyms such as <q>DoL</q> in student views</li>
+        <li>Hint at an award outcome before the result is released</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <!-- ================= A11Y ================= -->
+  <section class="section" id="a11y">
+    <p class="eyebrow">25 · Guidance</p>
+    <h2>Accessibility</h2>
+    <p class="lead">WCAG 2.2 AA is the minimum standard. Check every new screen against this list before it ships.</p>
+    <div class="sub panel checklist">
+      <div><svg class="i f"><use href="#f-check-circle"/></svg>Text contrast ≥ 4.5:1; large text and UI shapes ≥ 3:1</div>
+      <div><svg class="i f"><use href="#f-check-circle"/></svg>Never rely on colour alone. Pair it with an icon or label</div>
+      <div><svg class="i f"><use href="#f-check-circle"/></svg>Targets ≥ 44 × 44px with at least 8px between them</div>
+      <div><svg class="i f"><use href="#f-check-circle"/></svg>Visible 3px tangerine focus ring on every interactive element</div>
+      <div><svg class="i f"><use href="#f-check-circle"/></svg>Full keyboard use; Escape closes overlays; focus returns to the trigger</div>
+      <div><svg class="i f"><use href="#f-check-circle"/></svg>Respect reduced motion and reduced transparency</div>
+      <div><svg class="i f"><use href="#f-check-circle"/></svg>Text scales to 200% without loss; body never below 16px</div>
+      <div><svg class="i f"><use href="#f-check-circle"/></svg>Captions for every recorded interview; transcripts on request</div>
+      <div><svg class="i f"><use href="#f-check-circle"/></svg>Labels above fields; errors linked with aria-describedby</div>
+      <div><svg class="i f"><use href="#f-check-circle"/></svg>Language set to en-CA; headings in order with no skipped levels</div>
+    </div>
+  </section>
+
+  <!-- ================= TOKENS ================= -->
+  <section class="section" id="tokens">
+    <p class="eyebrow">26 · Guidance</p>
+    <h2>Tokens</h2>
+    <p class="lead">The single source of truth. The web app, the PDF stylesheet and the email templates all import these values. Change a token here and it updates everywhere.</p>
+    <div class="sub code">
+      <header><span>tokens.css</span><button class="btn btn-sm" id="copy-tokens"><svg class="i"><use href="#i-copy"/></svg>Copy</button></header>
+      <pre id="tokens-pre"></pre>
+    </div>
+  </section>
+
+  <footer class="site">
+    <span>PLAR Platform Design System · Light theme · Geist, Lora and tangerine</span>
+    <span>Built on Apple's Human Interface Guidelines</span>
+  </footer>
+
+  </div>
+  </main>
+</div>
+
+<!-- Modal -->
+<dialog id="dlg-modal" aria-labelledby="m-title">
+  <div class="modal">
+    <div class="m-ic"><svg class="i lg"><use href="#i-send"/></svg></div>
+    <h4 id="m-title">Release the result to A. Nguyen?</h4>
+    <p>The student will get an email and can read the assessment report right away. You can't undo this, but you can add a note later.</p>
+    <div class="acts"><button class="btn btn-neutral" data-close>Not yet</button><button class="btn btn-primary" data-close data-toast="Result released to A. Nguyen">Release result</button></div>
+  </div>
+</dialog>
+
+<!-- Sheet -->
+<dialog id="dlg-sheet" class="sheet" aria-labelledby="s-title">
+  <div class="sheet-body">
+    <div class="sheet-head"><h4 id="s-title">J. Rivera · Case details</h4><button class="btn btn-neutral icon-btn sm" data-close aria-label="Close"><svg class="i sm"><use href="#i-x"/></svg></button></div>
+    <div class="sheet-content">
+      <div class="row" style="gap:14px"><span class="avatar lg av-1">JR</span><div><b style="font-size:17px">J. Rivera</b><div class="note">Bachelor of Business Administration</div></div></div>
+      <div class="steps" style="margin-top:6px">
+        <div class="st done"><span class="bub"><svg class="i"><use href="#i-check"/></svg></span>Portfolio</div>
+        <div class="st done"><span class="bub"><svg class="i"><use href="#i-check"/></svg></span>Approval</div>
+        <div class="st cur"><span class="bub">3</span>Interview</div>
+        <div class="st"><span class="bub">4</span>Report</div>
+      </div>
+      <div class="inset-list">
+        <div class="li"><div class="li-body"><b>Interview</b><span>Tue 12 Nov · 10:00 Pacific</span></div><span class="badge b-neutral">Booked</span></div>
+        <div class="li"><div class="li-body"><b>Panel</b><span>K. Thompson (Chair), M. Laurent</span></div></div>
+        <div class="li"><div class="li-body"><b>ID verification</b><span>Confirmed by K. Thompson</span></div><span class="badge b-success"><svg class="i f"><use href="#f-check-circle"/></svg>Verified</span></div>
+      </div>
+      <div class="field"><label for="sn">Note for the panel</label><textarea id="sn" class="textarea" placeholder="Visible to the assessment panel only"></textarea></div>
+    </div>
+    <div class="sheet-foot"><button class="btn btn-neutral" data-close>Cancel</button><button class="btn btn-primary" data-close data-toast="Note saved">Save note</button></div>
+  </div>
+</dialog>
+
+<div id="toast-host" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+
+  // ---------- contrast helpers ----------
+  const lum = hex => {
+    const c = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255)
+      .map(v => v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  };
+  const ratio = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
+  const grade = r => r >= 7 ? "AAA" : r >= 4.5 ? "AA" : r >= 3 ? "AA large" : "Decorative";
+
+  // ---------- toast ----------
+  const host = $("#toast-host");
+  function toast(msg, undo) {
+    const t = document.createElement("div");
+    t.className = "toast";
+    t.innerHTML = `<span class="ok"><svg class="i"><use href="#i-check"/></svg></span><span></span>${undo ? '<button class="btn btn-plain btn-sm">Undo</button>' : ""}`;
+    t.children[1].textContent = msg;
+    host.appendChild(t);
+    const close = () => { t.classList.add("out"); setTimeout(() => t.remove(), 220); };
+    t.querySelector("button")?.addEventListener("click", close);
+    setTimeout(close, 4000);
+  }
+  async function copy(text, label) {
+    try { await navigator.clipboard.writeText(text); toast(`Copied ${label || text}`); }
+    catch { toast(`${label || text}`); }
+  }
+
+  // ---------- tangerine swatches ----------
+  const scale = [
+    ["50", "#FFF7EF"], ["100", "#FFEBD6"], ["200", "#FFD3AA"], ["300", "#FFB474"], ["400", "#FF9342"],
+    ["500", "#F5761A", "Brand"], ["600", "#C2550A", "Accent"], ["700", "#A8470B", "Text"],
+    ["800", "#8A3B0F"], ["900", "#6F3211"], ["950", "#3D1706"]
+  ];
+  $("#tangerine-swatches").innerHTML = scale.map(([k, hex, star]) => {
+    const w = ratio(hex, "#FFFFFF"), ink = ratio(hex, "#1D1D1F");
+    const keyColor = w > ink ? "#fff" : "#1D1D1F";
+    return `<button class="sw" data-copy="${hex}" aria-label="Copy tangerine ${k} ${hex}">
+      <div class="chip" style="background:${hex}"><span class="key" style="color:${keyColor}">${k}</span>${star ? `<span class="star">${star}</span>` : ""}</div>
+      <span class="hex">${hex}</span>
+      <span class="cr">White ${w.toFixed(2)}</span>
+      <span class="cr">Ink ${ink.toFixed(2)}</span></button>`;
+  }).join("");
+
+  const role = ([name, val, use, swatch]) =>
+    `<button class="role" data-copy="${val}" aria-label="Copy ${name}"><span class="c" style="background:${swatch || val}"></span><div><b>${name}</b><span>${use}</span><span class="mono">${val}</span></div></button>`;
+  $("#neutral-roles").innerHTML = [
+    ["Canvas", "#F7F6F3", "Page background"],
+    ["Surface", "#FFFFFF", "Cards, sheets, inputs"],
+    ["Surface 2", "#FBFAF8", "Hover rows, subtle panels"],
+    ["Surface 3", "#F1EFEB", "Disabled fields, wells"],
+    ["Label", "#1D1D1F", "Primary text"],
+    ["Label 2", "#6B6B70", "Secondary text (AA)"],
+    ["Label 3", "#8E8E93", "Decoration only, not text"],
+    ["Border strong", "#8F8C87", "Input outlines (3:1)"],
+    ["Separator", "rgba(29,29,31,.10)", "Hairlines between rows", "rgba(29,29,31,.10)"],
+    ["Fill", "rgba(29,29,31,.05)", "Neutral buttons, tracks", "rgba(29,29,31,.05)"]
+  ].map(role).join("");
+  $("#status-roles").innerHTML = [
+    ["Success", "#1E7B34", "Approved, verified"],
+    ["Success subtle", "#EAF6EC", "Success backgrounds"],
+    ["Warning", "#7A5200", "Due soon, needs a look"],
+    ["Warning subtle", "#FFF6D9", "Warning backgrounds"],
+    ["Danger", "#B42318", "Errors, destructive only"],
+    ["Danger subtle", "#FDECEA", "Error backgrounds"],
+    ["Info", "#1E6FB8", "Neutral notices"],
+    ["Info subtle", "#EAF2FB", "Info backgrounds"],
+    ["AI", "#4B48C8", "AI markers and links"],
+    ["AI subtle", "#F6F5FF", "AI draft background"],
+    ["AI gradient", "#F5761A → #E2477F → #5E5CE6", "Sparkle icon only", "linear-gradient(135deg,#F5761A,#E2477F,#5E5CE6)"],
+    ["Neutral rating", "#ECEBE8", "Inconclusive chip"]
+  ].map(role).join("");
+
+  const pairs = [
+    ["#FFFFFF", "#C2550A", "Primary button"],
+    ["#A8470B", "#FFFFFF", "Link on surface"],
+    ["#A8470B", "#F7F6F3", "Link on canvas"],
+    ["#8A3B0F", "#FFEBD6", "Secondary button, Satisfactory"],
+    ["#1D1D1F", "#F7F6F3", "Body text"],
+    ["#6B6B70", "#F7F6F3", "Secondary text on canvas"],
+    ["#3A3A3C", "#ECEBE8", "Inconclusive rating"],
+    ["#4B48C8", "#EFEEFD", "AI marker"],
+    ["#7A5200", "#FFF6D9", "Warning badge"],
+    ["#1E7B34", "#EAF6EC", "Success badge"],
+    ["#B42318", "#FDECEA", "Danger badge"],
+    ["#8F8C87", "#FFFFFF", "Input border (UI shape)"],
+    ["#F5761A", "#FFFFFF", "Brand tangerine (decorative)"]
+  ];
+  $("#contrast-table tbody").innerHTML = pairs.map(([fg, bg, use]) => {
+    const r = ratio(fg, bg), g = grade(r);
+    const tone = g === "Decorative" ? "b-neutral" : g === "AA large" ? "b-outline" : "b-success";
+    return `<tr><td><span style="display:inline-flex;align-items:center;height:30px;padding:0 12px;border-radius:8px;background:${bg};color:${fg};font-weight:600;box-shadow:inset 0 0 0 1px rgba(29,29,31,.08)">${use}</span></td>
+      <td><code>${fg}</code></td><td><code>${bg}</code></td><td class="tabular"><b>${r.toFixed(2)}</b>:1</td><td><span class="badge ${tone}">${g}</span></td></tr>`;
+  }).join("");
+
+  $("#cat-list").innerHTML = [
+    ["#C2550A", "Tangerine", "Primary series"], ["#5E5CE6", "Indigo", "Comparison"], ["#0F8C82", "Teal", "Third series"],
+    ["#2F7FC1", "Steel blue", "Fourth series"], ["#A2845E", "Sand", "Fifth series"], ["#8E8E93", "Grey", "Other, baseline"]
+  ].map(([c, n, u], i) => `<div class="row" style="gap:12px;flex-wrap:nowrap"><span class="mono" style="width:14px;color:var(--label-2)">${i + 1}</span><span style="width:48px;height:22px;border-radius:6px;background:${c}"></span><b style="font-size:14px;width:88px">${n}</b><span class="note">${u}</span><span class="mono" style="margin-left:auto;color:var(--label-2)">${c}</span></div>`).join("");
+
+  // ---------- type scale ----------
+  const types = [
+    ["Display", "serif", 56, 62, 600, "-0.03em", "Homepage hero, report covers", "Prior learning, recognised."],
+    ["Large title", "serif", 40, 46, 600, "-0.025em", "Page titles in documents and marketing", "Your portfolio, step by step"],
+    ["Title 1", "sans", 28, 34, 600, "-0.022em", "Workspace page titles", "Assessments"],
+    ["Title 2", "sans", 22, 28, 600, "-0.018em", "Card and section titles", "Preliminary ratings"],
+    ["Title 3", "sans", 20, 26, 600, "-0.015em", "Sheet and dialog titles", "Book your interview"],
+    ["Headline", "sans", 17, 24, 600, "-0.01em", "List row titles, emphasis", "Communication · Section 2"],
+    ["Body", "sans", 16, 24, 400, "-0.006em", "Default interface text", "Your advisor reviews each section and adds comments you can reply to."],
+    ["Reading", "serif", 18, 30, 400, "0", "Portfolios, feedback letters, reports", "I learned to resolve conflict by listening first and writing down what mattered to each person."],
+    ["Callout", "sans", 15, 22, 400, "-0.004em", "Alerts, supporting paragraphs", "You can ask your advisor for an extension if you need one."],
+    ["Subheadline", "sans", 14, 20, 550, "0", "Field labels, table headers", "Student number"],
+    ["Footnote", "sans", 13, 18, 400, "0", "Helper text, metadata", "Uploaded 2 days ago · 1.2 MB"],
+    ["Caption", "sans", 12, 16, 550, "0.005em", "Badges, timestamps", "IN REVIEW · 14:02"],
+    ["Overline", "sans", 11, 14, 600, "0.08em", "Section eyebrows (uppercase)", "ASSESSOR WORKSPACE"],
+    ["Mono", "mono", 13, 20, 450, "0", "IDs, tokens, audit timestamps", "T00123456 · 2026-10-28 14:02"]
+  ];
+  $("#type-scale").innerHTML = types.map(([n, f, s, lh, w, ls, use, txt]) => {
+    const fam = f === "serif" ? "var(--font-serif)" : f === "mono" ? "var(--font-mono)" : "var(--font-sans)";
+    const face = f === "serif" ? "Lora" : f === "mono" ? "Geist Mono" : "Geist";
+    return `<div class="type-row"><div class="meta"><b>${n}</b><span>${face} ${w} · ${s}/${lh}</span><em>${use}</em></div>
+      <div class="sample" style="font-family:${fam};font-size:${s}px;line-height:${lh}px;font-weight:${w};letter-spacing:${ls};${n === "Overline" ? "text-transform:uppercase;color:var(--accent-text)" : ""}">${txt}</div></div>`;
+  }).join("");
+
+  // ---------- spacing ----------
+  $("#space-scale").innerHTML = [[1, 4], [2, 8], [3, 12], [4, 16], [5, 20], [6, 24], [8, 32], [10, 40], [12, 48], [16, 64], [20, 80], [24, 96]]
+    .map(([k, px]) => `<div class="space-row"><span class="mono">space-${k}</span><span class="tabular" style="color:var(--label-2)">${px}px</span><span class="bar" style="width:${px * 2.4}px;max-width:100%"></span></div>`).join("");
+
+  // ---------- icons ----------
+  const icons = ["home", "folder", "file", "book", "calendar", "clock", "bell", "inbox", "message", "user", "users", "graduation", "video", "mic", "id", "shield", "lock", "eye", "pencil", "trash", "star", "bookmark", "check-circle", "info", "alert", "x-circle", "target",
+    "search", "filter", "sort", "mic-off", "captions", "phone-off", "upload", "download", "send", "link", "copy", "check", "x", "plus", "more", "chevron-right", "arrow-right", "arrow-up-right", "history", "layers", "sliders", "spark"];
+  const hasFill = n => !!document.getElementById("f-" + n);
+  const renderIcons = style => {
+    const list = style === "filled" ? icons.filter(hasFill) : icons;
+    $("#icon-grid").innerHTML = list.map(n => {
+      if (n === "spark") return `<div class="icon-cell"><svg class="i" style="stroke:none;fill:url(#ai-g)"><use href="#i-spark"/></svg>spark</div>`;
+      const o = `<svg class="i"><use href="#i-${n}"/></svg>`, f = `<svg class="i f"><use href="#f-${n}"/></svg>`;
+      if (style === "outline") return `<div class="icon-cell">${o}${n}</div>`;
+      if (style === "filled") return `<div class="icon-cell">${f}${n}</div>`;
+      return `<div class="icon-cell${hasFill(n) ? "" : " no-fill"}"><span class="pair-icons">${o}${hasFill(n) ? f : ""}</span>${n}</div>`;
+    }).join("");
+    $("#icon-count").textContent = style === "filled" ? `${list.length} filled icons` : style === "outline" ? `${list.length} outline icons` : `${icons.filter(hasFill).length} pairs · faded ones are outline only`;
+  };
+  renderIcons("pairs");
+  $("#icon-style").addEventListener("click", e => { const b = e.target.closest("[data-style]"); if (b) renderIcons(b.dataset.style); });
+  $("#fill-nav").addEventListener("click", e => {
+    const b = e.target.closest(".navitem"); if (!b) return;
+    $$(".navitem", $("#fill-nav")).forEach(x => x.removeAttribute("aria-current"));
+    b.setAttribute("aria-current", "page");
+  });
+
+  // ---------- tokens code ----------
+  const css = $("style").textContent;
+  const tokenBlock = css.slice(css.indexOf(":root {"), css.indexOf("}", css.indexOf(":root {")) + 1).trim();
+  $("#tokens-pre").innerHTML = tokenBlock
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+    .replace(/(\/\*.*?\*\/)/g, '<span class="c-c">$1</span>')
+    .replace(/(--[\w-]+)(:)/g, '<span class="c-k">$1</span>$2');
+  $("#copy-tokens").addEventListener("click", () => copy(tokenBlock, "all tokens"));
+
+  // ---------- generic interactions ----------
+  document.addEventListener("click", e => {
+    const t = e.target.closest("[data-copy]");
+    if (t) copy(t.dataset.copy);
+  });
+  $$('[role="switch"]').forEach(s => s.addEventListener("click", () => s.setAttribute("aria-checked", s.getAttribute("aria-checked") !== "true")));
+  $$('[role="radiogroup"]').forEach(g => g.addEventListener("click", e => {
+    const b = e.target.closest('[role="radio"]'); if (!b) return;
+    $$('[role="radio"]', g).forEach(x => x.setAttribute("aria-checked", x === b));
+  }));
+  $$("[data-tabs]").forEach(list => list.addEventListener("click", e => {
+    const b = e.target.closest('[role="tab"]'); if (!b) return;
+    $$('[role="tab"]', list).forEach(x => { x.setAttribute("aria-selected", x === b); $("#" + x.dataset.panel).hidden = x !== b; });
+  }));
+  $$("[data-loading]").forEach(b => b.addEventListener("click", () => {
+    b.classList.add("is-loading");
+    setTimeout(() => { b.classList.remove("is-loading"); toast("Portfolio approved"); }, 1600);
+  }));
+  $$("#slots .slot").forEach(s => s.addEventListener("click", () => {
+    $$("#slots .slot").forEach(x => !x.disabled && x.setAttribute("aria-pressed", x === s));
+  }));
+  $$("#tags .tag button").forEach(b => b.addEventListener("click", () => b.parentElement.remove()));
+  $$("[data-toggle]").forEach(b => b.addEventListener("click", () => b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") !== "true")));
+  $$(".tri").forEach(b => {
+    const labels = ["Not shown", "Partly", "Fully"];
+    const render = () => {
+      const s = +b.dataset.state;
+      b.innerHTML = (s === 2 ? '<svg class="i"><use href="#i-check"/></svg>' : s === 1 ? '<svg class="i"><use href="#i-check"/></svg>' : "") + labels[s];
+      b.setAttribute("aria-label", labels[s]);
+    };
+    render();
+    b.addEventListener("click", () => { b.dataset.state = (+b.dataset.state + 1) % 3; render(); });
+  });
+  $("#indet").indeterminate = true;
+  const f6 = $("#f6"), f6c = $("#f6c");
+  const count = () => f6c.textContent = `${f6.value.length} / 1000`;
+  f6.addEventListener("input", count); count();
+  const r1 = $("#r1"), r1v = $("#r1v");
+  const range = () => { const p = (r1.value - r1.min) / (r1.max - r1.min) * 100; r1.style.setProperty("--p", p + "%"); r1v.textContent = r1.value + " px"; };
+  r1.addEventListener("input", range); range();
+  $("#toast-btn").addEventListener("click", () => toast("Comment inserted into feedback", true));
+  $("#play-motion").addEventListener("click", () => {
+    const d = $("#motion-demo"); d.classList.toggle("motion-play");
+  });
+
+  // ---------- AI card ----------
+  const card = $("#ai-card"), body = $("#ai-body"), note = $("#ai-note"), original = body.textContent;
+  card.addEventListener("click", e => {
+    const a = e.target.closest("[data-ai]")?.dataset.ai; if (!a) return;
+    if (a === "accept") {
+      const edited = body.textContent !== original;
+      body.contentEditable = "false";
+      card.classList.remove("dismissed"); card.classList.add("accepted");
+      note.textContent = `Accepted${edited ? " with edits" : ""} by you · just now · recorded in the audit log`;
+      toast("Feedback accepted");
+    } else if (a === "edit") {
+      const on = body.contentEditable !== "true";
+      body.contentEditable = on ? "true" : "false";
+      e.target.closest("[data-ai]").querySelector("span").textContent = on ? "Done editing" : "Edit";
+      if (on) body.focus();
+    } else if (a === "dismiss") {
+      body.contentEditable = "false";
+      card.classList.add("dismissed");
+      note.textContent = "Dismissed by you · the suggestion won't be shown again";
+    } else if (a === "reset") {
+      card.classList.remove("accepted", "dismissed");
+      body.contentEditable = "false"; body.textContent = original;
+      $('[data-ai="edit"] span', card).textContent = "Edit";
+    }
+  });
+
+  // ---------- dialogs ----------
+  $$("[data-open]").forEach(b => b.addEventListener("click", () => $("#" + b.dataset.open).showModal()));
+  $$("dialog").forEach(d => {
+    d.addEventListener("click", e => {
+      const c = e.target.closest("[data-close]");
+      if (c) { d.close(); if (c.dataset.toast) toast(c.dataset.toast); return; }
+      if (e.target === d) d.close();
+    });
+  });
+
+  // ---------- navigation: mobile links + scroll spy ----------
+  const links = $$("#sidenav a");
+  $("#topnav-links").innerHTML = links.map(a => `<a href="${a.getAttribute("href")}">${a.textContent}</a>`).join("");
+  const allLinks = [...links, ...$$("#topnav-links a")];
+  const sections = links.map(a => $(a.getAttribute("href"))).filter(Boolean);
+  const setActive = id => {
+    allLinks.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + id));
+    const m = $(`#topnav-links a[href="#${id}"]`);
+    if (m && getComputedStyle($(".topnav")).display !== "none") m.scrollIntoView({ block: "nearest", inline: "center" });
+  };
+  let current = "";
+  const spy = () => {
+    const line = innerHeight * 0.3;
+    const hit = sections.filter(s => s.getBoundingClientRect().top <= line).pop() || sections[0];
+    if (hit.id !== current) { current = hit.id; setActive(hit.id); }
+  };
+  addEventListener("scroll", () => requestAnimationFrame(spy), { passive: true });
+  spy();
+})();
+</script>
+</body>
+</html>

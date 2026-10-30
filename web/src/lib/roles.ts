@@ -1,9 +1,43 @@
 // Role-specific workspace configuration. Real permissions arrive with RBAC in Milestone 1
 // (Resources/docs/16-implementation-plan.md); for now this only drives the preview shell.
 
+import type { LucideIcon } from "lucide-react";
+import {
+  BookOpen,
+  Calendar,
+  ChartColumn,
+  CircleCheck,
+  ClipboardCheck,
+  FileText,
+  Folder,
+  House,
+  Inbox,
+  MessageSquare,
+  SlidersVertical,
+  Users,
+  Video,
+} from "lucide-react";
+import {
+  type FilledIcon,
+  BookFilled,
+  CalendarFilled,
+  ChartFilled,
+  CheckCircleFilled,
+  ClipboardCheckFilled,
+  FileFilled,
+  FolderFilled,
+  HomeFilled,
+  InboxFilled,
+  MessageFilled,
+  SlidersFilled,
+  UsersFilled,
+  VideoFilled,
+} from "@/components/ui/filled-icons";
+
 export type RoleSlug = "student" | "advisor" | "assessor" | "admin";
 
-export type NavItem = { label: string; href?: string; milestone?: string };
+/** Navigation shows the outline icon at rest and swaps to the filled one when the item is selected. */
+export type NavItem = { label: string; href?: string; milestone?: string; icon: LucideIcon; iconSelected: FilledIcon };
 
 export type RoleConfig = {
   slug: RoleSlug;
@@ -12,17 +46,19 @@ export type RoleConfig = {
   nav: NavItem[];
 };
 
+const overview = (slug: RoleSlug): NavItem => ({ label: "Overview", href: `/workspace/${slug}`, icon: House, iconSelected: HomeFilled });
+
 export const roleConfigs: Record<RoleSlug, RoleConfig> = {
   student: {
     slug: "student",
     label: "Student",
     greeting: "Here's where your portfolio stands.",
     nav: [
-      { label: "Overview", href: "/workspace/student" },
-      { label: "My portfolio", milestone: "M4" },
-      { label: "Feedback", milestone: "M4" },
-      { label: "Interview", milestone: "M3" },
-      { label: "Messages", milestone: "M1" },
+      overview("student"),
+      { label: "My portfolio", milestone: "M4", icon: Folder, iconSelected: FolderFilled },
+      { label: "Feedback", milestone: "M4", icon: MessageSquare, iconSelected: MessageFilled },
+      { label: "Interview", milestone: "M3", icon: Video, iconSelected: VideoFilled },
+      { label: "Messages", milestone: "M1", icon: Inbox, iconSelected: InboxFilled },
     ],
   },
   advisor: {
@@ -30,11 +66,11 @@ export const roleConfigs: Record<RoleSlug, RoleConfig> = {
     label: "Advisor",
     greeting: "Your caseload at a glance.",
     nav: [
-      { label: "Overview", href: "/workspace/advisor" },
-      { label: "Caseload", milestone: "M1" },
-      { label: "Reviews", milestone: "M4" },
-      { label: "Comment library", milestone: "M4" },
-      { label: "Scheduling", milestone: "M3" },
+      overview("advisor"),
+      { label: "Caseload", milestone: "M1", icon: Users, iconSelected: UsersFilled },
+      { label: "Reviews", milestone: "M4", icon: FileText, iconSelected: FileFilled },
+      { label: "Comment library", milestone: "M4", icon: BookOpen, iconSelected: BookFilled },
+      { label: "Scheduling", milestone: "M3", icon: Calendar, iconSelected: CalendarFilled },
     ],
   },
   assessor: {
@@ -42,11 +78,11 @@ export const roleConfigs: Record<RoleSlug, RoleConfig> = {
     label: "Assessor",
     greeting: "Your assessments and upcoming interviews.",
     nav: [
-      { label: "Overview", href: "/workspace/assessor" },
-      { label: "Assignments", milestone: "M2" },
-      { label: "Rubric worksheets", milestone: "M2" },
-      { label: "Interviews", milestone: "M3" },
-      { label: "Reports", milestone: "M2" },
+      overview("assessor"),
+      { label: "Assignments", milestone: "M2", icon: Folder, iconSelected: FolderFilled },
+      { label: "Rubric worksheets", milestone: "M2", icon: ClipboardCheck, iconSelected: ClipboardCheckFilled },
+      { label: "Interviews", milestone: "M3", icon: Video, iconSelected: VideoFilled },
+      { label: "Reports", milestone: "M2", icon: FileText, iconSelected: FileFilled },
     ],
   },
   admin: {
@@ -54,12 +90,12 @@ export const roleConfigs: Record<RoleSlug, RoleConfig> = {
     label: "Manager & Director",
     greeting: "Approvals, decisions and oversight.",
     nav: [
-      { label: "Overview", href: "/workspace/admin" },
-      { label: "Approvals", milestone: "M2" },
-      { label: "All cases", milestone: "M1" },
-      { label: "Insights", milestone: "M5" },
-      { label: "People & roles", milestone: "M1" },
-      { label: "Settings", milestone: "M1" },
+      overview("admin"),
+      { label: "Approvals", milestone: "M2", icon: CircleCheck, iconSelected: CheckCircleFilled },
+      { label: "All cases", milestone: "M1", icon: Folder, iconSelected: FolderFilled },
+      { label: "Insights", milestone: "M5", icon: ChartColumn, iconSelected: ChartFilled },
+      { label: "People & roles", milestone: "M1", icon: Users, iconSelected: UsersFilled },
+      { label: "Settings", milestone: "M1", icon: SlidersVertical, iconSelected: SlidersFilled },
     ],
   },
 };

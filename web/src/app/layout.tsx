@@ -1,12 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Geist, Geist_Mono, Lora } from "next/font/google";
 import "./globals.css";
 
-// Inter is the fallback for non-Apple devices; Apple devices render the native system font (design system §4.1).
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
+// Geist runs the interface, Lora carries headlines and long-form reading, Geist Mono shows IDs and timestamps.
+const geist = Geist({ variable: "--font-geist", subsets: ["latin"] });
+const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
+const lora = Lora({ variable: "--font-lora", subsets: ["latin"], style: ["normal", "italic"] });
 
 export const metadata: Metadata = {
   title: {
@@ -18,13 +17,13 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f5f5f7",
+  themeColor: "#f7f6f3",
   colorScheme: "light",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en-CA" className={`${inter.variable} h-full`}>
+    <html lang="en-CA" className={`${geist.variable} ${geistMono.variable} ${lora.variable} h-full`}>
       <body className="relative min-h-full flex flex-col">
         <a
           href="#main"

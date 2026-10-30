@@ -4,17 +4,14 @@ import {
   ClipboardCheck,
   FileCheck,
   FolderUp,
-  GraduationCap,
   HeartHandshake,
-  Landmark,
   LockKeyhole,
   MessageSquareText,
   ShieldCheck,
-  UserRound,
-  Users,
   Video,
   Accessibility,
 } from "lucide-react";
+import { type FilledIcon, GraduationFilled, LandmarkFilled, UserFilled, UsersFilled } from "@/components/ui/filled-icons";
 
 // Public homepage content. Mirrors the approved feature list (Resources/docs/13-features.md).
 
@@ -62,35 +59,40 @@ export const journey: JourneyStep[] = [
   },
 ];
 
-export type Role = { slug: string; title: string; blurb: string; icon: LucideIcon; points: string[] };
+// Roles show a white filled glyph on a coloured tile (design system: filled icons on tiles).
+export type Role = { slug: string; title: string; blurb: string; icon: FilledIcon; tile: string; points: string[] };
 
 export const roles: Role[] = [
   {
     slug: "student",
     title: "Students",
     blurb: "Build your portfolio with clear guidance and always know your next step.",
-    icon: UserRound,
+    icon: UserFilled,
+    tile: "#F5761A",
     points: ["Upload sections and evidence in one place", "See feedback the moment it's ready", "Join your interview from your case page"],
   },
   {
     slug: "advisor",
     title: "Advisors",
     blurb: "Spend your time coaching, not chasing files and reminders.",
-    icon: GraduationCap,
+    icon: GraduationFilled,
+    tile: "#5E5CE6",
     points: ["Review and comment in the browser", "Suggested comments from your library", "Automatic checklist checks and reminders"],
   },
   {
     slug: "assessor",
     title: "Assessors",
     blurb: "Everything for an assessment on one screen, with your judgement in charge.",
-    icon: Users,
+    icon: UsersFilled,
+    tile: "#0F8C82",
     points: ["Digital rubric with private preliminary ratings", "Evidence linked to the exact passage", "Report drafts you edit and approve"],
   },
   {
     slug: "admin",
     title: "Manager & Director",
     blurb: "Clear oversight of every case, approval and decision.",
-    icon: Landmark,
+    icon: LandmarkFilled,
+    tile: "#2F7FC1",
     points: ["Approval queues with full context", "Audit trail for every award", "Insights on volumes and turnaround"],
   },
 ];

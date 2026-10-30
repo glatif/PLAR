@@ -27,5 +27,5 @@ AI-assisted efficiency platform for Thompson Rivers University Open Learning's P
 - Store project notes and memory in this folder, not in account-level memory.
 - Don't name or commit to an LLM provider. Any AI service must guarantee our data is not used to train its models (`Resources/docs/15-technical-approach.md` §3.3).
 - Interviews: the built-in interview room is preferred; Zoom is the fallback. ID verification is AI-assisted, with a person deciding.
-- Apply `Resources/docs/14-design-system.md` to all UI and all generated documents (PDFs, reports, proposals).
+- Apply the design system to all UI and all generated documents (PDFs, reports, proposals). The source of truth is `Resources/docs/design-system.html` (Geist + Lora, tangerine accent, outline + filled icons); `14-design-system.md` is the older teal write-up and still needs updating.
 - **Shareable documents** (the features doc, the design system, every PDF, proposal or email for the supervisor or stakeholders) must **not** contain question IDs (Q-…), source IDs (P1-…, P2-…), or references and links to the local `.md` files. Those are for our local reference only. Refer to department materials by their real titles instead.

@@ -1,90 +1,85 @@
 @import "tailwindcss";
 
-/* Light theme only (project lead, 2026-10-29). Dark tokens are kept behind a `.dark` class for a possible future toggle;
-   `dark:` utilities follow that class instead of the OS setting. */
+/* Light theme only (project lead, 2026-10-29). `dark:` utilities would follow a `.dark` class, which is never set. */
 @custom-variant dark (&:where(.dark, .dark *));
 
 /*
- * PLAR "Calm Glass" design tokens.
- * Source of truth: Resources/docs/14-design-system.md (§3 colour, §5 spacing, §6 shape, §7 glass, §8 motion).
+ * PLAR design tokens: Geist + Lora, tangerine accent, warm neutrals.
+ * Source of truth: Resources/docs/design-system.html (the interactive spec). Contrast ratios are listed there.
  */
 
 :root {
-  /* Neutrals and semantic roles (light) */
-  --canvas: #f5f5f7;
+  /* Surfaces and labels (warm neutrals) */
+  --canvas: #f7f6f3;
   --surface: #ffffff;
-  --surface-2: #fafafc;
+  --surface-2: #fbfaf8;
+  --surface-3: #f1efeb;
   --label: #1d1d1f;
-  --label-2: #6e6e73;
-  --label-3: #8e8e93;
-  --separator: rgba(0, 0, 0, 0.1);
-  --border-strong: #d2d2d7;
-  --accent: #0d7f77;
-  --accent-hover: #0b6660;
-  --accent-subtle: #effaf8;
-  --accent-ink: #0b514d;
+  --label-2: #6b6b70;
+  --label-3: #8e8e93; /* decoration only, never text */
+  --separator: rgba(29, 29, 31, 0.1);
+  --separator-strong: rgba(29, 29, 31, 0.16);
+  --border-strong: #8f8c87;
+  --fill-1: rgba(29, 29, 31, 0.05);
+  --fill-2: rgba(29, 29, 31, 0.08);
+
+  /* Accent roles: 600 fills (white text 4.57:1), 700 text and links, 500 decoration only */
+  --brand: #f5761a;
+  --accent: #c2550a;
+  --accent-hover: #a8470b;
+  --accent-press: #8a3b0f;
+  --accent-text: #a8470b;
+  --accent-subtle: #fff7ef;
+  --accent-soft: #ffebd6;
+  --accent-ink: #8a3b0f;
   --on-accent: #ffffff;
+  --focus-ring: rgba(194, 85, 10, 0.28);
+
+  /* Status: always paired with an icon and a label */
   --success: #1e7b34;
-  --warning: #8a5a00;
-  --danger: #c4281c;
+  --success-subtle: #eaf6ec;
+  --warning: #7a5200;
+  --warning-subtle: #fff6d9;
+  --danger: #b42318;
+  --danger-subtle: #fdecea;
+  --info: #1e6fb8;
+  --info-subtle: #eaf2fb;
+
+  /* AI-assisted content has its own hue so it never reads as a person's action */
+  --ai: #4b48c8;
+  --ai-subtle: #f6f5ff;
+  --ai-soft: #efeefd;
+  --ai-border: #c9c6f5;
+
+  /* Inconclusive rating: neutral grey, never red */
+  --neutral-chip: #ecebe8;
+  --neutral-chip-ink: #3a3a3c;
 
   /* Glass (navigation and control layer only) */
   --glass: rgba(255, 255, 255, 0.72);
-  --glass-thick: rgba(255, 255, 255, 0.86);
-  --glass-edge: rgba(255, 255, 255, 0.55);
-  --glass-filter: blur(24px) saturate(180%);
+  --glass-thick: rgba(255, 255, 255, 0.88);
+  --glass-edge: rgba(255, 255, 255, 0.65);
+  --glass-filter: saturate(180%) blur(24px);
 
-  /* Elevation */
-  --elev-1: 0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 1px rgba(0, 0, 0, 0.03);
-  --elev-2: 0 4px 16px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
-  --elev-3: 0 16px 48px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+  /* Elevation: each level carries a hairline ring so edges stay crisp on the warm canvas */
+  --elev-1: 0 1px 2px rgba(29, 29, 31, 0.04), 0 0 0 1px rgba(29, 29, 31, 0.05);
+  --elev-2: 0 6px 20px -6px rgba(29, 29, 31, 0.12), 0 2px 4px rgba(29, 29, 31, 0.04), 0 0 0 1px rgba(29, 29, 31, 0.05);
+  --elev-3: 0 28px 56px -16px rgba(29, 29, 31, 0.22), 0 10px 20px -10px rgba(29, 29, 31, 0.1), 0 0 0 1px rgba(29, 29, 31, 0.06);
 
   /* Decorative glows behind hero areas */
-  --glow-a: rgba(59, 181, 170, 0.22);
-  --glow-b: rgba(13, 127, 119, 0.14);
+  --glow-a: rgba(245, 118, 26, 0.18);
+  --glow-b: rgba(255, 180, 116, 0.16);
 
   color-scheme: light;
 }
 
-.dark {
-  --canvas: #0b0d0f;
-  --surface: #1c1c1e;
-  --surface-2: #2c2c2e;
-  --label: #f5f5f7;
-  --label-2: #a1a1a6;
-  --label-3: #8e8e93;
-  --separator: rgba(255, 255, 255, 0.12);
-  --border-strong: #3a3a3c;
-  --accent: #3bb5aa;
-  --accent-hover: #72cfc5;
-  --accent-subtle: rgba(59, 181, 170, 0.14);
-  --accent-ink: #a9e4dd;
-  --on-accent: #062826;
-  --success: #4cd58a;
-  --warning: #ffa44a;
-  --danger: #ff6b60;
-
-  --glass: rgba(28, 28, 30, 0.66);
-  --glass-thick: rgba(28, 28, 30, 0.82);
-  --glass-edge: rgba(255, 255, 255, 0.14);
-
-  --elev-1: 0 0 0 1px rgba(255, 255, 255, 0.06);
-  --elev-2: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 8px 24px rgba(0, 0, 0, 0.4);
-  --elev-3: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 24px 64px rgba(0, 0, 0, 0.55);
-
-  --glow-a: rgba(59, 181, 170, 0.16);
-  --glow-b: rgba(13, 127, 119, 0.18);
-
-  color-scheme: dark;
-}
-
-/* Glass falls back to solid surfaces when people ask for less transparency or more contrast (§7.2). */
+/* Glass falls back to solid surfaces when people ask for less transparency or more contrast. */
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
   :root {
     --glass: var(--surface);
     --glass-thick: var(--surface);
     --glass-filter: none;
-    --separator: var(--border-strong);
+    --separator: var(--separator-strong);
   }
 }
 
@@ -92,52 +87,72 @@
   --color-canvas: var(--canvas);
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
   --color-label: var(--label);
   --color-label-2: var(--label-2);
   --color-label-3: var(--label-3);
   --color-separator: var(--separator);
+  --color-separator-strong: var(--separator-strong);
   --color-border-strong: var(--border-strong);
+  --color-fill-1: var(--fill-1);
+  --color-fill-2: var(--fill-2);
+  --color-brand: var(--brand);
   --color-accent: var(--accent);
   --color-accent-hover: var(--accent-hover);
+  --color-accent-press: var(--accent-press);
+  --color-accent-text: var(--accent-text);
   --color-accent-subtle: var(--accent-subtle);
+  --color-accent-soft: var(--accent-soft);
   --color-accent-ink: var(--accent-ink);
   --color-on-accent: var(--on-accent);
   --color-success: var(--success);
+  --color-success-subtle: var(--success-subtle);
   --color-warning: var(--warning);
+  --color-warning-subtle: var(--warning-subtle);
   --color-danger: var(--danger);
+  --color-danger-subtle: var(--danger-subtle);
+  --color-info: var(--info);
+  --color-info-subtle: var(--info-subtle);
+  --color-ai: var(--ai);
+  --color-ai-subtle: var(--ai-subtle);
+  --color-ai-soft: var(--ai-soft);
+  --color-ai-border: var(--ai-border);
+  --color-neutral-chip: var(--neutral-chip);
+  --color-neutral-chip-ink: var(--neutral-chip-ink);
 
-  /* Teal scale (§3.1) */
-  --color-teal-50: #effaf8;
-  --color-teal-100: #d5f2ee;
-  --color-teal-200: #a9e4dd;
-  --color-teal-300: #72cfc5;
-  --color-teal-400: #3bb5aa;
-  --color-teal-500: #14998f;
-  --color-teal-600: #0d7f77;
-  --color-teal-700: #0b6660;
-  --color-teal-800: #0b514d;
-  --color-teal-900: #0a3f3c;
-  --color-teal-950: #062826;
+  /* Tangerine scale */
+  --color-tangerine-50: #fff7ef;
+  --color-tangerine-100: #ffebd6;
+  --color-tangerine-200: #ffd3aa;
+  --color-tangerine-300: #ffb474;
+  --color-tangerine-400: #ff9342;
+  --color-tangerine-500: #f5761a;
+  --color-tangerine-600: #c2550a;
+  --color-tangerine-700: #a8470b;
+  --color-tangerine-800: #8a3b0f;
+  --color-tangerine-900: #6f3211;
+  --color-tangerine-950: #3d1706;
 
-  /* Shape (§6) */
+  /* Shape */
   --radius-xs: 6px;
   --radius-sm: 10px;
   --radius-md: 14px;
   --radius-lg: 20px;
   --radius-xl: 28px;
 
-  /* Elevation (§7.1) */
+  /* Elevation */
   --shadow-1: var(--elev-1);
   --shadow-2: var(--elev-2);
   --shadow-3: var(--elev-3);
 
-  /* Typography (§4.1): native SF on Apple devices, Inter everywhere else */
-  --font-sans: -apple-system, BlinkMacSystemFont, var(--font-inter), "Segoe UI", Roboto, "Helvetica Neue", Arial,
-    sans-serif;
-  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+  /* Typography: Geist for the interface, Lora for headlines and reading, Geist Mono for IDs and timestamps */
+  --font-sans: var(--font-geist), -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --font-serif: var(--font-lora), "New York", Georgia, "Times New Roman", serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, monospace;
 
-  /* Motion (§8) */
-  --ease-calm: cubic-bezier(0.2, 0.8, 0.2, 1);
+  /* Motion */
+  --ease-calm: cubic-bezier(0.2, 0, 0, 1);
+  --ease-spring: cubic-bezier(0.34, 1.36, 0.64, 1);
   --ease-sheet: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
@@ -151,23 +166,29 @@
     background: var(--canvas);
     color: var(--label);
     font-family: var(--font-sans);
-    font-size: 1.0625rem; /* 17px body (§4.2) */
-    line-height: 1.53;
+    font-size: 1rem; /* 16px body */
+    line-height: 1.5;
+    letter-spacing: -0.006em;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
   }
 
   ::selection {
-    background: color-mix(in srgb, var(--accent) 22%, transparent);
+    background: var(--color-tangerine-200);
+    color: var(--label);
   }
 
-  /* Visible focus everywhere (§6, §13) */
+  /* Visible focus everywhere: a 3px tangerine ring */
   :focus-visible {
-    outline: 2px solid var(--accent);
+    outline: 3px solid var(--focus-ring);
     outline-offset: 2px;
-    box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 22%, transparent);
     border-radius: 6px;
+  }
+
+  /* Outline icons use a 1.75px stroke to match Geist's weight */
+  svg.lucide {
+    stroke-width: 1.75;
   }
 }
 
@@ -187,18 +208,18 @@
     box-shadow: inset 0 0 0 1px var(--glass-edge), 0 0 0 1px var(--separator), var(--elev-3);
   }
 
-  /* Solid content card (§9.3) */
+  /* Solid content card */
   .card {
     background: var(--surface);
-    border-radius: var(--radius-md);
-    box-shadow: 0 0 0 1px var(--separator), var(--elev-1);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--elev-1);
   }
 
-  /* Soft teal glow used behind hero areas */
+  /* Soft tangerine glow used behind hero areas */
   .hero-glow {
     background:
-      radial-gradient(60% 50% at 85% 0%, var(--glow-a) 0%, transparent 70%),
-      radial-gradient(45% 40% at 5% 30%, var(--glow-b) 0%, transparent 70%);
+      radial-gradient(55% 50% at 88% 0%, var(--glow-a) 0%, transparent 70%),
+      radial-gradient(40% 40% at 5% 25%, var(--glow-b) 0%, transparent 70%);
   }
 
   .text-balance {
