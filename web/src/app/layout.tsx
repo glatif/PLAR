@@ -23,7 +23,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en-CA" className={`${geist.variable} ${geistMono.variable} ${lora.variable} h-full`}>
+    <html lang="en-CA" data-scroll-behavior="smooth" className={`${geist.variable} ${geistMono.variable} ${lora.variable} h-full`}>
       <body className="relative min-h-full flex flex-col">
         <a
           href="#main"

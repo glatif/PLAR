@@ -1,6 +1,7 @@
 import "server-only";
 
 import { cookies } from "next/headers";
+import { connection } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import type { Database } from "@/lib/supabase/database.types";
 import { assertSupabaseEnv, supabasePublishableKey, supabaseUrl } from "@/lib/supabase/env";
@@ -8,10 +9,11 @@ import { assertSupabaseEnv, supabasePublishableKey, supabaseUrl } from "@/lib/su
 /**
  * Supabase client for Server Components, Server Functions and Route Handlers.
  * It reads the session from cookies, so queries run as the signed-in person through row-level security.
- * Reading cookies makes the caller dynamic: call it inside <Suspense> (Cache Components).
+ * It only runs at request time (the client reads the clock to check sessions), so call it inside <Suspense>.
  */
 export async function createClient() {
   assertSupabaseEnv();
+  await connection();
   const cookieStore = await cookies();
 
   return createServerClient<Database>(supabaseUrl, supabasePublishableKey, {

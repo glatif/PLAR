@@ -31,7 +31,7 @@ async function main() {
   const cli = await supabase(["--version"]);
   report.record(cli.ok ? "pass" : "fail", "Supabase CLI", cli.ok ? cli.stdout.trim().split("\n")[0] : "install with `brew install supabase/tap/supabase`");
   const docker = await run("docker", ["info", "--format", "{{.ServerVersion}}"]);
-  report.record(docker.ok ? "pass" : "warn", "Docker", docker.ok ? docker.stdout.trim() : "not running: the local stack needs it");
+  report.record(docker.ok ? "pass" : "skip", "Docker (optional)", docker.ok ? docker.stdout.trim() : "only needed for the optional local stack");
 
   report.section("Repository");
   const sb = resolve(repoRoot, "supabase");
@@ -44,6 +44,7 @@ async function main() {
   const harnessEnv = resolve(repoRoot, "harness/.env.local");
   report.record(existsSync(harnessEnv) ? "pass" : "fail", "harness/.env.local", existsSync(harnessEnv) ? undefined : "copy harness/.env.example");
   report.record(process.env.PLAR_DEV_PUBLISHABLE_KEY ? "pass" : "fail", "Dev publishable key");
+  report.record(process.env.PLAR_DEV_DB_URL ? "pass" : "skip", "Dev database URL", process.env.PLAR_DEV_DB_URL ? "for dev:seed" : "only needed for `npm run dev:seed`");
   const webEnv = resolve(repoRoot, "web/.env.local");
   const webEnvText = existsSync(webEnv) ? readFileSync(webEnv, "utf8") : "";
   report.record(webEnvText.includes("NEXT_PUBLIC_SUPABASE_URL") ? "pass" : "fail", "web/.env.local", webEnvText.includes(DEV_PROJECT_REF) ? "points at hosted dev" : webEnvText ? "points at another target" : "copy web/.env.example");
@@ -59,7 +60,7 @@ async function main() {
   });
   const status = await supabase(["status"], { timeoutMs: 15_000 });
   if (!status.ok) {
-    report.record("warn", "Local stack", "not running: `npm run local:start`");
+    report.record("skip", "Local stack (optional)", "not running. The project uses hosted dev for everything");
   } else {
     const open = await portOpen(LOCAL_API_PORT);
     report.record(open ? "pass" : "warn", "Local stack", open ? `API on 127.0.0.1:${LOCAL_API_PORT}` : `running, but port ${LOCAL_API_PORT} isn't reachable. With Colima, try \`colima restart\``);

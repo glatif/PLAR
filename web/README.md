@@ -21,12 +21,13 @@ npm run build
 | Path | What it is |
 |---|---|
 | `src/app/page.tsx` | Public homepage |
-| `src/app/sign-in/` | Sign-in (SSO placeholder + workspace previews) |
-| `src/app/workspace/` | Authenticated shell (glass top bar + sidebar) and role overviews |
+| `src/app/sign-in/` | Sign-in: email and password, one-click demo accounts (when `DEMO_LOGIN_PASSWORD` is set), TRU SSO placeholder |
+| `src/app/workspace/` | Signed-in shell and role workspaces with live data from Supabase |
+| `src/proxy.ts` | Refreshes the Supabase session and guards `/workspace` |
 | `src/components/ui/` | Design-system primitives: Button, Badge, BrandMark, filled icons |
 | `src/components/site/` | Homepage sections (header, footer, hero preview) |
 | `src/components/app/` | Workspace components (role navigation) |
-| `src/lib/` | Content, role configuration, synthetic preview data |
+| `src/lib/` | Content, roles, `auth.ts` (signed-in viewer), `workspace-data.ts` (per-role queries), Supabase clients |
 
 ## Rules
 

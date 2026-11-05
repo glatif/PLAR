@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { Suspense, type ReactNode } from "react";
-import { notFound } from "next/navigation";
-import { ChevronRight } from "lucide-react";
-import { AiBadge, Badge, type Tone } from "@/components/ui/badge";
-import { CheckCircleFilled, ClockFilled, InfoFilled } from "@/components/ui/filled-icons";
-import { previewData } from "@/lib/preview-data";
+import { Suspense } from "react";
+import { notFound, redirect } from "next/navigation";
+import { InfoFilled } from "@/components/ui/filled-icons";
+import { ActivityFeed, CaseTable, JourneyCard, StagePipeline, StatGrid, TaskList } from "@/components/app/overview";
+import { getViewer, roleLabels } from "@/lib/auth";
+import { firstName } from "@/lib/format";
 import { isRoleSlug, roleConfigs, roleSlugs } from "@/lib/roles";
+import { loadOverview } from "@/lib/workspace-data";
 
 export function generateStaticParams() {
   return roleSlugs.map((role) => ({ role }));
@@ -16,7 +17,7 @@ export async function generateMetadata({ params }: PageProps<"/workspace/[role]"
   return { title: isRoleSlug(role) ? `${roleConfigs[role].label} workspace` : "Workspace" };
 }
 
-// URL data is read inside <Suspense> so the shell can render instantly (Cache Components).
+// URL and session data are read inside <Suspense> so the shell renders instantly (Cache Components).
 export default function RoleOverviewPage({ params }: PageProps<"/workspace/[role]">) {
   return (
     <Suspense fallback={<OverviewSkeleton />}>
@@ -25,21 +26,16 @@ export default function RoleOverviewPage({ params }: PageProps<"/workspace/[role
   );
 }
 
-// Status badges carry a small filled glyph so the state reads without relying on colour.
-const statusIcon: Partial<Record<Tone, ReactNode>> = {
-  success: <CheckCircleFilled />,
-  warning: <ClockFilled />,
-};
-
 function OverviewSkeleton() {
   return (
     <div aria-hidden className="space-y-8">
       <div className="h-24 w-2/3 animate-pulse rounded-md bg-fill-1" />
       <div className="grid gap-4 sm:grid-cols-3">
         {[0, 1, 2].map((i) => (
-          <div key={i} className="h-28 animate-pulse rounded-md bg-fill-1" />
+          <div key={i} className="h-28 animate-pulse rounded-lg bg-fill-1" />
         ))}
       </div>
+      <div className="h-72 animate-pulse rounded-lg bg-fill-1" />
     </div>
   );
 }
@@ -48,50 +44,44 @@ async function RoleOverview({ params }: { params: PageProps<"/workspace/[role]">
   const { role } = await params;
   if (!isRoleSlug(role)) notFound();
 
+  const viewer = await getViewer();
+  if (!viewer) redirect("/sign-in");
+  if (!viewer.workspaces.includes(role)) redirect(viewer.workspaces[0] ? `/workspace/${viewer.workspaces[0]}` : "/sign-in");
+
   const config = roleConfigs[role];
-  const data = previewData[role];
+  const data = await loadOverview(role, viewer);
+  const roleNames = viewer.roles.map((r) => roleLabels[r]).join(" · ");
 
   return (
     <div className="space-y-8">
       <div>
-        <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-accent-text">{config.label} workspace</p>
-        <h1 className="mt-2 font-serif text-[40px] font-semibold leading-[46px] tracking-[-0.025em]">Welcome back.</h1>
+        <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-accent-text">{roleNames} workspace</p>
+        <h1 className="mt-2 font-serif text-[40px] font-semibold leading-[46px] tracking-[-0.025em]">Welcome back, {firstName(viewer.name)}.</h1>
         <p className="mt-1 text-[17px] text-label-2">{config.greeting}</p>
       </div>
 
       <div role="note" className="flex items-start gap-3 rounded-md bg-accent-subtle px-4 py-3 text-[14px] leading-[20px] text-accent-ink shadow-[inset_0_0_0_1px_var(--color-tangerine-200)]">
         <InfoFilled className="mt-0.5 size-4 shrink-0 text-accent-text" />
-        <p>Preview with synthetic data. Real cases, permissions and actions arrive in the upcoming milestones.</p>
+        <p>Demo environment. Every person and case is synthetic. Tick a task to try it: changes save to the dev database.</p>
       </div>
 
-      <section aria-label="Summary" className="grid gap-4 sm:grid-cols-3">
-        {data.stats.map((stat) => (
-          <div key={stat.label} className="card p-5">
-            <p className="text-[13px] font-medium text-label-2">{stat.label}</p>
-            <p className="mt-2 text-[32px] font-semibold leading-[38px] tracking-[-0.03em] tabular-nums">{stat.value}</p>
-            <p className="mt-1 text-[13px] text-label-2">{stat.hint}</p>
-          </div>
-        ))}
-      </section>
+      {data.stats.length ? <StatGrid stats={data.stats} /> : null}
 
-      <section aria-labelledby="tasks-heading" className="card overflow-hidden">
-        <h2 id="tasks-heading" className="border-b border-separator px-6 py-4 text-[17px] font-semibold">
-          {data.tasksTitle}
-        </h2>
-        <ul>
-          {data.tasks.map((task) => (
-            <li key={task.title} className="flex items-center gap-4 border-b border-separator px-6 py-4 transition-colors last:border-b-0 hover:bg-surface-2">
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-[15px] font-medium">{task.title}</p>
-                <p className="mt-0.5 text-[13px] text-label-2">{task.meta}</p>
-              </div>
-              {task.ai ? <AiBadge>AI assist</AiBadge> : null}
-              <Badge tone={task.tone} icon={statusIcon[task.tone]}>{task.status}</Badge>
-              <ChevronRight aria-hidden className="size-4 shrink-0 text-label-3" />
-            </li>
-          ))}
-        </ul>
-      </section>
+      {data.studentCase ? (
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
+          <TaskList title="Your next steps" tasks={data.tasks} />
+          <JourneyCard studentCase={data.studentCase} />
+        </div>
+      ) : (
+        <>
+          {data.pipeline ? <StagePipeline pipeline={data.pipeline} /> : null}
+          <div className="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+            <TaskList title="Needs your attention" tasks={data.tasks} />
+            <ActivityFeed events={data.activity} />
+          </div>
+          {data.cases.length ? <CaseTable title={data.casesTitle} cases={data.cases} showAdvisor={role === "admin"} /> : null}
+        </>
+      )}
     </div>
   );
 }

@@ -432,7 +432,7 @@ const WEEKS = [
     note: "Sunday 1 November: plan sign-off and kickoff.",
     tasks: [
       { t: "Kickoff and plan sign-off", d: 0.5, track: "platform", p: "Must", subs: ["Confirm this timeline and the weekly demo slot", "Send the open questions to the supervisor and the PLAR department", "Book the PLAR department meeting"] },
-      { t: "Supabase setup in Canada", d: 1, track: "platform", p: "Must", done: [0, 2, 3, 4], subs: ["Create the development project in the Canada (Central) region", "Staging and production projects (after the paid plan)", "Supabase CLI project: config, migrations, seed and database tests", "Supabase harness: doctor, security checks, types and push scripts", "Generated TypeScript types; environment variables and secrets"] },
+      { t: "Supabase setup in Canada", d: 1, track: "platform", p: "Must", done: [0, 1, 2, 3], subs: ["Create the cloud project in the Canada (Central) region (one database for everything)", "Supabase CLI project: config, migrations, seed and database tests", "Supabase harness: doctor, security checks, types and push scripts", "Generated TypeScript types; environment variables and secrets"] },
       { t: "Engineering tooling", d: 1, track: "platform", p: "Must", subs: ["Prettier and Vitest", "Playwright end-to-end tests with automatic accessibility checks", "Git hosting and CI: lint, typecheck, tests, build on every push"] },
       { t: "Deployment pipeline", d: 1, track: "platform", p: "Must", subs: ["Server in Canada; domain, DNS and HTTPS", "Staging deploys automatically from main", "Error monitoring and uptime checks"] },
       { t: "Core UI components", d: 1.5, track: "platform", p: "Must", subs: ["Fields: input, select, textarea, checkbox, radio, switch", "Segmented control, tabs, table, pagination", "Dialog, sheet, menu, toast, tooltip", "Avatar, progress, skeleton, empty state"] }
@@ -442,9 +442,9 @@ const WEEKS = [
 
   { n: 2, start: "2026-11-09", end: "2026-11-13", avail: 4, holidays: ["Wed 11 Nov · Remembrance Day"], theme: "Data model and sign-in", phase: "Core platform",
     tasks: [
-      { t: "Database schema v1", d: 2, track: "platform", p: "Must", subs: ["Profiles, role assignments, programs", "Cases, case events, portfolio sections, document versions", "Audit events (append-only)", "Synthetic seed script"] },
-      { t: "Row-level security", d: 1, track: "platform", p: "Must", subs: ["Helper functions: has role, can access case", "Policies on every table, default deny", "Automated tests per role (student, advisor, assessor, manager, director, admin)"] },
-      { t: "Sign-in", d: 1, track: "platform", p: "Must", subs: ["Microsoft (Entra ID) sign-in for staff and assessors", "Email link sign-in for students", "Development-only demo login; role-aware landing pages"] }
+      { t: "Database schema v1", d: 2, track: "platform", p: "Must", done: [0, 3], subs: ["Profiles, role assignments, programs", "Cases, case events, portfolio sections, document versions", "Audit events (append-only)", "Synthetic seed script"] },
+      { t: "Row-level security", d: 1, track: "platform", p: "Must", done: [0, 1, 2], subs: ["Helper functions: has role, can access case", "Policies on every table, default deny", "Automated tests per role (student, advisor, assessor, manager, director, admin)"] },
+      { t: "Sign-in", d: 1, track: "platform", p: "Must", done: [2, 3], subs: ["Microsoft (Entra ID) sign-in for staff and assessors", "Email link sign-in for students", "Development-only demo login; role-aware landing pages", "Email and password sign-in, sign-out and session refresh"] }
     ],
     exit: "People can sign in and land in their own workspace, and the database refuses anything their role shouldn't see.",
     needs: ["TRU IT: Microsoft app registration for sign-in"] },

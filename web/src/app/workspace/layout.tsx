@@ -1,15 +1,15 @@
 import { Suspense } from "react";
-import Link from "next/link";
 import { Bell, Search } from "lucide-react";
 import { BrandMark } from "@/components/ui/brand-mark";
 import { WorkspaceNav } from "@/components/app/workspace-nav";
+import { ViewerMenu } from "@/components/app/viewer-menu";
 
 /** Authenticated app shell: glass top bar and glass sidebar over solid content. */
 export default function WorkspaceLayout({ children }: LayoutProps<"/workspace">) {
   return (
     <div className="flex min-h-full flex-1 flex-col">
       <header className="glass sticky top-0 z-40 flex h-14 items-center gap-4 px-4 sm:px-6">
-        <BrandMark href="/" />
+        <BrandMark href="/workspace" />
         <div className="mx-auto hidden w-full max-w-md md:block">
           <label className="relative block">
             <span className="sr-only">Search cases</span>
@@ -30,12 +30,9 @@ export default function WorkspaceLayout({ children }: LayoutProps<"/workspace">)
           >
             <Bell aria-hidden className="size-[18px]" />
           </button>
-          <Link
-            href="/sign-in"
-            className="rounded-full px-3 py-1.5 text-[13px] font-semibold text-accent-text transition-colors hover:bg-accent-subtle"
-          >
-            Switch role
-          </Link>
+          <Suspense fallback={<span className="size-8 animate-pulse rounded-full bg-fill-1" />}>
+            <ViewerMenu />
+          </Suspense>
         </div>
       </header>
 

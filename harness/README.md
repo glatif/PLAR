@@ -1,13 +1,10 @@
 # Supabase harness
 
-Scripts to configure and test the PLAR Supabase backend. They work against two **targets**:
+Scripts to configure and test the PLAR Supabase backend. **The project uses one cloud database for everything:** the hosted dev project `plar-dev` (`dxnurogvpdxtbaocallr`), Canada (Central), free plan. There's no staging project. The local Docker stack is optional and not needed.
 
-| Target | What it is | Data |
-|---|---|---|
-| `dev` (default) | Hosted project `plar-dev` (`dxnurogvpdxtbaocallr`), Canada (Central), free plan | Migrations only. No accounts yet |
-| `local` | The Supabase CLI stack on this machine (Docker), ports 544xx | Synthetic demo accounts from `supabase/seed.sql` |
+The database itself is described in [`../supabase/`](../supabase): `migrations/` (schema), `seed.sql` (synthetic demo data) and `tests/database/` (pgTAP tests).
 
-The database itself lives in [`../supabase/`](../supabase): `config.toml`, `migrations/`, `seed.sql` and `tests/database/`.
+Demo sign-ins: [DEMO-ACCOUNTS.md](DEMO-ACCOUNTS.md).
 
 ## First run
 
@@ -15,43 +12,34 @@ The database itself lives in [`../supabase/`](../supabase): `config.toml`, `migr
 cd harness
 npm install
 cp .env.example .env.local   # then fill in the dev publishable key (public by design)
-npm run doctor               # checks tools, config and both targets
-npm run check                # API and security checks against hosted dev
+npm run doctor               # checks tools, config and the dev project
+npm run check                # signs in as every demo account and checks what each one can see and change
 ```
 
 ## Commands
 
 | Command | What it does |
 |---|---|
-| `npm run doctor` | Checks Node, the Supabase CLI, Docker, env files, the CLI login and both targets |
-| `npm run check` / `check:local` | API checks: reachability, signed-out access denied, and (local only) what each demo role can read and change |
-| `npm run types` / `types:local` | Regenerates `web/src/lib/supabase/database.types.ts` |
-| `npm run local:start` / `local:stop` / `local:status` | Runs the local stack |
-| `npm run local:env` | Prints the local URL and publishable key in `web/.env.local` format |
-| `npm run local:reset` | Rebuilds the local database from the migrations and the seed |
-| `npm run test:db` | Runs the pgTAP tests in `supabase/tests/database` on the local stack |
-| `npm run test` | `test:db`, then `check:local` |
+| `npm run doctor` | Checks Node, the Supabase CLI, env files, the CLI login and the dev project |
+| `npm run check` | Reachability, signed-out access denied on every table, each demo account's cases and tasks, and what people can and can't change |
+| `npm run dev:seed` | Reloads the synthetic demo data (needs `PLAR_DEV_DB_URL` and `psql`) |
+| `npm run types` | Regenerates `web/src/lib/supabase/database.types.ts` from dev (after `supabase login`) |
+| `npm run dev:link` | Links the CLI to the dev project (once, after `supabase login`) |
+| `npm run dev:migrations` | Compares local migration files with what's applied on dev |
+| `npm run dev:push` | Applies new migration files to dev |
 | `npm run db:new <name>` | Creates a new migration file |
-| `npm run db:lint` | Lints the local database schema |
-| `npm run dev:link` | Links the CLI to the hosted dev project (once, after `supabase login`) |
-| `npm run dev:migrations` | Compares local and hosted migrations |
-| `npm run dev:push` | Applies new migrations to hosted dev |
+
+Optional local stack (Docker): `local:start`, `local:stop`, `local:reset`, `test:db`, `check:local`, `types:local`.
 
 ## How a schema change flows
 
-1. `npm run db:new add_cases`, then write the SQL in `supabase/migrations/`.
-2. Add or extend a test in `supabase/tests/database/`.
-3. Locally: `npm run local:reset`, then `npm run test`.
-4. Hosted: `npm run dev:push`, then `npm run check` and `npm run types`.
-5. Commit the migration, the test and the regenerated types together.
+1. `npm run db:new add_sections`, then write the SQL in `supabase/migrations/`.
+2. `npm run dev:push` to apply it to dev. Claude can also apply it through the Supabase connector, keeping the same file and version.
+3. Add the new expectations to `src/check.ts`, then `npm run check`.
+4. `npm run types`, then commit the migration, the checks and the regenerated types together.
 
 ## Rules
 
-- **Synthetic data only.** Demo accounts use `@example.test` addresses and exist only on the local stack. Never seed hosted projects with demo passwords.
-- **No secrets in git.** `.env.local` files are git-ignored. The web app gets the publishable key only. Secret and service keys stay out of `web/`.
-- **Every table has row-level security on**, with access denied unless a policy allows it. Each new table gets a pgTAP test for each role.
-- Never run `local:reset` or `db reset` against a hosted project.
-
-## Known issue: Colima port forwarding
-
-This Mac runs Docker through Colima. If `local:start` fails with "connection refused" on port 54422, Colima isn't forwarding the new ports. `colima restart` fixes it, but it briefly stops any other running local stacks. Until then, use the `dev` target.
+- **Synthetic data only.** Every person in the dev project is made up (`@demo.test` addresses). Demo accounts share a simple password because they only ever see synthetic data. Before any real student information arrives, the demo accounts are removed and real sign-in takes over.
+- **No secrets in git.** `.env.local` files are git-ignored. The web app gets the publishable key only. Secret keys and the database URL stay out of `web/`.
+- **Every table has row-level security on**, and access is denied unless a policy allows it. Each new table gets checks for each role in `src/check.ts`.

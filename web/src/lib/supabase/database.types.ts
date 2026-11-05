@@ -16,6 +16,195 @@ export type Database = {
   }
   public: {
     Tables: {
+      case_assessors: {
+        Row: {
+          assessor_id: string
+          assigned_at: string
+          case_id: string
+          role: Database["public"]["Enums"]["assessor_role"]
+        }
+        Insert: {
+          assessor_id: string
+          assigned_at?: string
+          case_id: string
+          role: Database["public"]["Enums"]["assessor_role"]
+        }
+        Update: {
+          assessor_id?: string
+          assigned_at?: string
+          case_id?: string
+          role?: Database["public"]["Enums"]["assessor_role"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "case_assessors_assessor_id_fkey"
+            columns: ["assessor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "case_assessors_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      case_events: {
+        Row: {
+          actor_id: string | null
+          case_id: string
+          detail: string | null
+          id: string
+          kind: string
+          occurred_at: string
+          title: string
+        }
+        Insert: {
+          actor_id?: string | null
+          case_id: string
+          detail?: string | null
+          id?: string
+          kind: string
+          occurred_at?: string
+          title: string
+        }
+        Update: {
+          actor_id?: string | null
+          case_id?: string
+          detail?: string | null
+          id?: string
+          kind?: string
+          occurred_at?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "case_events_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "case_events_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cases: {
+        Row: {
+          advisor_id: string | null
+          created_at: string
+          credit_level: Database["public"]["Enums"]["credit_level"]
+          due_on: string | null
+          evidence_count: number
+          id: string
+          program_id: string
+          reference: string
+          sections_done: number
+          sections_total: number
+          stage: Database["public"]["Enums"]["case_stage"]
+          started_on: string
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          advisor_id?: string | null
+          created_at?: string
+          credit_level: Database["public"]["Enums"]["credit_level"]
+          due_on?: string | null
+          evidence_count?: number
+          id?: string
+          program_id: string
+          reference: string
+          sections_done?: number
+          sections_total?: number
+          stage?: Database["public"]["Enums"]["case_stage"]
+          started_on?: string
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          advisor_id?: string | null
+          created_at?: string
+          credit_level?: Database["public"]["Enums"]["credit_level"]
+          due_on?: string | null
+          evidence_count?: number
+          id?: string
+          program_id?: string
+          reference?: string
+          sections_done?: number
+          sections_total?: number
+          stage?: Database["public"]["Enums"]["case_stage"]
+          started_on?: string
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cases_advisor_id_fkey"
+            columns: ["advisor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cases_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cases_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      interviews: {
+        Row: {
+          case_id: string
+          created_at: string
+          duration_minutes: number
+          id: string
+          mode: Database["public"]["Enums"]["interview_mode"]
+          scheduled_at: string
+        }
+        Insert: {
+          case_id: string
+          created_at?: string
+          duration_minutes?: number
+          id?: string
+          mode?: Database["public"]["Enums"]["interview_mode"]
+          scheduled_at: string
+        }
+        Update: {
+          case_id?: string
+          created_at?: string
+          duration_minutes?: number
+          id?: string
+          mode?: Database["public"]["Enums"]["interview_mode"]
+          scheduled_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interviews_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -40,6 +229,27 @@ export type Database = {
           id?: string
           preferred_name?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      programs: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          name?: string
         }
         Relationships: []
       }
@@ -82,6 +292,60 @@ export type Database = {
           },
         ]
       }
+      tasks: {
+        Row: {
+          ai_assisted: boolean
+          assignee_id: string
+          case_id: string
+          created_at: string
+          detail: string | null
+          due_on: string | null
+          id: string
+          status: Database["public"]["Enums"]["task_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          ai_assisted?: boolean
+          assignee_id: string
+          case_id: string
+          created_at?: string
+          detail?: string | null
+          due_on?: string | null
+          id?: string
+          status?: Database["public"]["Enums"]["task_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          ai_assisted?: boolean
+          assignee_id?: string
+          case_id?: string
+          created_at?: string
+          detail?: string | null
+          due_on?: string | null
+          id?: string
+          status?: Database["public"]["Enums"]["task_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -98,6 +362,20 @@ export type Database = {
         | "manager"
         | "director"
         | "admin"
+      assessor_role: "chair" | "writer"
+      case_stage:
+        | "readiness"
+        | "portfolio"
+        | "feedback"
+        | "approval"
+        | "interview"
+        | "assessment"
+        | "decision"
+        | "credit"
+        | "closed"
+      credit_level: "lower" | "upper"
+      interview_mode: "built_in" | "zoom" | "phone"
+      task_status: "todo" | "ready" | "due_soon" | "review" | "waiting" | "done"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -234,6 +512,21 @@ export const Constants = {
         "director",
         "admin",
       ],
+      assessor_role: ["chair", "writer"],
+      case_stage: [
+        "readiness",
+        "portfolio",
+        "feedback",
+        "approval",
+        "interview",
+        "assessment",
+        "decision",
+        "credit",
+        "closed",
+      ],
+      credit_level: ["lower", "upper"],
+      interview_mode: ["built_in", "zoom", "phone"],
+      task_status: ["todo", "ready", "due_soon", "review", "waiting", "done"],
     },
   },
 } as const
