@@ -16,6 +16,9 @@ AI-assisted efficiency platform for Thompson Rivers University Open Learning's P
 - Commands (run in `web/`): `npm run dev`, `npm run lint`, `npm run typecheck`, `npm run build`. The desktop preview config is `.claude/launch.json` (port 3100).
 - This Next.js version has breaking changes: read `web/node_modules/next/dist/docs/` before using an unfamiliar API, and read `params` inside `<Suspense>`.
 - Milestones and the architecture decision log: `Resources/docs/16-implementation-plan.md`.
+- Database: `supabase/` (Supabase CLI project: migrations, seed, pgTAP tests). Hosted dev project `plar-dev`, ref `dxnurogvpdxtbaocallr`, Canada (Central). Every table has row-level security on, and each new table gets a pgTAP test per role.
+- `harness/` configures and tests Supabase: `npm run doctor`, `npm run check` (hosted dev) / `check:local`, `npm run types`, `dev:push`. See `harness/README.md`.
+- The web app uses the publishable key only. Secret or service keys never go in `web/` or in git.
 - Synthetic data only in code, seeds and tests.
 
 ## Working rules

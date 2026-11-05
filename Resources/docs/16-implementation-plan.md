@@ -26,15 +26,18 @@ PLAR-Project/
 ├── Resources/
 │   ├── project-email.md      stakeholder email (source)
 │   ├── General/              stakeholder documents — CONFIDENTIAL, never committed
-│   └── docs/                 project documentation (this folder)
+│   └── docs/                 project documentation (this folder), design-system.html, timeline.html
+├── supabase/                 the database (Supabase CLI project)
+│   ├── config.toml           local stack settings (ports 544xx)
+│   ├── migrations/           schema changes, applied in order (same versions as hosted)
+│   ├── seed.sql              synthetic demo accounts, local stack only
+│   └── tests/database/       pgTAP tests, including row-level security per role
+├── harness/                  scripts to configure and test Supabase (doctor, checks, types, push)
 └── web/                      the Next.js application
     ├── src/app/              routes (App Router)
-    │   ├── page.tsx          public homepage
-    │   ├── sign-in/          sign-in entry (placeholder until SSO is configured)
-    │   └── (app)/            authenticated area: shell + role dashboards
     ├── src/components/       design-system components (ui/) and page sections
-    ├── src/lib/              domain types, config, (later) data access, AI gateway
-    └── src/app/globals.css   design tokens (light, dark, reduced transparency)
+    ├── src/lib/              domain config, content, Supabase clients (lib/supabase/)
+    └── src/app/globals.css   design tokens
 ```
 
 ## 3. Architecture decisions (ADR log)

@@ -29,6 +29,7 @@ Team-internal notes that keep the project's working context in this folder. They
 | 2026-10-29 | **Light theme only** for the platform. Dark tokens are kept behind a `.dark` class (not used), and `dark:` utilities follow that class, not the OS setting. | Project lead |
 | 2026-10-30 | **New design system adopted:** Geist (interface) + Lora (headlines and reading), **tangerine** accent instead of teal, warm neutrals, still Apple-based and light only. Outline icons by default plus a **filled icon set** for selected navigation, toggles that are on, small status glyphs and white glyphs on coloured tiles. Interactive spec: [design-system.html](design-system.html) (now the source of truth for UI). Accent fill `#C2550A` (white text 4.57:1), accent text `#A8470B`, brand `#F5761A`; AI marked in indigo. `web/` updated to match. **Still to update:** `14-design-system.md` and the PDF covers/print CSS (still teal). | Project lead |
 | 2026-10-31 | **Backend: Supabase** in the Canada (Central) region (database with row-level security, sign-in, storage, queues, realtime). The app runs on our own server with a proper domain. **Delivery window: 1 Nov 2026 → 28 Feb 2027** (17 weeks), planned week by week in [timeline.html](timeline.html). ADRs 010–012 in [16-implementation-plan.md](16-implementation-plan.md). | Project lead |
+| 2026-11-05 | **Supabase free plan for week 1**: one hosted dev project in Canada (Central) under the project lead's organisation. Synthetic data only; no demo accounts on hosted projects. Staging and production follow when a paid plan is in place. | Project lead |
 | 2026-10-22 | Keep **documented facts**, **assumptions** and **proposals** visibly separate in every doc. | Project lead |
 
 ## Key findings to remember
@@ -49,8 +50,12 @@ Team-internal notes that keep the project's working context in this folder. They
 - [x] Draft the feature list, design system and technical approach (13, 14, 15).
 - [x] Feature list approved (2026-10-29).
 - [x] **M0 started:** `web/` scaffold, design tokens, homepage, sign-in placeholder, workspace shell with role previews (synthetic data).
-- [ ] M0 remaining: `git init` (on request), Prettier and Vitest setup, CI.
-- [ ] M1: database, auth/SSO, RBAC, case record, audit log.
+- [x] Git initialised (2026-10-29).
+- [x] **Week 1, Supabase (2026-11-05):** hosted dev project `plar-dev` (ref `dxnurogvpdxtbaocallr`, Canada Central, **free plan for now**). `supabase/` folder with config, the foundation migration (private helpers, `app_role`, profiles, role assignments, row-level security), a synthetic seed and pgTAP tests. The `harness/` folder holds doctor, API and security checks, type generation and push scripts. The web app has typed Supabase clients and env files. Security checks pass on hosted dev; the security advisor reports nothing.
+- [ ] Week 1 remaining: staging and production projects (need a paid plan or a second org), Prettier, Vitest, Playwright, CI, deployment (needs the server and domain), core UI components.
+- [ ] Local Supabase stack: blocked because Colima isn't forwarding new ports. Run `colima restart` when the other local stack (`lvi-console`) can pause, then `npm run local:start` and `npm run test` in `harness/`.
+- [ ] Revoke the Supabase access token that was pasted into chat on 2026-11-05 (the connector doesn't need it).
+- [ ] M1: rest of the schema, auth/SSO, case record, audit log.
 - [ ] Supervisor reviews the features document. Schedule a discussion with the supervisor and the PLAR department.
 - [ ] Evaluate LLM options against the requirements in 15 §3.3.
 - [ ] Prepare the stakeholder-facing documents: proposal, timeline and the questions.

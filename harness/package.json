@@ -1,0 +1,34 @@
+{
+  "name": "plar-supabase-harness",
+  "private": true,
+  "type": "module",
+  "description": "Configure and test the PLAR Supabase backend, locally or against the hosted dev project.",
+  "scripts": {
+    "doctor": "tsx src/doctor.ts",
+    "check": "tsx src/check.ts --target dev",
+    "check:local": "tsx src/check.ts --target local",
+    "types": "tsx src/types.ts --target dev",
+    "types:local": "tsx src/types.ts --target local",
+    "local:start": "supabase start --workdir ..",
+    "local:stop": "supabase stop --workdir ..",
+    "local:status": "supabase status --workdir ..",
+    "local:env": "supabase status --workdir .. -o env --override-name api.url=NEXT_PUBLIC_SUPABASE_URL --override-name auth.publishable_key=NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+    "local:reset": "supabase db reset --workdir ..",
+    "db:new": "supabase migration new --workdir ..",
+    "db:lint": "supabase db lint --workdir ..",
+    "test:db": "supabase test db --workdir ..",
+    "test": "npm run test:db && npm run check:local",
+    "dev:link": "supabase link --project-ref dxnurogvpdxtbaocallr --workdir ..",
+    "dev:migrations": "supabase migration list --linked --workdir ..",
+    "dev:push": "supabase db push --linked --workdir ..",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.119.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}

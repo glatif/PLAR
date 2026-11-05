@@ -432,7 +432,7 @@ const WEEKS = [
     note: "Sunday 1 November: plan sign-off and kickoff.",
     tasks: [
       { t: "Kickoff and plan sign-off", d: 0.5, track: "platform", p: "Must", subs: ["Confirm this timeline and the weekly demo slot", "Send the open questions to the supervisor and the PLAR department", "Book the PLAR department meeting"] },
-      { t: "Supabase setup in Canada", d: 1, track: "platform", p: "Must", subs: ["Create development, staging and production projects in the Canada (Central) region", "Local Supabase stack with the CLI; migrations folder in the repo", "Generated TypeScript types; environment variables and secrets"] },
+      { t: "Supabase setup in Canada", d: 1, track: "platform", p: "Must", done: [0, 2, 3, 4], subs: ["Create the development project in the Canada (Central) region", "Staging and production projects (after the paid plan)", "Supabase CLI project: config, migrations, seed and database tests", "Supabase harness: doctor, security checks, types and push scripts", "Generated TypeScript types; environment variables and secrets"] },
       { t: "Engineering tooling", d: 1, track: "platform", p: "Must", subs: ["Prettier and Vitest", "Playwright end-to-end tests with automatic accessibility checks", "Git hosting and CI: lint, typecheck, tests, build on every push"] },
       { t: "Deployment pipeline", d: 1, track: "platform", p: "Must", subs: ["Server in Canada; domain, DNS and HTTPS", "Staging deploys automatically from main", "Error monitoring and uptime checks"] },
       { t: "Core UI components", d: 1.5, track: "platform", p: "Must", subs: ["Fields: input, select, textarea, checkbox, radio, switch", "Segmented control, tabs, table, pagination", "Dialog, sheet, menu, toast, tooltip", "Avatar, progress, skeleton, empty state"] }
@@ -669,10 +669,13 @@ const availDays = WEEKS.reduce((s, w) => s + w.avail, 0);
 const daysToStart = Math.round((START - todayUTC) / 864e5);
 const subKeys = allTasks.flatMap(t => t.subs.map((_, j) => `${t.w}-${t.i}-${j}`));
 let done = store.get("done", {});
+// Sub-tasks marked done in the plan data (`done: [index, …]`) count as done unless unticked in this browser.
+const planDone = new Set(allTasks.flatMap(t => (t.done || []).map(j => `${t.w}-${t.i}-${j}`)));
+const isDone = k => k in done ? done[k] : planDone.has(k);
 
 /* Stats */
 function renderStats() {
-  const doneCount = subKeys.filter(k => done[k]).length;
+  const doneCount = subKeys.filter(isDone).length;
   const startLabel = daysToStart > 1 ? `Starts in ${daysToStart} days` : daysToStart === 1 ? "Starts tomorrow" : daysToStart === 0 ? "Starts today" : `Day ${-daysToStart + 1} of ${SPAN}`;
   $("#stats").innerHTML = `
     <div class="stat accent"><div class="k">Status</div><div class="v" style="font-size:24px">${startLabel}</div><div class="h">Sunday 1 November → Sunday 28 February</div></div>
@@ -785,7 +788,7 @@ function renderWeeks() {
                 <span class="badge ${t.p === "Must" ? "b-accent" : t.p === "Should" ? "b-info" : "b-neutral"}">${t.p}</span>
                 <span class="days">${daybar(t.d, TRACKS[t.track].color)}${t.d} day${t.d === 1 ? "" : "s"}</span>
               </div>
-              <ul class="subs">${t.subs.map((s, j) => { const k = `${w.n}-${t.i}-${j}`; return `<li><label><input type="checkbox" data-k="${k}" ${done[k] ? "checked" : ""}><span>${s}</span></label></li>`; }).join("")}</ul>
+              <ul class="subs">${t.subs.map((s, j) => { const k = `${w.n}-${t.i}-${j}`; return `<li><label><input type="checkbox" data-k="${k}" ${isDone(k) ? "checked" : ""}><span>${s}</span></label></li>`; }).join("")}</ul>
             </div>`).join("") : `<p class="empty-filter">No tasks in this workstream this week.</p>`}
         </div>
         <aside class="side">
@@ -803,7 +806,7 @@ function renderWeeks() {
   $("#toggle-all span").textContent = open.size === WEEKS.length ? "Collapse all" : "Expand all";
 }
 function updateProgress() {
-  const n = subKeys.filter(k => done[k]).length, p = Math.round(n / subKeys.length * 100);
+  const n = subKeys.filter(isDone).length, p = Math.round(n / subKeys.length * 100);
   $("#prog-label").textContent = `${p}% done`;
   $("#prog-bar").style.width = p + "%";
 }
@@ -840,7 +843,7 @@ document.addEventListener("click", e => {
 });
 document.addEventListener("change", e => {
   const c = e.target.closest("input[data-k]"); if (!c) return;
-  done[c.dataset.k] = c.checked; if (!c.checked) delete done[c.dataset.k];
+  done[c.dataset.k] = c.checked;
   store.set("done", done); updateProgress(); renderStats();
 });
 let fbTimer;
