@@ -1,0 +1,873 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#F7F6F3">
+<title>PLAR Build Timeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&family=Geist+Mono:wght@400..600&family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+<style>
+/* Tokens from the PLAR design system (design-system.html) */
+:root {
+  color-scheme: light;
+  --tangerine-50: #FFF7EF; --tangerine-100: #FFEBD6; --tangerine-200: #FFD3AA; --tangerine-300: #FFB474;
+  --tangerine-400: #FF9342; --tangerine-500: #F5761A; --tangerine-600: #C2550A; --tangerine-700: #A8470B;
+  --tangerine-800: #8A3B0F; --tangerine-900: #6F3211; --tangerine-950: #3D1706;
+  --canvas: #F7F6F3; --surface: #FFFFFF; --surface-2: #FBFAF8; --surface-3: #F1EFEB;
+  --label: #1D1D1F; --label-2: #6B6B70; --label-3: #8E8E93;
+  --separator: rgba(29,29,31,.10); --separator-strong: rgba(29,29,31,.16); --border-strong: #8F8C87;
+  --fill-1: rgba(29,29,31,.05); --fill-2: rgba(29,29,31,.08); --fill-3: rgba(29,29,31,.12);
+  --brand: var(--tangerine-500); --accent: var(--tangerine-600); --accent-hover: var(--tangerine-700);
+  --accent-text: var(--tangerine-700); --accent-subtle: var(--tangerine-50); --accent-soft: var(--tangerine-100); --accent-ink: var(--tangerine-800);
+  --focus-ring: rgba(194,85,10,.28);
+  --success: #1E7B34; --success-subtle: #EAF6EC; --warning: #7A5200; --warning-subtle: #FFF6D9;
+  --danger: #B42318; --danger-subtle: #FDECEA; --info: #1E6FB8; --info-subtle: #EAF2FB;
+  --ai: #4B48C8; --ai-soft: #EFEEFD;
+  --font-sans: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --font-serif: "Lora", "New York", Georgia, serif;
+  --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --r-sm: 10px; --r-md: 14px; --r-lg: 20px; --r-xl: 28px;
+  --elev-1: 0 1px 2px rgba(29,29,31,.04), 0 0 0 1px rgba(29,29,31,.05);
+  --elev-2: 0 6px 20px -6px rgba(29,29,31,.12), 0 2px 4px rgba(29,29,31,.04), 0 0 0 1px rgba(29,29,31,.05);
+  --elev-3: 0 28px 56px -16px rgba(29,29,31,.22), 0 10px 20px -10px rgba(29,29,31,.10), 0 0 0 1px rgba(29,29,31,.06);
+  --glass: rgba(255,255,255,.72); --glass-thick: rgba(255,255,255,.88); --glass-blur: saturate(180%) blur(24px);
+  --ease: cubic-bezier(.2,0,0,1); --spring: cubic-bezier(.34,1.36,.64,1);
+
+  /* Workstream colours (categorical palette) */
+  --t-platform: #C2550A; --t-p1: #F5761A; --t-interviews: #0F8C82; --t-p2: #5E5CE6; --t-ops: #2F7FC1; --t-launch: #A2845E; --t-ext: #8E8E93;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 84px; -webkit-text-size-adjust: 100%; }
+body { margin: 0; overflow-x: clip; background: var(--canvas); color: var(--label); font-family: var(--font-sans); font-size: 16px; line-height: 24px; letter-spacing: -0.006em; -webkit-font-smoothing: antialiased; }
+h1, h2, h3, h4, p { margin: 0; }
+button, input, textarea { font: inherit; color: inherit; letter-spacing: inherit; }
+button { cursor: pointer; }
+a { color: var(--accent-text); }
+:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 2px; border-radius: 6px; }
+::selection { background: var(--tangerine-200); }
+svg.i { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+svg.f { width: 16px; height: 16px; flex: none; fill: currentColor; }
+.mono { font-family: var(--font-mono); letter-spacing: 0; }
+.tabular { font-variant-numeric: tabular-nums; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Top bar */
+.bar { position: sticky; top: 0; z-index: 50; background: var(--glass); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); border-bottom: 1px solid var(--separator); }
+.bar-in { max-width: 1240px; margin: 0 auto; height: 60px; padding: 0 24px; display: flex; align-items: center; gap: 16px; }
+.mark { width: 30px; height: 30px; border-radius: 9px; flex: none; display: grid; place-items: center; background: linear-gradient(140deg, #FFB474, #F5761A 45%, #C2550A); box-shadow: inset 0 1px 0 rgba(255,255,255,.45), 0 2px 6px -1px rgba(194,85,10,.45); }
+.mark svg { width: 16px; height: 16px; stroke: #fff; stroke-width: 2.2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.bar .name { font-weight: 650; font-size: 15px; letter-spacing: -0.015em; }
+.bar .name span { color: var(--label-2); font-weight: 500; }
+.bar nav { margin-left: auto; display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; }
+.bar nav::-webkit-scrollbar { display: none; }
+.bar nav a { flex: none; height: 34px; padding: 0 12px; display: inline-flex; align-items: center; border-radius: 99px; font-size: 14px; font-weight: 500; color: var(--label-2); text-decoration: none; }
+.bar nav a:hover { color: var(--label); background: var(--fill-1); }
+
+main { max-width: 1240px; margin: 0 auto; padding: 0 24px 120px; }
+
+/* Hero */
+.hero { position: relative; isolation: isolate; overflow-x: clip; padding: 64px 0 40px; }
+.hero::before { content: ""; position: absolute; right: -120px; top: -140px; width: 640px; height: 640px; pointer-events: none; z-index: -1;
+  background: radial-gradient(closest-side, rgba(245,118,26,.18), rgba(255,180,116,.10) 50%, transparent 75%); }
+.eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-text); }
+.hero h1 { margin-top: 12px; font-family: var(--font-serif); font-weight: 600; font-size: 56px; line-height: 60px; letter-spacing: -0.03em; max-width: 15em; text-wrap: balance; }
+.hero h1 em { color: var(--accent-text); font-weight: 500; }
+.hero .lead { margin-top: 18px; max-width: 46em; font-size: 18px; line-height: 28px; color: var(--label-2); }
+.stats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; margin-top: 32px; }
+.stat { background: var(--surface); border-radius: var(--r-lg); box-shadow: var(--elev-1); padding: 18px 20px; }
+.stat .k { font-size: 13px; font-weight: 500; color: var(--label-2); }
+.stat .v { margin-top: 6px; font-size: 30px; line-height: 36px; font-weight: 600; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.stat .v small { font-size: 15px; font-weight: 500; color: var(--label-2); letter-spacing: -0.01em; }
+.stat .h { margin-top: 2px; font-size: 12.5px; color: var(--label-2); }
+.stat.accent { background: linear-gradient(150deg, #8A3B0F, #C2550A 60%, #F5761A); color: #fff; box-shadow: 0 12px 28px -12px rgba(194,85,10,.55); }
+.stat.accent .k, .stat.accent .h, .stat.accent .v small { color: rgba(255,255,255,.85); }
+
+/* Sections */
+.section { padding-top: 72px; }
+.section > header { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.section h2 { margin-top: 8px; font-family: var(--font-serif); font-weight: 600; font-size: 38px; line-height: 44px; letter-spacing: -0.025em; }
+.section .sub { margin-top: 8px; color: var(--label-2); font-size: 16px; line-height: 24px; max-width: 48em; }
+.panel { background: var(--surface); border-radius: var(--r-lg); box-shadow: var(--elev-1); }
+
+/* Controls */
+.segmented { display: inline-flex; padding: 3px; gap: 2px; border-radius: 99px; background: var(--fill-2); flex-wrap: wrap; }
+.segmented button { height: 32px; padding: 0 14px; border: 0; border-radius: 99px; background: transparent; font-size: 13.5px; font-weight: 500; display: inline-flex; align-items: center; gap: 7px; transition: background .2s var(--ease), box-shadow .2s; }
+.segmented button[aria-checked="true"] { background: var(--surface); font-weight: 600; box-shadow: 0 2px 6px rgba(29,29,31,.10), 0 0 0 .5px rgba(29,29,31,.06); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; height: 36px; padding: 0 16px; border: 0; border-radius: 99px; font-size: 14px; font-weight: 600; letter-spacing: -0.01em; transition: background .12s var(--ease), transform .12s var(--ease); white-space: nowrap; }
+.btn:active { transform: scale(.97); }
+.btn-primary { background: var(--accent); color: #fff; box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 1px 2px rgba(138,59,15,.25); }
+.btn-primary:hover { background: var(--accent-hover); }
+.btn-neutral { background: var(--fill-1); }
+.btn-neutral:hover { background: var(--fill-2); }
+.btn-plain { background: transparent; color: var(--accent-text); padding: 0 10px; }
+.btn-plain:hover { background: var(--accent-subtle); }
+.dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; flex: none; }
+.badge { display: inline-flex; align-items: center; gap: 5px; height: 22px; padding: 0 9px; border-radius: 99px; font-size: 11.5px; font-weight: 600; white-space: nowrap; line-height: 1; }
+.b-neutral { background: var(--fill-1); color: #3A3A3C; }
+.b-accent { background: var(--accent-soft); color: var(--accent-ink); }
+.b-success { background: var(--success-subtle); color: var(--success); }
+.b-warning { background: var(--warning-subtle); color: var(--warning); }
+.b-info { background: var(--info-subtle); color: var(--info); }
+.b-ai { background: var(--ai-soft); color: var(--ai); }
+.b-outline { box-shadow: inset 0 0 0 1px var(--separator-strong); color: var(--label-2); }
+
+/* Gantt */
+.gantt-wrap { margin-top: 24px; overflow-x: auto; border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--elev-1); }
+.gantt { min-width: 1080px; position: relative; padding-bottom: 8px; }
+.g-head, .g-row { display: grid; grid-template-columns: 240px minmax(0, 1fr); }
+.g-out { position: absolute; top: 13px; font-size: 12px; font-weight: 600; color: var(--label-2); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.g-head { position: sticky; top: 0; background: var(--surface-2); border-bottom: 1px solid var(--separator); border-radius: var(--r-lg) var(--r-lg) 0 0; }
+.g-head .lab { padding: 10px 18px; font-size: 12px; font-weight: 600; color: var(--label-2); text-transform: uppercase; letter-spacing: .06em; display: flex; align-items: flex-end; }
+.g-months { position: relative; height: 54px; }
+.g-month { position: absolute; top: 8px; font-size: 12px; font-weight: 650; color: var(--label); padding-left: 8px; border-left: 1px solid var(--separator-strong); height: 44px; }
+.g-week { position: absolute; bottom: 6px; font-size: 11px; color: var(--label-2); font-family: var(--font-mono); transform: translateX(4px); }
+.g-group { padding: 14px 18px 6px; font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--label-2); grid-column: 1 / -1; }
+.g-row .lab { padding: 0 18px; display: flex; align-items: center; gap: 10px; min-height: 44px; font-size: 14px; font-weight: 550; }
+.g-row .lab small { display: block; font-size: 11.5px; color: var(--label-2); font-weight: 450; line-height: 15px; }
+.g-track { position: relative; min-height: 44px; }
+.g-bar { position: absolute; top: 9px; height: 26px; border-radius: 8px; display: flex; align-items: center; padding: 0 9px; font-size: 12px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.22), 0 2px 6px -2px rgba(29,29,31,.25); transition: transform .2s var(--spring), box-shadow .2s; border: 0; text-align: left; }
+.g-bar:hover { transform: translateY(-1px); box-shadow: inset 0 1px 0 rgba(255,255,255,.22), 0 6px 14px -4px rgba(29,29,31,.35); }
+.g-bar.soft { color: var(--label); background: repeating-linear-gradient(135deg, var(--fill-1) 0 6px, var(--fill-2) 6px 12px) !important; box-shadow: inset 0 0 0 1px var(--separator-strong); }
+.g-bar.ext { background: var(--surface) !important; color: var(--label); box-shadow: inset 0 0 0 1.5px var(--t-ext); }
+.g-diamond { position: absolute; top: 13px; width: 18px; height: 18px; transform: translateX(-9px) rotate(45deg); border-radius: 4px; background: var(--label); box-shadow: 0 0 0 3px var(--surface); }
+.g-diamond.final { background: var(--brand); }
+.g-dlabel { position: absolute; top: 12px; font-size: 12px; font-weight: 600; white-space: nowrap; transform: translateX(16px); }
+.g-shade { position: absolute; top: 54px; bottom: 0; background: repeating-linear-gradient(135deg, rgba(29,29,31,.025) 0 8px, rgba(29,29,31,.055) 8px 16px); pointer-events: none; }
+.g-shade span { position: absolute; top: 6px; left: 50%; transform: translateX(-50%); font-size: 10.5px; font-weight: 600; color: var(--label-2); white-space: nowrap; background: var(--surface); padding: 1px 6px; border-radius: 6px; box-shadow: 0 0 0 1px var(--separator); }
+.g-hol { position: absolute; top: 54px; bottom: 0; width: 2px; background: rgba(180,35,24,.18); pointer-events: none; }
+.g-grid { position: absolute; top: 54px; bottom: 0; width: 1px; background: var(--separator); pointer-events: none; }
+.g-today { position: absolute; top: 46px; bottom: 0; width: 2px; background: var(--accent); pointer-events: none; z-index: 2; }
+.g-today span { position: absolute; top: -2px; left: 50%; transform: translate(-50%, -100%); font-size: 10.5px; font-weight: 700; color: #fff; background: var(--accent); padding: 2px 6px; border-radius: 6px; white-space: nowrap; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 16px; font-size: 13px; color: var(--label-2); }
+.legend > span { display: inline-flex; align-items: center; gap: 7px; }
+.legend i.sw { width: 18px; height: 10px; border-radius: 3px; display: inline-block; }
+
+/* Key dates */
+.kd-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 20px; margin-top: 24px; }
+.kd-list { padding: 8px 0; }
+.kd { display: grid; grid-template-columns: 76px minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 12px 22px; position: relative; }
+.kd + .kd::before { content: ""; position: absolute; top: 0; left: 112px; right: 0; height: 1px; background: var(--separator); }
+.kd .date { text-align: center; border-radius: 12px; background: var(--surface-2); box-shadow: inset 0 0 0 1px var(--separator); padding: 6px 0; }
+.kd .date b { display: block; font-size: 20px; line-height: 22px; font-weight: 650; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.kd .date span { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--label-2); font-weight: 600; }
+.kd.final .date { background: var(--accent); color: #fff; box-shadow: none; }
+.kd.final .date span { color: rgba(255,255,255,.85); }
+.kd .t b { display: block; font-size: 15px; font-weight: 600; line-height: 20px; }
+.kd .t span { display: block; font-size: 13px; color: var(--label-2); line-height: 18px; }
+.needs { padding: 6px 0; }
+.need { display: flex; gap: 12px; padding: 12px 22px; align-items: flex-start; position: relative; }
+.need + .need::before { content: ""; position: absolute; top: 0; left: 22px; right: 0; height: 1px; background: var(--separator); }
+.need .ic { width: 32px; height: 32px; border-radius: 9px; display: grid; place-items: center; flex: none; color: #fff; }
+.need b { display: block; font-size: 14.5px; font-weight: 600; line-height: 20px; }
+.need span { display: block; font-size: 13px; color: var(--label-2); line-height: 18px; }
+.need .due { margin-left: auto; flex: none; }
+.panel-h { padding: 18px 22px 4px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.panel-h h3 { font-size: 17px; font-weight: 600; letter-spacing: -0.012em; }
+
+/* Week cards */
+.toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 22px; }
+.toolbar .grow { flex: 1; }
+.progress-all { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--label-2); }
+.progress { height: 8px; border-radius: 99px; background: var(--fill-2); overflow: hidden; width: 160px; }
+.progress > i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--tangerine-500), var(--accent)); transition: width .4s var(--ease); }
+.weeks { margin-top: 20px; display: flex; flex-direction: column; gap: 16px; }
+.week { background: var(--surface); border-radius: var(--r-lg); box-shadow: var(--elev-1); overflow: hidden; scroll-margin-top: 84px; }
+.week.holiday { background: linear-gradient(180deg, var(--surface-2), var(--surface)); }
+.wk-head { display: grid; grid-template-columns: 92px minmax(0, 1fr) 230px; gap: 20px; align-items: center; padding: 20px 22px; border: 0; background: none; width: 100%; text-align: left; }
+.wk-head:hover { background: var(--surface-2); }
+.wk-num { text-align: center; }
+.wk-num b { display: block; font-family: var(--font-serif); font-size: 34px; line-height: 36px; font-weight: 600; letter-spacing: -0.03em; color: var(--accent-text); }
+.wk-num span { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--label-2); font-weight: 600; }
+.wk-title .dates { font-size: 13px; color: var(--label-2); font-weight: 500; font-variant-numeric: tabular-nums; }
+.wk-title h3 { margin-top: 2px; font-family: var(--font-serif); font-size: 23px; line-height: 29px; font-weight: 600; letter-spacing: -0.018em; }
+.wk-title .tags { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; }
+.cap { display: flex; flex-direction: column; gap: 6px; }
+.cap .row { display: flex; justify-content: space-between; font-size: 12.5px; color: var(--label-2); }
+.cap .row b { color: var(--label); font-weight: 600; font-variant-numeric: tabular-nums; }
+.cap .meter { display: flex; height: 10px; border-radius: 99px; background: var(--fill-2); overflow: hidden; gap: 2px; }
+.cap .meter i { display: block; height: 100%; }
+.cap .meter i:first-child { border-radius: 99px 0 0 99px; }
+.chev { width: 18px; height: 18px; color: var(--label-2); transition: transform .25s var(--ease); }
+.week[aria-expanded="true"] .chev { transform: rotate(180deg); }
+.wk-body { display: none; border-top: 1px solid var(--separator); }
+.week[aria-expanded="true"] .wk-body { display: grid; grid-template-columns: minmax(0, 1fr) 320px; }
+.tasks { padding: 8px 0; }
+.task { padding: 14px 22px; position: relative; }
+.task + .task::before { content: ""; position: absolute; top: 0; left: 22px; right: 22px; height: 1px; background: var(--separator); }
+.task-h { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.task-h b { font-size: 15.5px; font-weight: 600; letter-spacing: -0.01em; }
+.task-h .days { margin-left: auto; display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--label-2); font-variant-numeric: tabular-nums; }
+.daybar { display: inline-flex; gap: 2px; }
+.daybar i { width: 10px; height: 10px; border-radius: 3px; background: var(--fill-2); }
+.daybar i.on { background: currentColor; }
+.daybar i.half { background: linear-gradient(90deg, currentColor 50%, var(--fill-2) 50%); }
+.subs { list-style: none; margin: 10px 0 0; padding: 0 0 0 19px; display: grid; gap: 2px; }
+.subs label { display: flex; gap: 10px; align-items: flex-start; padding: 4px 0; font-size: 14px; line-height: 20px; color: #3A3A3C; cursor: pointer; }
+.subs input { appearance: none; -webkit-appearance: none; margin: 1px 0 0; width: 18px; height: 18px; flex: none; border-radius: 6px; border: 1.5px solid var(--border-strong); background: var(--surface); display: grid; place-items: center; cursor: pointer; transition: background .12s, border-color .12s; }
+.subs input:hover { border-color: var(--accent); }
+.subs input:checked { background: var(--accent); border-color: var(--accent); }
+.subs input:checked::after { content: ""; width: 10px; height: 10px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center/contain no-repeat; }
+.subs input:checked + span { color: var(--label-2); text-decoration: line-through; text-decoration-color: var(--label-3); }
+.side { background: var(--surface-2); border-left: 1px solid var(--separator); padding: 18px 20px; display: flex; flex-direction: column; gap: 16px; }
+.side h4 { font-size: 11.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; color: var(--label-2); display: flex; align-items: center; gap: 6px; }
+.side p, .side li { font-size: 13.5px; line-height: 20px; }
+.side ul { margin: 6px 0 0; padding-left: 18px; }
+.exit { border-radius: 12px; background: var(--accent-subtle); box-shadow: inset 0 0 0 1px var(--tangerine-200); padding: 12px 14px; color: var(--accent-ink); }
+.exit h4 { color: var(--accent-ink); }
+.exit p { margin-top: 4px; }
+.fb textarea { width: 100%; min-height: 92px; margin-top: 6px; padding: 10px 12px; border-radius: var(--r-sm); border: 1px solid var(--border-strong); background: var(--surface); font-size: 14px; line-height: 20px; resize: vertical; outline: none; transition: border-color .12s, box-shadow .2s; }
+.fb textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 4px var(--focus-ring); }
+.fb .saved { font-size: 12px; color: var(--label-2); margin-top: 4px; min-height: 16px; }
+.empty-filter { padding: 18px 22px; font-size: 14px; color: var(--label-2); }
+
+/* Info cards */
+.cards3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 24px; }
+.icard { background: var(--surface); border-radius: var(--r-lg); box-shadow: var(--elev-1); padding: 20px 22px; }
+.icard .ih { display: flex; align-items: center; gap: 10px; }
+.icard .ih .ic { width: 32px; height: 32px; border-radius: 9px; display: grid; place-items: center; color: #fff; flex: none; }
+.icard h3 { font-size: 16.5px; font-weight: 600; letter-spacing: -0.012em; }
+.icard p, .icard li { font-size: 14px; line-height: 21px; color: #3A3A3C; }
+.icard p { margin-top: 10px; }
+.icard ul { margin: 10px 0 0; padding-left: 18px; }
+.icard li + li { margin-top: 4px; }
+.qlist { margin-top: 24px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.q { background: var(--surface); border-radius: var(--r-md); box-shadow: var(--elev-1); padding: 16px 18px; display: flex; gap: 12px; }
+.q .n { width: 26px; height: 26px; border-radius: 8px; background: var(--accent-soft); color: var(--accent-ink); font-size: 12.5px; font-weight: 700; display: grid; place-items: center; flex: none; }
+.q b { display: block; font-size: 15px; font-weight: 600; line-height: 21px; }
+.q span { display: block; margin-top: 3px; font-size: 13.5px; line-height: 20px; color: var(--label-2); }
+.q em { font-style: normal; color: var(--accent-ink); font-weight: 550; }
+
+#toast { position: fixed; left: 50%; bottom: 28px; transform: translate(-50%, 20px); opacity: 0; pointer-events: none; z-index: 100; display: inline-flex; align-items: center; gap: 10px; height: 46px; padding: 0 18px 0 14px; border-radius: 99px; background: rgba(29,29,31,.88); color: #fff; font-size: 14px; font-weight: 500; -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); box-shadow: 0 14px 34px -10px rgba(0,0,0,.4); transition: opacity .2s, transform .45s var(--spring); }
+#toast.show { opacity: 1; transform: translate(-50%, 0); }
+#toast i { width: 22px; height: 22px; border-radius: 50%; background: var(--brand); display: grid; place-items: center; }
+
+footer { margin-top: 96px; padding-top: 28px; border-top: 1px solid var(--separator); display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-size: 13px; color: var(--label-2); }
+
+@media (max-width: 1080px) {
+  .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .kd-grid { grid-template-columns: minmax(0, 1fr); }
+  .cards3 { grid-template-columns: minmax(0, 1fr); }
+  .week[aria-expanded="true"] .wk-body { grid-template-columns: minmax(0, 1fr); }
+  .side { border-left: 0; border-top: 1px solid var(--separator); }
+}
+@media (max-width: 720px) {
+  .bar-in { padding: 0 16px; }
+  .bar nav { display: none; }
+  main { padding: 0 16px 80px; }
+  .hero { padding-top: 40px; }
+  .hero h1 { font-size: 38px; line-height: 42px; }
+  .hero .lead { font-size: 16px; line-height: 25px; }
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stats .stat:first-child { grid-column: 1 / -1; }
+  .section { padding-top: 56px; }
+  .section h2 { font-size: 30px; line-height: 36px; }
+  .wk-head { grid-template-columns: 56px minmax(0, 1fr) 18px; gap: 12px; padding: 16px; }
+  .wk-head .cap { grid-column: 1 / -1; grid-row: 2; }
+  .wk-num b { font-size: 26px; line-height: 28px; }
+  .wk-title h3 { font-size: 19px; line-height: 24px; }
+  .task { padding: 14px 16px; }
+  .task-h .days { margin-left: 0; width: 100%; }
+  .subs { padding-left: 0; }
+  .side { padding: 16px; }
+  .qlist { grid-template-columns: minmax(0, 1fr); }
+  .kd { grid-template-columns: 64px minmax(0, 1fr); padding: 12px 16px; }
+  .kd .badge { grid-column: 2; justify-self: start; }
+  .kd + .kd::before { left: 16px; }
+  .need { padding: 12px 16px; flex-wrap: wrap; }
+  .need .due { margin-left: 44px; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: 1ms !important; animation-duration: 1ms !important; scroll-behavior: auto !important; } }
+@media (prefers-reduced-transparency: reduce) { .bar { background: var(--surface); -webkit-backdrop-filter: none; backdrop-filter: none; } }
+@media print {
+  .bar, .toolbar, .fb, #toast { display: none !important; }
+  .week .wk-body { display: grid !important; }
+  .week { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="14" height="14" rx="2.5"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></symbol>
+  <symbol id="i-expand" viewBox="0 0 24 24"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></symbol>
+  <symbol id="i-print" viewBox="0 0 24 24"><path d="M6 9V2h12v7"/><rect x="2" y="9" width="20" height="9" rx="2"/><path d="M6 14h12v8H6z"/></symbol>
+  <symbol id="f-check-circle" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm-1.5 14.1 6.6-6.6-1.2-1.2-5.4 5.4-2.4-2.4-1.2 1.2z"/></symbol>
+  <symbol id="f-flag" viewBox="0 0 24 24"><path d="M5 2.75a.75.75 0 0 1 .75.75V4h11.6a1 1 0 0 1 .8 1.6L15.9 8.5l2.25 2.9a1 1 0 0 1-.8 1.6H5.75v8.5a.75.75 0 0 1-1.5 0V3.5A.75.75 0 0 1 5 2.75z"/></symbol>
+  <symbol id="f-users" viewBox="0 0 24 24"><circle cx="9" cy="7.5" r="4"/><path d="M1.5 19.5c0-3.04 3.36-5.5 7.5-5.5s7.5 2.46 7.5 5.5c0 .83-.67 1.5-1.5 1.5H3c-.83 0-1.5-.67-1.5-1.5z"/><circle cx="17" cy="8" r="3"/><path d="M17.7 14.1c2.84.37 4.8 2.2 4.8 4.65 0 .69-.56 1.25-1.25 1.25H18.4c.06-.24.1-.49.1-.75 0-1.97-.88-3.79-2.3-5.1.48-.05.98-.06 1.5-.05z"/></symbol>
+  <symbol id="f-shield" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M11.24 2.28a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1v7c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72zM10.6 15.2l5.99-6-1.05-1.06-4.94 4.94-2.14-2.14L7.4 12z"/></symbol>
+  <symbol id="f-file" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M6.5 2h7.09c.53 0 1.04.21 1.42.59l4.4 4.4c.38.38.59.89.59 1.42V19.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2zM8 12.25h8v1.5H8zm0 4h6v1.5H8z"/></symbol>
+  <symbol id="f-lock" viewBox="0 0 24 24"><path d="M7 10V7a5 5 0 0 1 10 0v3" fill="none" stroke="currentColor" stroke-width="2"/><path fill-rule="evenodd" d="M5.5 10h13A2.5 2.5 0 0 1 21 12.5v7a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 19.5v-7A2.5 2.5 0 0 1 5.5 10zm5.6 4.5v3.5h1.8v-3.5z"/></symbol>
+  <symbol id="f-spark" viewBox="0 0 24 24"><path d="M12 2.5c.5 4.6 2.9 7 7.5 7.5-4.6.5-7 2.9-7.5 7.5-.5-4.6-2.9-7-7.5-7.5 4.6-.5 7-2.9 7.5-7.5Zm7 13c.2 1.9 1.1 2.8 3 3-1.9.2-2.8 1.1-3 3-.2-1.9-1.1-2.8-3-3 1.9-.2 2.8-1.1 3-3Z"/></symbol>
+  <symbol id="f-server" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M4.5 3h15A2.5 2.5 0 0 1 22 5.5v3A2.5 2.5 0 0 1 19.5 11h-15A2.5 2.5 0 0 1 2 8.5v-3A2.5 2.5 0 0 1 4.5 3zm0 10h15a2.5 2.5 0 0 1 2.5 2.5v3a2.5 2.5 0 0 1-2.5 2.5h-15A2.5 2.5 0 0 1 2 18.5v-3A2.5 2.5 0 0 1 4.5 13zM6 6.25h2v1.5H6zm0 10h2v1.5H6z"/></symbol>
+  <symbol id="f-db" viewBox="0 0 24 24"><ellipse cx="12" cy="5.5" rx="8.5" ry="3.5"/><path d="M3.5 8.4c1.5 1.5 4.8 2.6 8.5 2.6s7-1.1 8.5-2.6V12c0 1.93-3.8 3.5-8.5 3.5S3.5 13.93 3.5 12zm0 6.5c1.5 1.5 4.8 2.6 8.5 2.6s7-1.1 8.5-2.6v3.6c0 1.93-3.8 3.5-8.5 3.5s-8.5-1.57-8.5-3.5z"/></symbol>
+</svg>
+
+<header class="bar">
+  <div class="bar-in">
+    <span class="mark"><svg viewBox="0 0 24 24"><path d="M5 19V5h7a4.5 4.5 0 0 1 0 9H5"/><path d="M13 14l5 5"/></svg></span>
+    <span class="name">PLAR Platform <span>· Build timeline</span></span>
+    <nav aria-label="Sections">
+      <a href="#overview">Overview</a><a href="#dates">Key dates</a><a href="#weeks">Week by week</a><a href="#stack">How we build</a><a href="#questions">Questions</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero" id="top">
+    <p class="eyebrow">Delivery plan · 1 November 2026 → 28 February 2027</p>
+    <h1>From foundation to launch in <em>seventeen weeks.</em></h1>
+    <p class="lead">The plan follows the department's priorities: the shared platform first, then <b>Assessment (Project #1)</b>, then the interview room, then <b>Advisor feedback (Project #2)</b>, finishing with intake, hardening and a pilot. Every phase ends in a demo. Tick tasks off as they're done, and leave feedback on any week. Your notes stay in this browser until you copy them.</p>
+    <div class="stats" id="stats"></div>
+  </section>
+
+  <!-- ============ OVERVIEW / GANTT ============ -->
+  <section class="section" id="overview">
+    <header>
+      <div><p class="eyebrow">Overview</p><h2>The whole timeline</h2>
+      <p class="sub">Phases run left to right. Hatched bars are lighter or parallel work, and outlined bars are things we need from other people. Diamonds are demos. Select a bar to jump to its first week.</p></div>
+    </header>
+    <div class="gantt-wrap"><div class="gantt" id="gantt"></div></div>
+    <div class="legend" id="legend"></div>
+  </section>
+
+  <!-- ============ KEY DATES ============ -->
+  <section class="section" id="dates">
+    <header><div><p class="eyebrow">Checkpoints</p><h2>Key dates and what we need</h2>
+      <p class="sub">Demos keep the supervisor and the PLAR department close to the work. Items on the right come from other people. If one arrives late, the week it unblocks moves too.</p></div></header>
+    <div class="kd-grid">
+      <div class="panel"><div class="panel-h"><h3>Demos and milestones</h3><span class="badge b-accent" id="kd-count"></span></div><div class="kd-list" id="keydates"></div></div>
+      <div class="panel"><div class="panel-h"><h3>Needed from others</h3><span class="badge b-neutral">Dependencies</span></div><div class="needs" id="needs"></div></div>
+    </div>
+  </section>
+
+  <!-- ============ WEEKS ============ -->
+  <section class="section" id="weeks">
+    <header><div><p class="eyebrow">Week by week</p><h2>Tasks, sub-tasks and days</h2>
+      <p class="sub">Each task shows its estimate in working days, where one square is one day. The meter on each week compares planned days with the days available after holidays. Estimates assume one developer working with Claude, five days a week.</p></div></header>
+    <div class="toolbar">
+      <div class="segmented" role="radiogroup" aria-label="Filter by workstream" id="filter"></div>
+      <span class="grow"></span>
+      <div class="progress-all"><span id="prog-label">0% done</span><div class="progress"><i id="prog-bar" style="width:0%"></i></div></div>
+      <button class="btn btn-neutral" id="toggle-all"><svg class="i"><use href="#i-expand"/></svg><span>Expand all</span></button>
+      <button class="btn btn-primary" id="copy-fb"><svg class="i"><use href="#i-copy"/></svg>Copy my feedback</button>
+    </div>
+    <div class="weeks" id="week-list"></div>
+  </section>
+
+  <!-- ============ STACK ============ -->
+  <section class="section" id="stack">
+    <header><div><p class="eyebrow">How we build</p><h2>Stack and ways of working</h2>
+      <p class="sub">Supabase is the backbone. One managed platform in Canada covers the database, sign-in, files, background jobs and live updates.</p></div></header>
+    <div class="cards3">
+      <div class="icard">
+        <div class="ih"><span class="ic" style="background:#1E7B34"><svg class="f"><use href="#f-db"/></svg></span><h3>Supabase (Canada region)</h3></div>
+        <ul>
+          <li><b>Postgres</b> with row-level security, so every role sees only its own cases</li>
+          <li><b>Auth</b>: Microsoft sign-in for staff and assessors, email links for students</li>
+          <li><b>Storage</b>: private buckets with short-lived signed links</li>
+          <li><b>Queues and Cron</b> for reminders, conversions and deletions</li>
+          <li><b>Realtime</b> for notifications; <b>pgvector</b> for comment suggestions</li>
+          <li>Separate development, staging and production projects</li>
+        </ul>
+      </div>
+      <div class="icard">
+        <div class="ih"><span class="ic" style="background:#2F7FC1"><svg class="f"><use href="#f-server"/></svg></span><h3>App and hosting</h3></div>
+        <ul>
+          <li>Next.js app (already started) in the new design system</li>
+          <li>Deployed to our own server in Canada with a proper domain and HTTPS</li>
+          <li>Staging updates automatically from the main branch, and production is released on purpose</li>
+          <li>Interview video runs through our own media server in Canada, with Zoom as the fallback</li>
+          <li>Error monitoring, daily backups and a tested restore</li>
+        </ul>
+      </div>
+      <div class="icard">
+        <div class="ih"><span class="ic" style="background:#C2550A"><svg class="f"><use href="#f-check-circle"/></svg></span><h3>Ways of working</h3></div>
+        <ul>
+          <li>A demo at the end of every phase, and a short written update every Friday</li>
+          <li>Synthetic data only until privacy approval is in place</li>
+          <li>AI features work with a stand-in first, behind switches that stay off until approved</li>
+          <li>Every feature passes the accessibility, security and audit checks before it counts as done</li>
+          <li>Each week's spare buffer goes into fixes, not new scope</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ QUESTIONS ============ -->
+  <section class="section" id="questions">
+    <header><div><p class="eyebrow">Before we start</p><h2>Assumptions to confirm</h2>
+      <p class="sub">I've planned around these defaults. If any are wrong, tell me and I'll rebalance the weeks.</p></div></header>
+    <div class="qlist" id="qlist"></div>
+  </section>
+
+  <footer>
+    <span>PLAR Platform · Build timeline · Thompson Rivers University Open Learning</span>
+    <span id="foot-date"></span>
+  </footer>
+</main>
+
+<div id="toast" role="status" aria-live="polite"><i><svg class="f" style="width:13px;height:13px;color:#fff"><use href="#f-check-circle"/></svg></i><span></span></div>
+
+<script>
+/* ============================================================
+   TIMELINE DATA — the single source for every view on this page.
+   Week → tasks → sub-tasks. Days are working days.
+   ============================================================ */
+const TRACKS = {
+  platform:   { label: "Platform",           color: "var(--t-platform)" },
+  p1:         { label: "Assessment (P1)",    color: "var(--t-p1)" },
+  interviews: { label: "Interviews",         color: "var(--t-interviews)" },
+  p2:         { label: "Advisor feedback (P2)", color: "var(--t-p2)" },
+  ops:        { label: "Intake & operations", color: "var(--t-ops)" },
+  launch:     { label: "Quality & launch",   color: "var(--t-launch)" }
+};
+
+const WEEKS = [
+  { n: 1, start: "2026-11-02", end: "2026-11-06", avail: 5, theme: "Kickoff and Supabase foundation", phase: "Foundation",
+    note: "Sunday 1 November: plan sign-off and kickoff.",
+    tasks: [
+      { t: "Kickoff and plan sign-off", d: 0.5, track: "platform", p: "Must", subs: ["Confirm this timeline and the weekly demo slot", "Send the open questions to the supervisor and the PLAR department", "Book the PLAR department meeting"] },
+      { t: "Supabase setup in Canada", d: 1, track: "platform", p: "Must", subs: ["Create development, staging and production projects in the Canada (Central) region", "Local Supabase stack with the CLI; migrations folder in the repo", "Generated TypeScript types; environment variables and secrets"] },
+      { t: "Engineering tooling", d: 1, track: "platform", p: "Must", subs: ["Prettier and Vitest", "Playwright end-to-end tests with automatic accessibility checks", "Git hosting and CI: lint, typecheck, tests, build on every push"] },
+      { t: "Deployment pipeline", d: 1, track: "platform", p: "Must", subs: ["Server in Canada; domain, DNS and HTTPS", "Staging deploys automatically from main", "Error monitoring and uptime checks"] },
+      { t: "Core UI components", d: 1.5, track: "platform", p: "Must", subs: ["Fields: input, select, textarea, checkbox, radio, switch", "Segmented control, tabs, table, pagination", "Dialog, sheet, menu, toast, tooltip", "Avatar, progress, skeleton, empty state"] }
+    ],
+    exit: "Empty app live on staging behind the real domain, with CI green and the component kit ready.",
+    needs: ["Domain and server access", "Supabase organisation (paid plan for backups and SSO)"] },
+
+  { n: 2, start: "2026-11-09", end: "2026-11-13", avail: 4, holidays: ["Wed 11 Nov · Remembrance Day"], theme: "Data model and sign-in", phase: "Core platform",
+    tasks: [
+      { t: "Database schema v1", d: 2, track: "platform", p: "Must", subs: ["Profiles, role assignments, programs", "Cases, case events, portfolio sections, document versions", "Audit events (append-only)", "Synthetic seed script"] },
+      { t: "Row-level security", d: 1, track: "platform", p: "Must", subs: ["Helper functions: has role, can access case", "Policies on every table, default deny", "Automated tests per role (student, advisor, assessor, manager, director, admin)"] },
+      { t: "Sign-in", d: 1, track: "platform", p: "Must", subs: ["Microsoft (Entra ID) sign-in for staff and assessors", "Email link sign-in for students", "Development-only demo login; role-aware landing pages"] }
+    ],
+    exit: "People can sign in and land in their own workspace, and the database refuses anything their role shouldn't see.",
+    needs: ["TRU IT: Microsoft app registration for sign-in"] },
+
+  { n: 3, start: "2026-11-16", end: "2026-11-20", avail: 5, theme: "Case record, audit log and admin", phase: "Core platform",
+    tasks: [
+      { t: "Case record", d: 1.5, track: "platform", p: "Must", subs: ["Case page: header, status, people, due date", "Journey timeline for each case", "Caseload list with search and filters"] },
+      { t: "Audit log", d: 1, track: "platform", p: "Must", subs: ["Database triggers and a server helper for sensitive actions", "Admin viewer with filters and export"] },
+      { t: "Admin area", d: 1.5, track: "platform", p: "Must", subs: ["Users and invitations", "Role assignment and approval roles", "Program settings and feature switches"] },
+      { t: "Notifications", d: 1, track: "platform", p: "Must", subs: ["In-app notification centre with live updates", "Email templates in the design system", "Local mail catcher for development"] }
+    ],
+    exit: "A seeded demo where each role sees its cases and every sensitive action is logged.",
+    needs: [] },
+
+  { n: 4, start: "2026-11-23", end: "2026-11-27", avail: 5, theme: "Files, jobs and the platform demo", phase: "Core platform → Assessment",
+    tasks: [
+      { t: "File storage", d: 1, track: "platform", p: "Must", subs: ["Private buckets and short-lived signed links", "Uploads with progress, type and size checks", "File versions"] },
+      { t: "Background jobs", d: 1, track: "platform", p: "Must", subs: ["Supabase Queues and Cron", "Retries and job logging", "First job: daily digest email"] },
+      { t: "Platform hardening and demo", d: 1, track: "platform", p: "Must", subs: ["End-to-end tests for each role", "Seed 20 synthetic cases", "Demo to the supervisor"] },
+      { t: "Portfolio import", d: 1, track: "p1", p: "Must", subs: ["Advisor uploads the final portfolio", "Map files to sections; required-parts checklist"] },
+      { t: "AI gateway with a stand-in", d: 1, track: "p1", p: "Must", subs: ["One interface for every AI capability", "Stand-in (mock) responses, no external service", "Every AI call logged; switches off by default"] }
+    ],
+    exit: "Core platform signed off. Assessment work starts on solid ground.",
+    needs: ["The department's rubric and standard comments in editable form"], demo: "Platform demo" },
+
+  { n: 5, start: "2026-11-30", end: "2026-12-04", avail: 5, theme: "Assessment workspace I", phase: "Assessment (Project #1)",
+    tasks: [
+      { t: "Document viewer", d: 2, track: "p1", p: "Must", subs: ["Word to PDF conversion as a background job", "Viewer with pages, zoom and search", "Evidence list linked to pages"] },
+      { t: "Assessor assignment", d: 1, track: "p1", p: "Must", subs: ["Assign a chair and a writer", "Availability and expertise hints", "Notify both assessors"] },
+      { t: "Rubric worksheet", d: 2, track: "p1", p: "Must", subs: ["Rubric versions and criteria loaded from the department's rubric", "Not shown / partly / fully shown marks with evidence links and notes", "Private preliminary ratings (Outstanding, Satisfactory, Inconclusive)", "Autosave"] }
+    ],
+    exit: "Two assessors can open a portfolio and complete their own worksheets privately.",
+    needs: [] },
+
+  { n: 6, start: "2026-12-07", end: "2026-12-11", avail: 5, theme: "Assessment workspace II", phase: "Assessment (Project #1)",
+    tasks: [
+      { t: "Ratings reveal and consensus", d: 1.5, track: "p1", p: "Must", subs: ["Reveal only after both assessors submit", "Side-by-side comparison", "Consensus ratings and the credit-range guide"] },
+      { t: "Preparation space", d: 1, track: "p1", p: "Must", subs: ["Gaps by competency", "Shared notes and question bank"] },
+      { t: "Interview question suggestions", d: 1, track: "p1", p: "Should", ai: true, subs: ["Suggestions from the stand-in AI, clearly labelled", "Accept, edit or dismiss; behind a switch"] },
+      { t: "Evidence map", d: 1.5, track: "p1", p: "Should", ai: true, subs: ["Links criteria to passages, with citations", "Accept, edit or dismiss; behind a switch"] }
+    ],
+    exit: "Assessors reach consensus on screen. AI helpers work with the stand-in.",
+    needs: ["Answer on whether AI may suggest ratings (affects the evidence map)"] },
+
+  { n: 7, start: "2026-12-14", end: "2026-12-18", avail: 5, theme: "Reports and decisions", phase: "Assessment (Project #1)",
+    tasks: [
+      { t: "Report drafting", d: 2, track: "p1", p: "Must", subs: ["Structured report editor", "AI first draft in draft styling (stand-in)", "Tone and consistency checks", "Version history"] },
+      { t: "Chair review", d: 0.5, track: "p1", p: "Must", subs: ["Comments and approval by the chair"] },
+      { t: "Decision workflow", d: 1.5, track: "p1", p: "Must", subs: ["Submit → log → manager review → director decision → release", "Full audit trail", "Student notification on release"] },
+      { t: "PDF assessment report", d: 1, track: "p1", p: "Must", subs: ["Report template in the design system", "Generated on the server; shared by signed link"] }
+    ],
+    exit: "A full assessment can be completed and the report released.",
+    needs: ["Report and letter wording from the department"] },
+
+  { n: 8, start: "2026-12-21", end: "2026-12-24", avail: 3.5, holidays: ["Thu 24 Dec · half day", "Fri 25 Dec · Christmas"], theme: "Project #1 demo and buffer", phase: "Assessment (Project #1)",
+    tasks: [
+      { t: "End-to-end assessment test", d: 1, track: "p1", p: "Must", subs: ["Synthetic portfolio, two demo assessors", "Finish with a released report"] },
+      { t: "Buffer and fixes", d: 1.5, track: "launch", p: "Must", subs: ["Fix issues from testing", "Tidy accessibility and loading states"] },
+      { t: "Project #1 demo", d: 0.5, track: "p1", p: "Must", subs: ["Demo to the supervisor and the PLAR department"] },
+      { t: "Design system documents", d: 0.5, track: "launch", p: "Should", subs: ["Update the written guide and PDF templates to the tangerine system"] }
+    ],
+    exit: "Project #1 shown end to end before the break.",
+    needs: [], demo: "Project #1 demo" },
+
+  { n: 9, start: "2026-12-28", end: "2026-12-31", avail: 2, holiday: true, holidays: ["Holiday period · lighter week", "Fri 1 Jan · New Year's Day"], theme: "Holiday week: light work", phase: "Holiday buffer",
+    tasks: [
+      { t: "Guides and documentation", d: 1, track: "launch", p: "Should", subs: ["Draft assessor and admin guides", "Architecture notes"] },
+      { t: "Interview room spike", d: 1, track: "interviews", p: "Should", subs: ["Choose the media server and TURN setup in Canada", "Proof of concept with two browsers"] }
+    ],
+    exit: "Ready to build the interview room in January.",
+    needs: [] },
+
+  { n: 10, start: "2027-01-04", end: "2027-01-08", avail: 5, theme: "Interviews I: scheduling and the room", phase: "Interviews",
+    tasks: [
+      { t: "Scheduling", d: 2, track: "interviews", p: "Must", subs: ["Collect availability from the student and both assessors", "Match slots", "Invitations (Letters 1 and 2) with calendar files", "Reminders before the interview"] },
+      { t: "Interview room core", d: 3, track: "interviews", p: "Must", subs: ["Media server and TURN in Canada", "Lobby with device check", "Video tiles and the glass control bar", "Join from the case page"] }
+    ],
+    exit: "Three people can meet in the built-in room from a scheduled invitation.",
+    needs: ["Accepted ID types and the ID-check policy"] },
+
+  { n: 11, start: "2027-01-11", end: "2027-01-15", avail: 5, theme: "Interviews II: resilience and companion", phase: "Interviews",
+    tasks: [
+      { t: "Room resilience", d: 1.5, track: "interviews", p: "Must", subs: ["Audio-only mode", "Automatic reconnect", "Network quality indicator"] },
+      { t: "Captions and recording", d: 1, track: "interviews", p: "Should", subs: ["Live captions (behind a switch)", "Recording with consent, stored in Canada (behind a switch)"] },
+      { t: "Interview companion", d: 1.5, track: "interviews", p: "Must", subs: ["Competency tracker", "Notes for each competency", "Question list and timer"] },
+      { t: "Zoom fallback", d: 0.5, track: "interviews", p: "Must", subs: ["Switch a session to Zoom with one action"] },
+      { t: "ID capture", d: 0.5, track: "interviews", p: "Must", subs: ["Camera capture with the guide frame", "Glare, blur and distance hints"] }
+    ],
+    exit: "Interviews hold up on poor connections and assessors take notes beside the video.",
+    needs: [] },
+
+  { n: 12, start: "2027-01-18", end: "2027-01-22", avail: 5, theme: "Identity check, interview demo, Project #2 begins", phase: "Interviews → Advisor feedback",
+    tasks: [
+      { t: "ID verification review", d: 1.5, track: "interviews", p: "Must", subs: ["Verifier screen; a person decides", "AI assist behind a switch", "Images deleted automatically; deletion logged", "Alternative path without a camera"] },
+      { t: "Mock interview and load test", d: 1, track: "interviews", p: "Must", subs: ["Full run in two browsers with three people", "Simulated poor network"] },
+      { t: "Interviews demo", d: 0.5, track: "interviews", p: "Must", subs: ["Demo to the supervisor"] },
+      { t: "Student portfolio workspace", d: 2, track: "p2", p: "Must", subs: ["Section uploads and versions", "Progress tracker and due date"] }
+    ],
+    exit: "A mock Discussion of Learning runs from ID check to notes.",
+    needs: ["AI service decision (the evaluation finishes this week)"], demo: "Interviews demo" },
+
+  { n: 13, start: "2027-01-25", end: "2027-01-29", avail: 5, theme: "Advisor feedback I", phase: "Advisor feedback (Project #2)",
+    tasks: [
+      { t: "In-browser review", d: 2.5, track: "p2", p: "Must", subs: ["Comments anchored to the text", "Replies and resolving", "Review rounds"] },
+      { t: "Standard comments library", d: 1.5, track: "p2", p: "Must", subs: ["Import the department's library", "Search, insert and edit", "Ranked suggestions (behind a switch)"] },
+      { t: "Automatic checklist checks", d: 1, track: "p2", p: "Must", subs: ["Required sections present", "Evidence numbering and captions"] }
+    ],
+    exit: "Advisors review and comment in the browser, with suggested comments.",
+    needs: [] },
+
+  { n: 14, start: "2027-02-01", end: "2027-02-05", avail: 5, theme: "Advisor feedback II and reminders", phase: "Advisor feedback (Project #2)",
+    tasks: [
+      { t: "Round summaries", d: 1, track: "p2", p: "Must", subs: ["What changed and what is still open", "Notify the student"] },
+      { t: "Extensions", d: 0.5, track: "p2", p: "Must", subs: ["Request, approve, new due date"] },
+      { t: "Automated reminders", d: 1.5, track: "p2", p: "Must", subs: ["Schedule at 6, 12, 20 and 24 weeks", "Templates; pause and skip rules", "Reminder log"] },
+      { t: "Ready-for-assessment queue", d: 1, track: "p2", p: "Must", subs: ["Advisor approval → manager queue", "Hand-off into the assessment workspace"] },
+      { t: "Project #2 tests and demo", d: 1, track: "p2", p: "Must", subs: ["Synthetic student from first upload to approved", "Demo to the supervisor and the PLAR department"] }
+    ],
+    exit: "Project #2 works end to end and feeds Project #1.",
+    needs: [], demo: "Project #2 demo" },
+
+  { n: 15, start: "2027-02-08", end: "2027-02-12", avail: 5, theme: "Intake and operations", phase: "Intake & operations",
+    tasks: [
+      { t: "Readiness questionnaire", d: 1.5, track: "ops", p: "Should", subs: ["Online questionnaire with stored results", "Advisor view", "Automatic response (behind a switch)"] },
+      { t: "Onboarding", d: 1.5, track: "ops", p: "Should", subs: ["Resume intake", "Authenticity statement with e-signature", "Welcome flow"] },
+      { t: "Records and payment", d: 1, track: "ops", p: "Should", subs: ["Payment status", "Credit-entry export for Records"] },
+      { t: "Insights dashboard", d: 1, track: "ops", p: "Could", subs: ["Volumes, turnaround and bottlenecks by stage"] }
+    ],
+    exit: "The full journey, from readiness to credit, is in one place.",
+    needs: ["Privacy impact assessment approval (for a pilot with real data)"] },
+
+  { n: 16, start: "2027-02-15", end: "2027-02-19", avail: 4, holidays: ["Mon 15 Feb · Family Day"], theme: "Hardening", phase: "Hardening",
+    tasks: [
+      { t: "Retention and deletion jobs", d: 0.5, track: "launch", p: "Must", subs: ["Retention rules", "Logged deletions"] },
+      { t: "AI service connection", d: 1, track: "launch", p: "Should", ai: true, subs: ["Connect the approved service, if approved", "Otherwise AI stays on the stand-in with switches off"] },
+      { t: "Accessibility audit", d: 1, track: "launch", p: "Must", subs: ["Automated checks, keyboard and screen reader pass", "Fixes"] },
+      { t: "Security review", d: 1, track: "launch", p: "Must", subs: ["Row-level security audit and Supabase advisors", "Security headers and dependency scan", "Backup restore test"] },
+      { t: "Performance", d: 0.5, track: "launch", p: "Should", subs: ["Load test the interview room and key pages"] }
+    ],
+    exit: "Ready for real users: accessible, secure and tested.",
+    needs: [] },
+
+  { n: 17, start: "2027-02-22", end: "2027-02-26", avail: 5, theme: "Pilot and launch", phase: "Pilot & launch",
+    note: "Sunday 28 February: project complete.",
+    tasks: [
+      { t: "Production release", d: 1, track: "launch", p: "Must", subs: ["Production Supabase and domain", "Monitoring and backups", "Go-live checklist"] },
+      { t: "Pilot", d: 2, track: "launch", p: "Must", subs: ["Small group of advisors and assessors", "Feedback session", "Fixes"] },
+      { t: "Training material", d: 1, track: "launch", p: "Must", subs: ["Guides for each role", "Short video walkthroughs"] },
+      { t: "Handover", d: 1, track: "launch", p: "Must", subs: ["Admin runbook", "Retrospective", "Roadmap after February"] }
+    ],
+    exit: "The platform is live with a pilot group and handed over.",
+    needs: [], demo: "Launch" }
+];
+
+/* Gantt phases (rows), parallel tracks and external dependencies */
+const PHASES = [
+  { group: "Build", label: "Foundation", sub: "Supabase, CI, deploy, components", track: "platform", start: "2026-11-02", end: "2026-11-06", week: 1 },
+  { label: "Core platform", sub: "Schema, security, sign-in, admin", track: "platform", start: "2026-11-09", end: "2026-11-27", week: 2 },
+  { label: "Assessment · Project #1", sub: "Viewer, rubric, consensus, reports", track: "p1", start: "2026-11-26", end: "2026-12-24", week: 4 },
+  { label: "Interviews", sub: "Scheduling, room, ID check", track: "interviews", start: "2027-01-04", end: "2027-01-22", week: 10, pre: { start: "2026-12-29", end: "2026-12-31" } },
+  { label: "Advisor feedback · Project #2", sub: "Review, comments, reminders", track: "p2", start: "2027-01-20", end: "2027-02-05", week: 12 },
+  { label: "Intake & operations", sub: "Questionnaire, onboarding, Records", track: "ops", start: "2027-02-08", end: "2027-02-12", week: 15 },
+  { label: "Hardening", sub: "Accessibility, security, AI service", track: "launch", start: "2027-02-15", end: "2027-02-19", week: 16 },
+  { label: "Pilot & launch", sub: "Release, pilot, training", track: "launch", start: "2027-02-22", end: "2027-02-28", week: 17 },
+  { group: "Parallel work", label: "Privacy impact assessment", sub: "With the TRU Privacy Office", track: "ext", ext: true, start: "2026-11-09", end: "2027-02-12" },
+  { label: "AI service evaluation", sub: "No-training guarantee first", track: "ext", ext: true, start: "2026-11-16", end: "2027-01-22" },
+  { label: "Stakeholder answers", sub: "Scope, roles, ID policy", track: "ext", ext: true, start: "2026-11-02", end: "2027-01-04" },
+  { label: "Guides and training", sub: "Written guides, then videos", track: "launch", soft: true, start: "2026-12-28", end: "2027-02-26" }
+];
+
+const DEMOS = [
+  { date: "2026-11-27", label: "Platform demo", sub: "Sign-in, roles, cases, audit log" },
+  { date: "2026-12-23", label: "Project #1 demo", sub: "A full assessment, ending in a released report" },
+  { date: "2027-01-22", label: "Interviews demo", sub: "Scheduling, ID check, room and companion" },
+  { date: "2027-02-05", label: "Project #2 demo", sub: "From first upload to approved for assessment" },
+  { date: "2027-02-19", label: "Ready for pilot", sub: "Accessibility and security checks passed" },
+  { date: "2027-02-28", label: "Project complete", sub: "Live with a pilot group, handed over", final: true }
+];
+
+const NEEDS = [
+  { by: "2026-11-06", who: "Project lead", what: "Domain, server access and the Supabase plan", why: "Unblocks deployment in week 1", color: "#2F7FC1", icon: "f-server" },
+  { by: "2026-11-13", who: "TRU IT", what: "Microsoft sign-in app registration", why: "Staff sign-in in week 2", color: "#2F7FC1", icon: "f-lock" },
+  { by: "2026-11-13", who: "PLAR department", what: "Meeting to go through the open questions", why: "Shapes roles, approvals and workflow", color: "#C2550A", icon: "f-users" },
+  { by: "2026-11-27", who: "PLAR department", what: "Rubric, standard comments and report wording in editable form", why: "Needed for weeks 5–7 and 13", color: "#C2550A", icon: "f-file" },
+  { by: "2026-12-04", who: "Supervisor + department", what: "Whether AI may suggest ratings or run interviews", why: "Decides which AI switches can ever turn on", color: "#4B48C8", icon: "f-spark" },
+  { by: "2027-01-04", who: "PLAR department", what: "Accepted ID types and the ID-check policy", why: "ID verification in weeks 11–12", color: "#C2550A", icon: "f-shield" },
+  { by: "2027-01-22", who: "Supervisor + IT", what: "Approval of an AI service with a no-training guarantee", why: "Connected in week 16, otherwise the stand-in stays", color: "#4B48C8", icon: "f-spark" },
+  { by: "2027-02-12", who: "TRU Privacy Office", what: "Privacy impact assessment approved", why: "Needed before a pilot with real student data", color: "#1E7B34", icon: "f-shield" }
+];
+
+const QUESTIONS = [
+  { q: "Who is building?", a: "I've assumed <em>one developer (you) working with me</em>, five days a week. A second developer would let interviews and Project #2 run side by side and add about three weeks of slack." },
+  { q: "Where does the app run?", a: "I've assumed <em>our own server in Canada</em> with the domain pointed at it, and Supabase in the Canada (Central) region. Tell me the provider and the domain when you have them." },
+  { q: "Supabase plan", a: "I've assumed a <em>paid plan</em> for daily backups, point-in-time recovery and single sign-on options. The free plan pauses projects and has no backups." },
+  { q: "Holidays", a: "I've assumed <em>light work from 24 December to 1 January</em>, plus the BC statutory holidays (Remembrance Day and Family Day). Stakeholders are likely away then too." },
+  { q: "What does the pilot use?", a: "I've assumed a <em>staff pilot with synthetic cases</em> unless privacy approval lands by 12 February. Then we can pilot with a few real students." },
+  { q: "What if something slips?", a: "<em>Must</em> items are protected. <em>Should</em> and <em>Could</em> items (the insights dashboard, the questionnaire auto-response, captions, recording) move to March first." }
+];
+
+/* ============================================================
+   RENDERING
+   ============================================================ */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const D = s => { const [y, m, d] = s.split("-").map(Number); return new Date(Date.UTC(y, m - 1, d)); };
+const fmt = (s, o = { day: "numeric", month: "short" }) => D(s).toLocaleDateString("en-CA", { ...o, timeZone: "UTC" });
+const store = {
+  get(k, f) { try { const v = localStorage.getItem("plar-tl:" + k); return v == null ? f : JSON.parse(v); } catch { return f; } },
+  set(k, v) { try { localStorage.setItem("plar-tl:" + k, JSON.stringify(v)); } catch {} }
+};
+function toast(msg) { const t = $("#toast"); t.querySelector("span").textContent = msg; t.classList.add("show"); clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.remove("show"), 2600); }
+
+const START = D("2026-11-01"), END = D("2027-02-28");
+const SPAN = (END - START) / 864e5 + 1;
+const pct = s => ((D(s) - START) / 864e5) / SPAN * 100;
+const pctEnd = s => ((D(s) - START) / 864e5 + 1) / SPAN * 100;
+const today = new Date(); const todayUTC = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
+
+const allTasks = WEEKS.flatMap(w => w.tasks.map((t, i) => ({ ...t, w: w.n, i })));
+const totalDays = allTasks.reduce((s, t) => s + t.d, 0);
+const availDays = WEEKS.reduce((s, w) => s + w.avail, 0);
+const daysToStart = Math.round((START - todayUTC) / 864e5);
+const subKeys = allTasks.flatMap(t => t.subs.map((_, j) => `${t.w}-${t.i}-${j}`));
+let done = store.get("done", {});
+
+/* Stats */
+function renderStats() {
+  const doneCount = subKeys.filter(k => done[k]).length;
+  const startLabel = daysToStart > 1 ? `Starts in ${daysToStart} days` : daysToStart === 1 ? "Starts tomorrow" : daysToStart === 0 ? "Starts today" : `Day ${-daysToStart + 1} of ${SPAN}`;
+  $("#stats").innerHTML = `
+    <div class="stat accent"><div class="k">Status</div><div class="v" style="font-size:24px">${startLabel}</div><div class="h">Sunday 1 November → Sunday 28 February</div></div>
+    <div class="stat"><div class="k">Duration</div><div class="v">17 <small>weeks</small></div><div class="h">${SPAN} calendar days</div></div>
+    <div class="stat"><div class="k">Planned work</div><div class="v">${totalDays} <small>days</small></div><div class="h">of ${availDays} available</div></div>
+    <div class="stat"><div class="k">Tasks</div><div class="v">${allTasks.length} <small>· ${subKeys.length} sub-tasks</small></div><div class="h">${doneCount} sub-tasks done</div></div>
+    <div class="stat"><div class="k">Demos</div><div class="v">${DEMOS.length}</div><div class="h">One at the end of every phase</div></div>`;
+}
+
+/* Gantt */
+function renderGantt() {
+  const months = [];
+  for (let d = new Date(START); d <= END; d.setUTCMonth(d.getUTCMonth() + 1, 1)) months.push(new Date(d));
+  const mondays = WEEKS.map(w => w.start);
+  let head = `<div class="g-head"><div class="lab">Phase</div><div class="g-months">`;
+  months.forEach(m => { const s = m.toISOString().slice(0, 10); head += `<div class="g-month" style="left:${pct(s)}%">${m.toLocaleDateString("en-CA", { month: "long", year: "numeric", timeZone: "UTC" })}</div>`; });
+  mondays.forEach((s, i) => head += `<div class="g-week" style="left:${pct(s)}%">W${i + 1}</div>`);
+  head += `</div></div>`;
+
+  let rows = "";
+  PHASES.forEach(p => {
+    if (p.group) rows += `<div class="g-row"><div class="g-group">${p.group}</div></div>`;
+    const color = TRACKS[p.track]?.color || "var(--t-ext)";
+    const cls = p.ext ? "ext" : p.soft ? "soft" : "";
+    const pre = p.pre ? `<span class="g-bar soft" style="left:${pct(p.pre.start)}%;width:${pctEnd(p.pre.end) - pct(p.pre.start)}%" title="Interview room spike: ${fmt(p.pre.start)} – ${fmt(p.pre.end)}"></span>` : "";
+    const tag = p.week ? "button" : "span";
+    const width = pctEnd(p.end) - pct(p.start), text = `${fmt(p.start)} – ${fmt(p.end)}`, narrow = width < 9;
+    const out = narrow ? (pctEnd(p.end) > 90 ? `<span class="g-out" style="right:calc(${100 - pct(p.start)}% + 6px)">${text}</span>` : `<span class="g-out" style="left:calc(${pctEnd(p.end)}% + 6px)">${text}</span>`) : "";
+    rows += `<div class="g-row"><div class="lab"><span class="dot" style="background:${color}"></span><div>${p.label}<small>${p.sub}</small></div></div>
+      <div class="g-track">${pre}<${tag} class="g-bar ${cls}" ${p.week ? `data-week="${p.week}" aria-label="${p.label}, ${text}. Show week ${p.week}"` : ""} style="left:${pct(p.start)}%;width:${width}%;background:${color}" title="${p.label}: ${text}">${narrow ? "" : text}</${tag}>${out}</div></div>`;
+  });
+  rows += `<div class="g-row"><div class="g-group">Checkpoints</div></div><div class="g-row"><div class="lab"><span class="dot" style="background:var(--label)"></span><div>Demos<small>End of each phase</small></div></div><div class="g-track" style="min-height:${DEMOS.length > 0 ? 44 : 0}px">`;
+  DEMOS.forEach((d, i) => { const left = pct(d.date) + 100 / SPAN / 2; rows += `<i class="g-diamond${d.final ? " final" : ""}" style="left:${left}%" title="${d.label} · ${fmt(d.date)}"></i>`; if (d.final || i % 2 === 0) {} });
+  rows += `</div></div>`;
+
+  let overlays = "";
+  mondays.forEach(s => overlays += `<i class="g-grid" style="left:calc(240px + (100% - 240px) * ${pct(s) / 100})"></i>`);
+  overlays += `<div class="g-shade" style="left:calc(240px + (100% - 240px) * ${pct("2026-12-24") / 100});width:calc((100% - 240px) * ${(pctEnd("2027-01-01") - pct("2026-12-24")) / 100})"><span>Holidays</span></div>`;
+  ["2026-11-11", "2027-02-15"].forEach(h => overlays += `<i class="g-hol" style="left:calc(240px + (100% - 240px) * ${(pct(h) + 100 / SPAN / 2) / 100})" title="Statutory holiday"></i>`);
+  if (todayUTC >= START && todayUTC <= END) {
+    const tp = Math.max(0, ((todayUTC - START) / 864e5 + 0.5) / SPAN * 100);
+    overlays += `<i class="g-today" style="left:calc(240px + (100% - 240px) * ${tp / 100})"><span>Today</span></i>`;
+  }
+  $("#gantt").innerHTML = head + rows + overlays;
+
+  $("#legend").innerHTML = Object.entries(TRACKS).map(([k, t]) => `<span><i class="sw" style="background:${t.color}"></i>${t.label}</span>`).join("") +
+    `<span><i class="sw" style="box-shadow:inset 0 0 0 1.5px var(--t-ext)"></i>Needed from others</span><span><i class="sw" style="background:repeating-linear-gradient(135deg,var(--fill-1) 0 4px,var(--fill-3) 4px 8px)"></i>Light or parallel work</span><span><i class="sw" style="width:10px;height:10px;transform:rotate(45deg);background:var(--label)"></i>Demo</span>`;
+}
+
+/* Key dates and dependencies */
+function renderDates() {
+  $("#kd-count").textContent = `${DEMOS.length} checkpoints`;
+  $("#keydates").innerHTML = DEMOS.map(d => `
+    <div class="kd${d.final ? " final" : ""}"><div class="date"><b>${D(d.date).getUTCDate()}</b><span>${fmt(d.date, { month: "short" })}</span></div>
+      <div class="t"><b>${d.label}</b><span>${d.sub}</span></div>
+      <span class="badge ${d.final ? "b-accent" : "b-neutral"}">${fmt(d.date, { weekday: "short" })}</span></div>`).join("");
+  $("#needs").innerHTML = NEEDS.map(n => `
+    <div class="need"><span class="ic" style="background:${n.color}"><svg class="f"><use href="#${n.icon}"/></svg></span>
+      <div><b>${n.what}</b><span>${n.who} · ${n.why}</span></div>
+      <span class="badge b-warning due">by ${fmt(n.by)}</span></div>`).join("");
+}
+
+/* Weeks */
+let filter = "all";
+const open = new Set(store.get("open", []));
+function daybar(d, color) {
+  let h = `<span class="daybar" style="color:${color}" aria-hidden="true">`;
+  for (let i = 0; i < Math.ceil(d); i++) h += `<i class="${d - i >= 1 ? "on" : "half"}"></i>`;
+  return h + `</span>`;
+}
+function renderWeeks() {
+  const fb = store.get("feedback", {});
+  $("#week-list").innerHTML = WEEKS.map(w => {
+    const tasks = w.tasks.map((t, i) => ({ ...t, i })).filter(t => filter === "all" || t.track === filter);
+    const planned = w.tasks.reduce((s, t) => s + t.d, 0);
+    const byTrack = {};
+    w.tasks.forEach(t => byTrack[t.track] = (byTrack[t.track] || 0) + t.d);
+    const meter = Object.entries(byTrack).map(([k, d]) => `<i style="width:${d / Math.max(w.avail, planned) * 100}%;background:${TRACKS[k].color}" title="${TRACKS[k].label}: ${d} days"></i>`).join("");
+    const over = planned > w.avail;
+    const tracks = [...new Set(w.tasks.map(t => t.track))];
+    const isOpen = open.has(w.n);
+    const hide = filter !== "all" && !tasks.length;
+    return `
+    <article class="week${w.holiday ? " holiday" : ""}" id="w${w.n}" aria-expanded="${isOpen}" ${hide ? "hidden" : ""}>
+      <button class="wk-head" data-toggle="${w.n}" aria-controls="wb${w.n}">
+        <div class="wk-num"><span>Week</span><b>${w.n}</b></div>
+        <div class="wk-title">
+          <div class="dates">${fmt(w.start, { weekday: "short", day: "numeric", month: "short" })} – ${fmt(w.end, { weekday: "short", day: "numeric", month: "short" })} · ${w.phase}</div>
+          <h3>${w.theme}</h3>
+          <div class="tags">
+            ${tracks.map(k => `<span class="badge b-outline"><span class="dot" style="background:${TRACKS[k].color};width:7px;height:7px"></span>${TRACKS[k].label}</span>`).join("")}
+            ${w.demo ? `<span class="badge b-accent"><svg class="f" style="width:12px;height:12px"><use href="#f-flag"/></svg>${w.demo}</span>` : ""}
+            ${(w.holidays || []).map(h => `<span class="badge b-neutral">${h}</span>`).join("")}
+          </div>
+        </div>
+        <div class="cap">
+          <div class="row"><span>Planned vs available</span><b>${planned} / ${w.avail} days</b></div>
+          <div class="meter">${meter}</div>
+          <div class="row"><span>${over ? "Over capacity" : planned === w.avail ? "Fully booked" : `${w.avail - planned} day${w.avail - planned === 1 ? "" : "s"} buffer`}</span><svg class="i chev"><use href="#i-chevron"/></svg></div>
+        </div>
+      </button>
+      <div class="wk-body" id="wb${w.n}">
+        <div class="tasks">
+          ${tasks.length ? tasks.map(t => `
+            <div class="task">
+              <div class="task-h">
+                <span class="dot" style="background:${TRACKS[t.track].color}"></span>
+                <b>${t.t}</b>
+                ${t.ai ? `<span class="badge b-ai"><svg class="f" style="width:11px;height:11px"><use href="#f-spark"/></svg>AI, behind a switch</span>` : ""}
+                <span class="badge ${t.p === "Must" ? "b-accent" : t.p === "Should" ? "b-info" : "b-neutral"}">${t.p}</span>
+                <span class="days">${daybar(t.d, TRACKS[t.track].color)}${t.d} day${t.d === 1 ? "" : "s"}</span>
+              </div>
+              <ul class="subs">${t.subs.map((s, j) => { const k = `${w.n}-${t.i}-${j}`; return `<li><label><input type="checkbox" data-k="${k}" ${done[k] ? "checked" : ""}><span>${s}</span></label></li>`; }).join("")}</ul>
+            </div>`).join("") : `<p class="empty-filter">No tasks in this workstream this week.</p>`}
+        </div>
+        <aside class="side">
+          ${w.note ? `<p style="font-weight:550">${w.note}</p>` : ""}
+          <div class="exit"><h4><svg class="f" style="width:13px;height:13px"><use href="#f-check-circle"/></svg>Done when</h4><p>${w.exit}</p></div>
+          ${w.needs.length ? `<div><h4>Needs</h4><ul>${w.needs.map(n => `<li>${n}</li>`).join("")}</ul></div>` : ""}
+          <div class="fb"><h4><label for="fb${w.n}">Your feedback</label></h4>
+            <textarea id="fb${w.n}" data-fb="${w.n}" placeholder="Too much? Wrong order? Missing something?">${(fb[w.n] || "").replace(/</g, "&lt;")}</textarea>
+            <div class="saved" id="fbs${w.n}"></div></div>
+        </aside>
+      </div>
+    </article>`;
+  }).join("");
+  updateProgress();
+  $("#toggle-all span").textContent = open.size === WEEKS.length ? "Collapse all" : "Expand all";
+}
+function updateProgress() {
+  const n = subKeys.filter(k => done[k]).length, p = Math.round(n / subKeys.length * 100);
+  $("#prog-label").textContent = `${p}% done`;
+  $("#prog-bar").style.width = p + "%";
+}
+
+/* Filter control */
+$("#filter").innerHTML = [["all", "All work", null], ...Object.entries(TRACKS).map(([k, t]) => [k, t.label, t.color])]
+  .map(([k, l, c]) => `<button role="radio" aria-checked="${k === "all"}" data-f="${k}">${c ? `<span class="dot" style="background:${c};width:8px;height:8px"></span>` : ""}${l}</button>`).join("");
+$("#filter").addEventListener("click", e => {
+  const b = e.target.closest("[data-f]"); if (!b) return;
+  filter = b.dataset.f;
+  $$("#filter [role=radio]").forEach(x => x.setAttribute("aria-checked", x === b));
+  if (filter !== "all") WEEKS.forEach(w => { if (w.tasks.some(t => t.track === filter)) open.add(w.n); });
+  renderWeeks();
+});
+
+/* Interactions */
+document.addEventListener("click", e => {
+  const h = e.target.closest("[data-toggle]");
+  if (h) {
+    const n = +h.dataset.toggle, art = h.closest(".week");
+    open.has(n) ? open.delete(n) : open.add(n);
+    art.setAttribute("aria-expanded", open.has(n));
+    store.set("open", [...open]);
+    $("#toggle-all span").textContent = open.size === WEEKS.length ? "Collapse all" : "Expand all";
+    return;
+  }
+  const g = e.target.closest("[data-week]");
+  if (g) {
+    const n = +g.dataset.week; open.add(n); store.set("open", [...open]);
+    if (filter !== "all") { filter = "all"; $$("#filter [role=radio]").forEach(x => x.setAttribute("aria-checked", x.dataset.f === "all")); }
+    renderWeeks();
+    $("#w" + n).scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+});
+document.addEventListener("change", e => {
+  const c = e.target.closest("input[data-k]"); if (!c) return;
+  done[c.dataset.k] = c.checked; if (!c.checked) delete done[c.dataset.k];
+  store.set("done", done); updateProgress(); renderStats();
+});
+let fbTimer;
+document.addEventListener("input", e => {
+  const t = e.target.closest("textarea[data-fb]"); if (!t) return;
+  const fb = store.get("feedback", {}); fb[t.dataset.fb] = t.value; store.set("feedback", fb);
+  clearTimeout(fbTimer); const s = $("#fbs" + t.dataset.fb); s.textContent = "Saving…";
+  fbTimer = setTimeout(() => s.textContent = "Saved in this browser", 400);
+});
+$("#toggle-all").addEventListener("click", () => {
+  if (open.size === WEEKS.length) open.clear(); else WEEKS.forEach(w => open.add(w.n));
+  store.set("open", [...open]); renderWeeks();
+});
+$("#copy-fb").addEventListener("click", async () => {
+  const fb = store.get("feedback", {});
+  const lines = WEEKS.filter(w => (fb[w.n] || "").trim()).map(w => `Week ${w.n} (${fmt(w.start)} – ${fmt(w.end)}) · ${w.theme}\n${fb[w.n].trim()}`);
+  if (!lines.length) { toast("No feedback written yet"); return; }
+  const text = "Timeline feedback\n\n" + lines.join("\n\n");
+  try { await navigator.clipboard.writeText(text); toast(`Copied feedback for ${lines.length} week${lines.length === 1 ? "" : "s"}. Paste it to Claude.`); }
+  catch { toast("Couldn't copy. Select the text in each box instead."); }
+});
+
+$("#qlist").innerHTML = QUESTIONS.map((q, i) => `<div class="q"><span class="n">${i + 1}</span><div><b>${q.q}</b><span>${q.a}</span></div></div>`).join("");
+$("#foot-date").textContent = `Plan drafted 31 October 2026 · ${totalDays} planned days across ${WEEKS.length} weeks`;
+
+if (!open.size) open.add(1);
+renderStats(); renderGantt(); renderDates(); renderWeeks();
+</script>
+</body>
+</html>

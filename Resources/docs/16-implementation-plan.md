@@ -43,17 +43,22 @@ PLAR-Project/
 |---|---|---|---|
 | ADR-001 | **Next.js (App Router) + TypeScript**, single web app in `web/` | Accepted | Project lead |
 | ADR-002 | **Tailwind CSS v4** with design tokens as CSS variables; self-built accessible primitives | Accepted | [14](14-design-system.md) |
-| ADR-003 | **PostgreSQL + Prisma**, with pgvector for the comment library | Accepted (M1) | Host region per Q-PRIV-1 |
-| ADR-004 | **Auth**: Microsoft Entra ID SSO for staff and assessors; email link or TRU sign-in for students | Proposed | Q-SYS-1, Q-ASSESS-6 |
+| ADR-003 | ~~PostgreSQL + Prisma~~, with pgvector for the comment library | Superseded by ADR-010 | Host region per Q-PRIV-1 |
+| ADR-004 | **Auth**: Microsoft Entra ID SSO for staff and assessors; email link or TRU sign-in for students | Superseded by ADR-011 | Q-SYS-1, Q-ASSESS-6 |
 | ADR-005 | **AI gateway** with swappable adapters; mock adapter only until a provider is approved | Accepted | Q-AI-7; [15 §3](15-technical-approach.md#3-llm-integration-provider-options-and-privacy-requirements) |
 | ADR-006 | **Built-in interview room** on WebRTC with a self-hosted SFU in Canada; Zoom fallback | Proposed | Q-INT-7 |
-| ADR-007 | **Hosting**: a container in a Canadian region (TRU Azure or a managed Canadian provider) | Proposed | Q-SYS-4, Q-PRIV-1 |
-| ADR-008 | **Background jobs** on a Postgres-backed queue (reminders, AI batches, email, deletions) | Accepted (M1) | — |
-| ADR-009 | **Documents**: object storage (Canada), Word→PDF conversion, the shared print stylesheet for generated PDFs | Accepted (M2) | [14 §11](14-design-system.md) |
+| ADR-007 | **Hosting**: a container in a Canadian region (TRU Azure or a managed Canadian provider) | Superseded by ADR-012 | Q-SYS-4, Q-PRIV-1 |
+| ADR-008 | **Background jobs** on a Postgres-backed queue (reminders, AI batches, email, deletions) | Accepted (M1) | Implemented with Supabase Queues and Cron (ADR-010) |
+| ADR-009 | **Documents**: object storage (Canada), Word→PDF conversion, the shared print stylesheet for generated PDFs | Accepted (M2) | Storage is Supabase Storage (ADR-010); styles from [design-system.html](design-system.html) |
+| ADR-010 | **Supabase** (Canada (Central) region) as the backend: Postgres with row-level security, Auth, Storage, Queues and Cron, Realtime, pgvector. Schema changes as Supabase CLI migrations with generated TypeScript types (no Prisma). Separate dev, staging and production projects. | Accepted (2026-10-31) | Project lead. Paid plan assumed for backups and SSO |
+| ADR-011 | **Auth via Supabase Auth**: Microsoft Entra ID for staff and assessors, email link for students, a development-only demo login | Proposed | Needs the TRU IT app registration (Q-SYS-1) |
+| ADR-012 | **Hosting**: the Next.js app on our own server in Canada with a proper domain and HTTPS; staging auto-deploys, production is released on purpose | Accepted (2026-10-31) | Project lead. Provider and domain to be named |
 
 New decisions get a row here. Superseded ones are marked, never deleted.
 
 ## 4. Milestones
+
+**Dated schedule:** [timeline.html](timeline.html) maps these milestones onto 17 weeks, 1 November 2026 → 28 February 2027, with tasks, sub-tasks and day estimates.
 
 The order follows the stakeholders' priority (assessment first, then advising) [EMAIL], after the foundation. Each milestone lists what it delivers, its exit criteria, and the questions that could change it.
 
