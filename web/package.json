@@ -7,16 +7,25 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "typecheck": "next typegen && tsc --noEmit"
+    "typecheck": "next typegen && tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "setup:verification": "node scripts/setup-verification.mjs",
+    "postinstall": "node scripts/setup-verification.mjs",
+    "assets:verification": "MAKE_ASSETS=1 vitest run tests/verification/make-assets.test.ts",
+    "dev:phone": "node scripts/dev-https.mjs"
   },
   "dependencies": {
+    "@mediapipe/tasks-vision": "^1.2.2",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.119.0",
+    "@techstark/opencv-js": "^5.0.0-release.1",
     "lucide-react": "^1.64.0",
     "next": "16.4.3",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "server-only": "^0.0.1"
+    "server-only": "^0.0.1",
+    "sharp": "^0.35.5"
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "^4",
@@ -26,6 +35,8 @@
     "eslint": "^9",
     "eslint-config-next": "16.4.3",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "tsx": "^4.23.15",
+    "typescript": "^5",
+    "vitest": "^4.1.12"
   }
 }

@@ -13,6 +13,7 @@ import {
   House,
   Inbox,
   MessageSquare,
+  ShieldCheck,
   SlidersVertical,
   Users,
   Video,
@@ -29,6 +30,7 @@ import {
   HomeFilled,
   InboxFilled,
   MessageFilled,
+  ShieldCheckFilled,
   SlidersFilled,
   UsersFilled,
   VideoFilled,
@@ -92,6 +94,7 @@ export const roleConfigs: Record<RoleSlug, RoleConfig> = {
     nav: [
       overview("admin"),
       { label: "Approvals", milestone: "M2", icon: CircleCheck, iconSelected: CheckCircleFilled },
+      { label: "Identity checks", href: "/testing", icon: ShieldCheck, iconSelected: ShieldCheckFilled },
       { label: "All cases", milestone: "M1", icon: Folder, iconSelected: FolderFilled },
       { label: "Insights", milestone: "M5", icon: ChartColumn, iconSelected: ChartFilled },
       { label: "People & roles", milestone: "M1", icon: Users, iconSelected: UsersFilled },

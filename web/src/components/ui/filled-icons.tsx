@@ -132,6 +132,14 @@ export const VideoFilled = filled(
   </>,
 );
 
+export const IdCardFilled = filled(
+  "IdCardFilled",
+  <path
+    fillRule="evenodd"
+    d="M4.5 4h15A2.5 2.5 0 0 1 22 6.5v11a2.5 2.5 0 0 1-2.5 2.5h-15A2.5 2.5 0 0 1 2 17.5v-11A2.5 2.5 0 0 1 4.5 4zM8 8.3a2.2 2.2 0 1 0 0 4.4 2.2 2.2 0 0 0 0-4.4zM4.6 16.6c.38-1.66 1.76-2.6 3.4-2.6s3.02.94 3.4 2.6zM14 9.25h5v1.5h-5zm0 4h3.5v1.5H14z"
+  />,
+);
+
 export const ShieldCheckFilled = filled(
   "ShieldCheckFilled",
   <path

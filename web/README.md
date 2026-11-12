@@ -14,6 +14,9 @@ npm run dev          # http://localhost:3000 (the desktop preview uses port 3100
 npm run lint
 npm run typecheck    # regenerates route types, then tsc
 npm run build
+npm test             # unit and detection tests (Vitest)
+npm run dev:phone    # HTTPS dev server for testing the camera on a phone (needs mkcert)
+npm run assets:verification   # regenerate sample ID photos and faces in test-assets/
 ```
 
 ## Structure
@@ -27,6 +30,8 @@ npm run build
 | `src/components/ui/` | Design-system primitives: Button, Badge, BrandMark, filled icons |
 | `src/components/site/` | Homepage sections (header, footer, hero preview) |
 | `src/components/app/` | Workspace components (role navigation) |
+| `src/app/verify/`, `src/app/testing/` | Identity verification lab and its testing gallery (dev only) |
+| `src/components/verification/`, `src/lib/verification/` | Camera flow, face tracking, ID detection and straightening, storage, AI check |
 | `src/lib/` | Content, roles, `auth.ts` (signed-in viewer), `workspace-data.ts` (per-role queries), Supabase clients |
 
 ## Rules

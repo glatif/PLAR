@@ -42,6 +42,7 @@ This is the entry point to the project documentation for the TRU Open Learning *
 | [14-design-system.md](14-design-system.md) | **The design system** ("Calm Glass"): Apple-inspired, with teal accents. Colour (contrast-checked), typography, spacing, radii, glass, motion, components, the interview room, and print/PDF/email standards. |
 | [16-implementation-plan.md](16-implementation-plan.md) | **The implementation plan**: engineering principles, repository layout, architecture decision log, milestones M0–M7 with exit criteria and blocking questions, draft data model, testing and Definition of Done, security checklist and AI engineering approach. |
 | [15-technical-approach.md](15-technical-approach.md) | Architecture; the **built-in interview room with Zoom as a fallback**; **LLM options (the Microsoft Copilot ecosystem, or a proprietary multimodal endpoint)** and the **mandatory no-training privacy requirements**; the identity-verification design. |
+| [17-identity-verification.md](17-identity-verification.md) | **Identity verification lab** (built): face photo, head movement and ID capture, background straightening, **success and failure states**, the lab AI check, and how to test. |
 
 **PDF versions** (styled with the design system): [pdf/13-features.pdf](pdf/13-features.pdf) · [pdf/14-design-system.pdf](pdf/14-design-system.pdf). Print stylesheet: [assets/print.css](assets/print.css).
 

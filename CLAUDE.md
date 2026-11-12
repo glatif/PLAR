@@ -20,6 +20,7 @@ AI-assisted efficiency platform for Thompson Rivers University Open Learning's P
 - **One cloud database for everything** (no staging, no local stack). `harness/` configures and tests it: `npm run doctor`, `npm run check` (signs in as every demo account), `npm run dev:seed`, `npm run types`, `dev:push`. See `harness/README.md`.
 - Demo accounts (synthetic, one per role) are listed in `harness/DEMO-ACCOUNTS.md`. Keep `harness/src/fixtures.ts` in step with `supabase/seed.sql`.
 - The web app uses the publishable key only. Secret or service keys never go in `web/` or in git.
+- **Verification lab** (`/verify`, `/testing`, dev only): see `Resources/docs/17-identity-verification.md`. Captures live in `web/.verification-data/` (git-ignored, never committed). `npm test` runs the detection tests; `npm run dev:phone` serves HTTPS for phone testing. The lab AI check uses OpenRouter (key in `web/.env.local` only), approved for the lab only.
 - Synthetic data only in code, seeds and tests.
 
 ## Working rules
@@ -29,7 +30,7 @@ AI-assisted efficiency platform for Thompson Rivers University Open Learning's P
 - Treat AI scoring and AI-conducted interviews as **unconfirmed** until the stakeholders answer Q-SCOPE-2 and Q-INT-1.
 - Do not send real student content to external services without approval.
 - Store project notes and memory in this folder, not in account-level memory.
-- Don't name or commit to an LLM provider. Any AI service must guarantee our data is not used to train its models (`Resources/docs/15-technical-approach.md` §3.3).
+- Don't name or commit to an LLM provider. Any AI service must guarantee our data is not used to train its models (`Resources/docs/15-technical-approach.md` §3.3). Exception: the verification lab's AI check (approved 2026-11-11, lab only).
 - Interviews: the built-in interview room is preferred; Zoom is the fallback. ID verification is AI-assisted, with a person deciding.
 - Apply the design system to all UI and all generated documents (PDFs, reports, proposals). The source of truth is `Resources/docs/design-system.html` (Geist + Lora, tangerine accent, outline + filled icons); `14-design-system.md` is the older teal write-up and still needs updating.
 - **Shareable documents** (the features doc, the design system, every PDF, proposal or email for the supervisor or stakeholders) must **not** contain question IDs (Q-…), source IDs (P1-…, P2-…), or references and links to the local `.md` files. Those are for our local reference only. Refer to department materials by their real titles instead.

@@ -40,3 +40,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Identity verification: served runtime/model (fetched by `npm run setup:verification`) and test captures
+/public/vendor/mediapipe/
+/public/vendor/opencv/
+/.verification-data/
+
+# Downloaded sample face for manual testing (not ours to redistribute)
+/test-assets/faces/
+
+# Local HTTPS certificates for phone testing (npm run dev:phone)
+/certificates/
