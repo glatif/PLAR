@@ -1,0 +1,34 @@
+# PLAR web app. Follows the HorAIzon server conventions (/opt/horizon, DEPLOYING-TO-HORAIZON.md):
+# service named "app", env_file .env.local, and a placeholder port that the server's hz-generated
+# docker-compose.override.yml replaces with the allocated 127.0.0.1:90xx port.
+services:
+  app:
+    build:
+      context: .
+      args:
+        # Public by design (Supabase URL + publishable key); read from .env next to this file.
+        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+        NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY}
+        VERIFICATION_LAB: ${VERIFICATION_LAB:-false}
+    image: plar-web:latest
+    container_name: plar
+    init: true
+    restart: unless-stopped
+    env_file: .env.local
+    environment:
+      NODE_ENV: production
+    ports:
+      - "127.0.0.1:3000:3000"   # the server overrides this
+    volumes:
+      # Identity-verification lab captures: kept across rebuilds and redeploys.
+      - verification-data:/app/.verification-data
+    # Headroom for the lab: ID photos are straightened with OpenCV in the server process.
+    mem_limit: 1g
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  verification-data:

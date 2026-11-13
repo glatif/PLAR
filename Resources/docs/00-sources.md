@@ -93,6 +93,15 @@ These are not stakeholder sources. They are public references used for the desig
 
 Provider terms change, so re-check them during the evaluation in [15 §3.4](15-technical-approach.md#34-how-we-will-choose).
 
+## Hosting server (technical observations)
+
+| ID | Reference | Used in |
+|---|---|---|
+| SRV-SNAP | Read-only snapshot of the hosting server `74.208.142.195`, taken 2026-11-12 with `server/inspect.sh`, plus follow-up checks and port probes from the team's Mac the same day. Saved locally in `server/.snapshots/` (git-ignored; never shared). | [18](18-hosting-server.md) |
+| SRV-GUIDE | The server's own operating guide, `/opt/horizon/SERVER_GUIDE.md` (last reviewed 2026-08-05), written by whoever set up the `hz` tool and the living-heritage app. | [18](18-hosting-server.md) |
+| SRV-OVH | Snapshot of the OVH project server `144.217.80.160`, taken 2026-11-13 with `server/inspect.sh` as `hh_horaizon` (no root, so firewall and SSH settings could not be read), plus follow-up checks the same day. Saved locally in `server/.snapshots/`. | [18 Part A](18-hosting-server.md) |
+| SRV-OVH-GUIDE | The OVH server's own documents: `/opt/projects/faculty-desk/DEPLOYING-TO-HORAIZON.md`, `/opt/horizon/SERVER_GUIDE.md` and `hz help`. | [18 Part A](18-hosting-server.md) |
+
 ## Handling rules for these sources
 
 - The sources contain confidential student material (P1-SP*, P2-B, P2-C). Do not copy student details into the platform, test data or prompts without agreement. See [10-principles-and-constraints.md](10-principles-and-constraints.md#confidentiality-and-privacy).

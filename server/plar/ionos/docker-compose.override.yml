@@ -1,0 +1,6 @@
+# IONOS server (74.208.142.195) only: the port and env file used there.
+# Copied next to docker-compose.yml on that server; PLAR's main home is the OVH server (hz-managed).
+services:
+  app:
+    ports: !override
+      - "127.0.0.1:9000:3000"

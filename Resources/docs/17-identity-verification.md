@@ -1,6 +1,8 @@
 # Identity verification (verification lab)
 
-**Status:** working demo, built 2026-11-11. Lab only: `/verify` (the flow) and `/testing` (the gallery) run in development, or when `VERIFICATION_LAB=true` is set at build time. Captures are stored on the developer's computer, not in Supabase.
+**Status:** working demo, built 2026-11-11. Lab only: `/verify` (the flow) and `/testing` (the identity checks page) run in development, or when `VERIFICATION_LAB=true` is set at build time and runtime. Both are linked from the home page wherever the lab is on. Captures are stored on disk next to the app (`.verification-data/`), not in Supabase.
+
+**Live since 2026-11-13** at https://plar.airl.ca, **open to anyone** (project lead's decision, temporary until sign-in is added): anyone with the link can see every capture on `/testing`. Captures sit in a Docker volume on the OVH server; the AI check runs there too. See [18-hosting-server.md](18-hosting-server.md).
 
 This is the "photo ID check before the interview" from the features list, built as a separate, testable piece before it joins the interview flow (M3). Design decision: AI assists, a person decides (project rule; see [15-technical-approach.md](15-technical-approach.md)).
 

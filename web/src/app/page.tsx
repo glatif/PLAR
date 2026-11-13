@@ -1,10 +1,11 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ScanFace, ShieldCheck } from "lucide-react";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
 import { HeroPreview } from "@/components/site/hero-preview";
 import { ButtonLink } from "@/components/ui/button";
 import { AiSparkle, CheckCircleFilled } from "@/components/ui/filled-icons";
 import { commitments, journey, roles } from "@/lib/content";
+import { labEnabled } from "@/lib/verification/storage";
 
 function SectionHeading({ kicker, title, intro }: { kicker: string; title: string; intro?: string }) {
   return (
@@ -14,6 +15,26 @@ function SectionHeading({ kicker, title, intro }: { kicker: string; title: strin
         {title}
       </h2>
       {intro ? <p className="text-balance mt-4 text-[17px] leading-[27px] text-label-2">{intro}</p> : null}
+    </div>
+  );
+}
+
+/** Quick ways into the identity-verification lab, for testing. Shown only where the lab is switched on. */
+function LabShortcuts() {
+  return (
+    <div className="mt-8 max-w-xl rounded-lg bg-surface p-4 shadow-1 sm:p-5">
+      <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-accent-text">Verification lab · testing</p>
+      <p className="mt-1 text-[14px] leading-[20px] text-label-2">Try the photo and ID check, then review the results.</p>
+      <div className="mt-4 grid gap-2.5 sm:grid-cols-2">
+        <ButtonLink href="/verify" variant="secondary" className="w-full">
+          <ScanFace aria-hidden className="size-4" />
+          Verify identity
+        </ButtonLink>
+        <ButtonLink href="/testing" variant="neutral" className="w-full">
+          <ShieldCheck aria-hidden className="size-4" />
+          Identity checks
+        </ButtonLink>
+      </div>
     </div>
   );
 }
@@ -55,6 +76,7 @@ export default function HomePage() {
                 </li>
               ))}
             </ul>
+            {labEnabled() ? <LabShortcuts /> : null}
           </div>
           <HeroPreview />
         </section>
