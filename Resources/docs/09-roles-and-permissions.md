@@ -17,6 +17,8 @@ This page sets out who does what according to the sources, where the sources dis
 | **New / apprentice assessor** | Shadows interviews, does a practice assessment, has a mentor. | P1-B p.46–47 |
 | **Administrative and CUPE staff** | Coordinate interviews, download and upload student files, give Moodle access, collect statistics, enter PLAR credit in Banner. "This support may be provided by Program Advisors, OL Administrative Assistants, etc." | P1-B p.11 |
 
+**Decision (project lead, 2026-11-19): six platform roles for now.** Student, Advisor, Assessor (chair or writer), PLAR Manager, PLAR Director and Admin. The **booking coordinator is not a separate role**: advisors book interviews. New / apprentice assessors are not a role for now. Administrative and CUPE staff tasks sit with the Admin role. This is how the database is set up (`app_role`, migration `20261119174054_six_roles`), and it's shown on the admin's Roles and access page in the app.
+
 ## 2. Roles outside PLAR (that the workflow touches)
 
 | Role | Interaction | Sources |
@@ -53,7 +55,7 @@ These need stakeholder answers before RBAC can be designed.
 | Verify reference letters; flag double dipping or other PLAR potential | PLAR Advisor | P2-E |
 | **Approve for assessment** | Manager *or* Director (configurable) | §3 |
 | **Assign assessors** | Manager *or* Director, with advisor input (configurable) | §3 |
-| Schedule interviews | Advisor / booking coordinator | P1-B p.120; P2-A step 11 |
+| Schedule interviews | Advisor (advisors also book interviews, decision 2026-11-19) | P1-B p.120; P2-A step 11 |
 | View assigned portfolio and Program Plan | Assigned assessors only | P1-B p.19; P2-I p.14 |
 | Enter **own** preliminary ratings and notes; see the co-assessor's only after both have submitted | Assessor | Independence: P1-B p.22–23 |
 | Record consensus ratings and award; draft and review the report | Assessor pair (writer drafts, chair reviews) | P1-B p.24–26 |

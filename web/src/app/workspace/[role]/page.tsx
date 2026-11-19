@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { notFound, redirect } from "next/navigation";
-import { InfoFilled } from "@/components/ui/filled-icons";
+import { ArrowRight } from "lucide-react";
+import { ButtonLink } from "@/components/ui/button";
+import { InfoFilled, KeyFilled } from "@/components/ui/filled-icons";
 import { ActivityFeed, CaseTable, JourneyCard, StagePipeline, StatGrid, TaskList } from "@/components/app/overview";
 import { getViewer, roleLabels } from "@/lib/auth";
 import { firstName } from "@/lib/format";
@@ -51,6 +53,7 @@ async function RoleOverview({ params }: { params: PageProps<"/workspace/[role]">
   const config = roleConfigs[role];
   const data = await loadOverview(role, viewer);
   const roleNames = viewer.roles.map((r) => roleLabels[r]).join(" · ");
+  const oversees = role === "manager" || role === "director" || role === "admin";
 
   return (
     <div className="space-y-8">
@@ -64,6 +67,8 @@ async function RoleOverview({ params }: { params: PageProps<"/workspace/[role]">
         <InfoFilled className="mt-0.5 size-4 shrink-0 text-accent-text" />
         <p>Demo environment. Every person and case is synthetic. Tick a task to try it: changes save to the dev database.</p>
       </div>
+
+      {role === "admin" ? <RolesShortcut /> : null}
 
       {data.stats.length ? <StatGrid stats={data.stats} /> : null}
 
@@ -79,9 +84,28 @@ async function RoleOverview({ params }: { params: PageProps<"/workspace/[role]">
             <TaskList title="Needs your attention" tasks={data.tasks} />
             <ActivityFeed events={data.activity} />
           </div>
-          {data.cases.length ? <CaseTable title={data.casesTitle} cases={data.cases} showAdvisor={role === "admin"} /> : null}
+          {data.cases.length ? <CaseTable title={data.casesTitle} cases={data.cases} showAdvisor={oversees} /> : null}
         </>
       )}
     </div>
+  );
+}
+
+/** Admin only: opens the page that explains each role's purpose and access. */
+function RolesShortcut() {
+  return (
+    <section aria-labelledby="roles-shortcut" className="card flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:gap-5 sm:p-6">
+      <span className="flex size-12 shrink-0 items-center justify-center rounded-[14px] text-white" style={{ background: roleConfigs.admin.tile }}>
+        <KeyFilled className="size-6" />
+      </span>
+      <div className="min-w-0 flex-1">
+        <h2 id="roles-shortcut" className="text-[17px] font-semibold">Roles and access</h2>
+        <p className="mt-0.5 text-[14px] leading-[20px] text-label-2">The six roles in PLAR, what each one is for and what each can see and do.</p>
+      </div>
+      <ButtonLink href="/workspace/admin/roles" className="w-full sm:w-auto">
+        Open roles and access
+        <ArrowRight aria-hidden className="size-4" />
+      </ButtonLink>
+    </section>
   );
 }

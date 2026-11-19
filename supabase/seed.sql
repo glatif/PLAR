@@ -36,7 +36,7 @@ begin
 end;
 $$;
 
--- Accounts you can sign in with: one per role (password in harness/DEMO-ACCOUNTS.md)
+-- Accounts you can sign in with: at least one for each of the six roles (password in harness/DEMO-ACCOUNTS.md)
 create temp table demo_people (key text primary key, id uuid, email text, name text, role public.app_role, can_sign_in boolean);
 insert into demo_people values
   ('student',     '00000000-0000-4000-8000-000000000001', 'student@demo.test',     'Alex Morgan',    'student',     true),
@@ -44,7 +44,6 @@ insert into demo_people values
   ('advisor2',    '00000000-0000-4000-8000-000000000008', 'advisor2@demo.test',    'Maria Laurent',  'advisor',     true),
   ('chair',       '00000000-0000-4000-8000-000000000003', 'assessor@demo.test',    'Jordan Rivera',  'assessor',    true),
   ('writer',      '00000000-0000-4000-8000-000000000004', 'writer@demo.test',      'Kai Thompson',   'assessor',    true),
-  ('coordinator', '00000000-0000-4000-8000-000000000009', 'coordinator@demo.test', 'Dana Whitfield', 'coordinator', true),
   ('manager',     '00000000-0000-4000-8000-000000000005', 'manager@demo.test',     'Lee Chen',       'manager',     true),
   ('director',    '00000000-0000-4000-8000-000000000006', 'director@demo.test',    'Pat Okafor',     'director',    true),
   ('admin',       '00000000-0000-4000-8000-000000000007', 'admin@demo.test',       'Robin Admin',    'admin',       true);
@@ -149,7 +148,7 @@ from (values
   ('PLAR-2026-014', 'feedback',  'Feedback round 2 returned',      'Communication and Problem-Solving sections', 'advisor',  interval '2 days'),
   ('PLAR-2026-014', 'upload',    'Uploaded 3 evidence files',      'Reference letter, workshop agenda, certificate', 'student', interval '5 days'),
   ('PLAR-2026-002', 'assessment','Preliminary ratings submitted',   'Writer submitted; waiting for the chair', 'writer', interval '1 day'),
-  ('PLAR-2026-005', 'interview', 'Interview booked',               'Built-in room · identity check scheduled', 'coordinator', interval '3 days'),
+  ('PLAR-2026-005', 'interview', 'Interview booked',               'Built-in room · identity check scheduled', 'advisor2', interval '3 days'),
   ('PLAR-2026-001', 'assessment','Report sent for director review', 'Full credit recommended', 'manager', interval '20 hours')
 ) as v (reference, kind, title, detail, actor, ago)
 join public.cases c using (reference);
@@ -192,9 +191,10 @@ from (values
   ('PLAR-2026-001', 'chair',       'M. Wong · Review the report draft',         'Chair · the writer''s draft is ready',             'review',   1,    true),
   ('PLAR-2026-005', 'writer',      'P. Nair · Interview preparation',           'Chair · interview tomorrow',                       'due_soon', 1,    true),
   ('PLAR-2026-002', 'writer',      'T. Brooks · Draft the assessment report',   'Writer · after consensus',                         'waiting',  null, true),
-  -- Coordinator, manager, director
-  ('PLAR-2026-005', 'coordinator', 'P. Nair · Send interview reminder',         'Interview tomorrow',                               'due_soon', 0,    false),
-  ('PLAR-2026-007', 'coordinator', 'L. O''Connor · Confirm the room test',      'Student device check not done yet',                'todo',     2,    false),
+  -- Advisors also book interviews
+  ('PLAR-2026-005', 'advisor2',    'P. Nair · Send interview reminder',         'Interview tomorrow',                               'due_soon', 0,    false),
+  ('PLAR-2026-007', 'advisor',     'L. O''Connor · Confirm the room test',      'Student device check not done yet',                'todo',     2,    false),
+  -- Manager, director
   ('PLAR-2026-009', 'manager',     'S. Martins · Approve for assessment',       'Advisor checklist complete',                       'ready',    null, false),
   ('PLAR-2026-010', 'manager',     'E. Clarke · Assign assessors',              '3 suggested pairs by availability and expertise',  'todo',     4,    false),
   ('PLAR-2026-001', 'director',    'M. Wong · Final decision',                  'Full credit recommended · consistency checks passed', 'review', 2,    false)

@@ -159,6 +159,14 @@ export const LockFilled = filled(
   </>,
 );
 
+export const KeyFilled = filled(
+  "KeyFilled",
+  <>
+    <path fillRule="evenodd" d="M8 9.5a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11zm0 3.7a1.8 1.8 0 1 0 0 3.6 1.8 1.8 0 0 0 0-3.6z" />
+    <path d="M11.9 11.1 20 3m-3 3 2.6 2.6M14.2 8.8l2.1 2.1" {...stroke} strokeWidth={2.4} />
+  </>,
+);
+
 export const SlidersFilled = filled(
   "SlidersFilled",
   <path d="M4 3a1 1 0 0 1 1 1v6.17a3 3 0 0 1 0 5.66V20a1 1 0 1 1-2 0v-4.17a3 3 0 0 1 0-5.66V4a1 1 0 0 1 1-1zm8 0a1 1 0 0 1 1 1v1.17a3 3 0 0 1 0 5.66V20a1 1 0 1 1-2 0v-9.17a3 3 0 0 1 0-5.66V4a1 1 0 0 1 1-1zm8 0a1 1 0 0 1 1 1v8.17a3 3 0 0 1 0 5.66V20a1 1 0 1 1-2 0v-2.17a3 3 0 0 1 0-5.66V4a1 1 0 0 1 1-1z" />,

@@ -12,10 +12,9 @@ export const demoUsers = {
   advisor2: { email: "advisor2@demo.test", name: "Maria Laurent", role: "advisor", cases: 7, tasks: 8 },
   assessor: { email: "assessor@demo.test", name: "Jordan Rivera", role: "assessor", cases: 6, tasks: 3 },
   writer: { email: "writer@demo.test", name: "Kai Thompson", role: "assessor", cases: 6, tasks: 2 },
-  coordinator: { email: "coordinator@demo.test", name: "Dana Whitfield", role: "coordinator", cases: 16, tasks: 20 },
   manager: { email: "manager@demo.test", name: "Lee Chen", role: "manager", cases: 16, tasks: 20 },
   director: { email: "director@demo.test", name: "Pat Okafor", role: "director", cases: 16, tasks: 20 },
   admin: { email: "admin@demo.test", name: "Robin Admin", role: "admin", cases: 16, tasks: 20 },
 } satisfies Record<string, DemoUser>;
 
-export const TOTAL_PROFILES = 24;
+export const TOTAL_PROFILES = 23;

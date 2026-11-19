@@ -12,6 +12,11 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # project lead's decision) until sign-in is added. PLAR_LAB_AI=true also sends the OpenRouter key.
 : "${PLAR_LAB:=true}"
 : "${PLAR_LAB_AI:=true}"
+# Demo sign-in on the live site (2026-11-19, project lead's decision): one-click demo accounts and the
+# "Sign in with Microsoft" demo picker, for the synthetic accounts only. Sends DEMO_LOGIN_PASSWORD.
+# PLAR_MICROSOFT=entra once TRU's Microsoft Entra ID is connected in Supabase.
+: "${PLAR_DEMO:=true}"
+: "${PLAR_MICROSOFT:=demo}"
 
 # Key-only, non-interactive: never prompts for or sends a password.
 SSH_OPTS=(

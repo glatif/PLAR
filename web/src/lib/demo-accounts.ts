@@ -11,8 +11,8 @@ export const demoAccountGroups: { label: string; accounts: DemoAccount[] }[] = [
   {
     label: "Advisors",
     accounts: [
-      { key: "advisor", email: "advisor@demo.test", name: "Sam Patel", role: "Advisor", note: "9 students", tile: "#5E5CE6" },
-      { key: "advisor2", email: "advisor2@demo.test", name: "Maria Laurent", role: "Advisor", note: "7 students", tile: "#5E5CE6" },
+      { key: "advisor", email: "advisor@demo.test", name: "Sam Patel", role: "Advisor", note: "9 students · books interviews", tile: "#5E5CE6" },
+      { key: "advisor2", email: "advisor2@demo.test", name: "Maria Laurent", role: "Advisor", note: "7 students · books interviews", tile: "#5E5CE6" },
     ],
   },
   {
@@ -25,10 +25,9 @@ export const demoAccountGroups: { label: string; accounts: DemoAccount[] }[] = [
   {
     label: "PLAR office",
     accounts: [
-      { key: "coordinator", email: "coordinator@demo.test", name: "Dana Whitfield", role: "Coordinator", note: "Scheduling", tile: "#2F7FC1" },
-      { key: "manager", email: "manager@demo.test", name: "Lee Chen", role: "Manager", note: "Approvals", tile: "#2F7FC1" },
-      { key: "director", email: "director@demo.test", name: "Pat Okafor", role: "Director", note: "Final decisions", tile: "#2F7FC1" },
-      { key: "admin", email: "admin@demo.test", name: "Robin Admin", role: "Administrator", note: "Everything", tile: "#2F7FC1" },
+      { key: "manager", email: "manager@demo.test", name: "Lee Chen", role: "PLAR Manager", note: "Approvals and assessors", tile: "#2F7FC1" },
+      { key: "director", email: "director@demo.test", name: "Pat Okafor", role: "PLAR Director", note: "Final credit decisions", tile: "#9A3F7A" },
+      { key: "admin", email: "admin@demo.test", name: "Robin Admin", role: "Admin", note: "People, roles and settings", tile: "#48484A" },
     ],
   },
 ];

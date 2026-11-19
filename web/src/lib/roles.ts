@@ -1,5 +1,6 @@
-// Role-specific workspace configuration. Real permissions arrive with RBAC in Milestone 1
-// (Resources/docs/16-implementation-plan.md); for now this only drives the preview shell.
+// One workspace per role: student, advisor (who also books interviews), assessor, PLAR Manager,
+// PLAR Director and admin. Row-level security in the database decides what each person can see;
+// this file only drives the workspace shell.
 
 import type { LucideIcon } from "lucide-react";
 import {
@@ -12,6 +13,7 @@ import {
   Folder,
   House,
   Inbox,
+  KeyRound,
   MessageSquare,
   ShieldCheck,
   SlidersVertical,
@@ -29,6 +31,7 @@ import {
   FolderFilled,
   HomeFilled,
   InboxFilled,
+  KeyFilled,
   MessageFilled,
   ShieldCheckFilled,
   SlidersFilled,
@@ -36,7 +39,8 @@ import {
   VideoFilled,
 } from "@/components/ui/filled-icons";
 
-export type RoleSlug = "student" | "advisor" | "assessor" | "admin";
+/** One workspace per role. Advisors also book interviews (no separate coordinator role). */
+export type RoleSlug = "student" | "advisor" | "assessor" | "manager" | "director" | "admin";
 
 /** Navigation shows the outline icon at rest and swaps to the filled one when the item is selected. */
 export type NavItem = { label: string; href?: string; milestone?: string; icon: LucideIcon; iconSelected: FilledIcon };
@@ -45,16 +49,22 @@ export type RoleConfig = {
   slug: RoleSlug;
   label: string;
   greeting: string;
+  /** Colour of the role's white-glyph tile. */
+  tile: string;
   nav: NavItem[];
 };
 
 const overview = (slug: RoleSlug): NavItem => ({ label: "Overview", href: `/workspace/${slug}`, icon: House, iconSelected: HomeFilled });
+const allCases: NavItem = { label: "All cases", milestone: "M1", icon: Folder, iconSelected: FolderFilled };
+const identityChecks: NavItem = { label: "Identity checks", href: "/testing", icon: ShieldCheck, iconSelected: ShieldCheckFilled };
+const insights: NavItem = { label: "Insights", milestone: "M5", icon: ChartColumn, iconSelected: ChartFilled };
 
 export const roleConfigs: Record<RoleSlug, RoleConfig> = {
   student: {
     slug: "student",
     label: "Student",
     greeting: "Here's where your portfolio stands.",
+    tile: "#F5761A",
     nav: [
       overview("student"),
       { label: "My portfolio", milestone: "M4", icon: Folder, iconSelected: FolderFilled },
@@ -66,19 +76,21 @@ export const roleConfigs: Record<RoleSlug, RoleConfig> = {
   advisor: {
     slug: "advisor",
     label: "Advisor",
-    greeting: "Your caseload at a glance.",
+    greeting: "Your caseload and interview bookings at a glance.",
+    tile: "#5E5CE6",
     nav: [
       overview("advisor"),
       { label: "Caseload", milestone: "M1", icon: Users, iconSelected: UsersFilled },
       { label: "Reviews", milestone: "M4", icon: FileText, iconSelected: FileFilled },
       { label: "Comment library", milestone: "M4", icon: BookOpen, iconSelected: BookFilled },
-      { label: "Scheduling", milestone: "M3", icon: Calendar, iconSelected: CalendarFilled },
+      { label: "Interview bookings", milestone: "M3", icon: Calendar, iconSelected: CalendarFilled },
     ],
   },
   assessor: {
     slug: "assessor",
     label: "Assessor",
     greeting: "Your assessments and upcoming interviews.",
+    tile: "#0F8C82",
     nav: [
       overview("assessor"),
       { label: "Assignments", milestone: "M2", icon: Folder, iconSelected: FolderFilled },
@@ -87,17 +99,47 @@ export const roleConfigs: Record<RoleSlug, RoleConfig> = {
       { label: "Reports", milestone: "M2", icon: FileText, iconSelected: FileFilled },
     ],
   },
+  manager: {
+    slug: "manager",
+    label: "PLAR Manager",
+    greeting: "Approvals, assessor assignments and reports to review.",
+    tile: "#2F7FC1",
+    nav: [
+      overview("manager"),
+      { label: "Approvals", milestone: "M2", icon: CircleCheck, iconSelected: CheckCircleFilled },
+      { label: "Assign assessors", milestone: "M2", icon: Users, iconSelected: UsersFilled },
+      { label: "Reports to review", milestone: "M2", icon: FileText, iconSelected: FileFilled },
+      allCases,
+      identityChecks,
+      insights,
+    ],
+  },
+  director: {
+    slug: "director",
+    label: "PLAR Director",
+    greeting: "Credit decisions, appeals and oversight.",
+    tile: "#9A3F7A",
+    nav: [
+      overview("director"),
+      { label: "Credit decisions", milestone: "M2", icon: CircleCheck, iconSelected: CheckCircleFilled },
+      { label: "Appeals", milestone: "M5", icon: MessageSquare, iconSelected: MessageFilled },
+      allCases,
+      identityChecks,
+      insights,
+    ],
+  },
   admin: {
     slug: "admin",
-    label: "Manager & Director",
-    greeting: "Approvals, decisions and oversight.",
+    label: "Admin",
+    greeting: "People, roles and settings.",
+    tile: "#48484A",
     nav: [
       overview("admin"),
-      { label: "Approvals", milestone: "M2", icon: CircleCheck, iconSelected: CheckCircleFilled },
-      { label: "Identity checks", href: "/testing", icon: ShieldCheck, iconSelected: ShieldCheckFilled },
-      { label: "All cases", milestone: "M1", icon: Folder, iconSelected: FolderFilled },
-      { label: "Insights", milestone: "M5", icon: ChartColumn, iconSelected: ChartFilled },
-      { label: "People & roles", milestone: "M1", icon: Users, iconSelected: UsersFilled },
+      { label: "Roles & access", href: "/workspace/admin/roles", icon: KeyRound, iconSelected: KeyFilled },
+      { label: "People", milestone: "M1", icon: Users, iconSelected: UsersFilled },
+      allCases,
+      identityChecks,
+      insights,
       { label: "Settings", milestone: "M1", icon: SlidersVertical, iconSelected: SlidersFilled },
     ],
   },

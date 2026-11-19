@@ -357,7 +357,6 @@ export type Database = {
       app_role:
         | "student"
         | "advisor"
-        | "coordinator"
         | "assessor"
         | "manager"
         | "director"
@@ -506,7 +505,6 @@ export const Constants = {
       app_role: [
         "student",
         "advisor",
-        "coordinator",
         "assessor",
         "manager",
         "director",

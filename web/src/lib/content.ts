@@ -11,7 +11,7 @@ import {
   Video,
   Accessibility,
 } from "lucide-react";
-import { type FilledIcon, GraduationFilled, LandmarkFilled, UserFilled, UsersFilled } from "@/components/ui/filled-icons";
+import { type FilledIcon, CheckCircleFilled, GraduationFilled, KeyFilled, LandmarkFilled, UserFilled, UsersFilled } from "@/components/ui/filled-icons";
 
 // Public homepage content. Mirrors the approved feature list (Resources/docs/13-features.md).
 
@@ -77,7 +77,7 @@ export const roles: Role[] = [
     blurb: "Spend your time coaching, not chasing files and reminders.",
     icon: GraduationFilled,
     tile: "#5E5CE6",
-    points: ["Review and comment in the browser", "Suggested comments from your library", "Automatic checklist checks and reminders"],
+    points: ["Review and comment in the browser", "Suggested comments from your library", "Book interviews with the student and both assessors"],
   },
   {
     slug: "assessor",
@@ -88,12 +88,28 @@ export const roles: Role[] = [
     points: ["Digital rubric with private preliminary ratings", "Evidence linked to the exact passage", "Report drafts you edit and approve"],
   },
   {
-    slug: "admin",
-    title: "Manager & Director",
-    blurb: "Clear oversight of every case, approval and decision.",
-    icon: LandmarkFilled,
+    slug: "manager",
+    title: "PLAR Manager",
+    blurb: "Keep every case moving, from approval to the assessors' report.",
+    icon: CheckCircleFilled,
     tile: "#2F7FC1",
-    points: ["Approval queues with full context", "Audit trail for every award", "Insights on volumes and turnaround"],
+    points: ["Approval queue with full context", "Assessor pairs suggested by availability", "Reports to review in one place"],
+  },
+  {
+    slug: "director",
+    title: "PLAR Director",
+    blurb: "Make the final credit decision with everything in front of you.",
+    icon: LandmarkFilled,
+    tile: "#9A3F7A",
+    points: ["Decisions with the ratings and report side by side", "Audit trail for every award", "Appeals with the assessors' notes"],
+  },
+  {
+    slug: "admin",
+    title: "Admin",
+    blurb: "Look after who can sign in and what each person can do.",
+    icon: KeyFilled,
+    tile: "#48484A",
+    points: ["Give and remove roles", "Insights on volumes and turnaround", "Templates and settings"],
   },
 ];
 

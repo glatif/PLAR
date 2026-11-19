@@ -16,25 +16,16 @@ export type Viewer = {
   workspaces: RoleSlug[];
 };
 
-// Which workspace each role opens. Coordinators, managers, directors and admins share the oversight workspace.
-const workspaceForRole: Record<AppRole, RoleSlug> = {
-  student: "student",
-  advisor: "advisor",
-  assessor: "assessor",
-  coordinator: "admin",
-  manager: "admin",
-  director: "admin",
-  admin: "admin",
-};
+// Each role opens its own workspace. The order is the order a person with several roles sees them in.
+const workspaceOrder: RoleSlug[] = ["admin", "director", "manager", "assessor", "advisor", "student"];
 
 export const roleLabels: Record<AppRole, string> = {
   student: "Student",
   advisor: "Advisor",
   assessor: "Assessor",
-  coordinator: "Coordinator",
-  manager: "Manager",
-  director: "Director",
-  admin: "Administrator",
+  manager: "PLAR Manager",
+  director: "PLAR Director",
+  admin: "Admin",
 };
 
 /** The signed-in person, their profile and roles. Cached for the length of one request. */
@@ -51,7 +42,7 @@ export const getViewer = cache(async (): Promise<Viewer | null> => {
   ]);
 
   const roles = (roleRows ?? []).map((r) => r.role);
-  const workspaces = [...new Set(roles.map((r) => workspaceForRole[r]))];
+  const workspaces = workspaceOrder.filter((slug) => roles.includes(slug));
 
   return {
     id: user.id,

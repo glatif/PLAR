@@ -139,7 +139,7 @@ The order follows the stakeholders' priority (assessment first, then advising) [
 | Entity | Purpose | Key fields |
 |---|---|---|
 | User | A person with access | name, email, status, SSO subject |
-| RoleAssignment | What a user may do | user, role (student/advisor/coordinator/assessor/manager/director/admin), scope |
+| RoleAssignment | What a user may do | user, role (student/advisor/assessor/manager/director/admin; advisors also book interviews), scope |
 | Case | One student's PLAR journey | student, program, LL/UL credit room, status, due date, advisor |
 | ProgramPlanSnapshot | The credits on record when the case was assessed | case, credits applied, remaining, file |
 | PortfolioSection | CL, ToC, AR, IoL, DoL, EDL, EV | case, type, current version, review state |

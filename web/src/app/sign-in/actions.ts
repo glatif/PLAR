@@ -1,8 +1,10 @@
 "use server";
 
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { demoAccounts } from "@/lib/demo-accounts";
+import { microsoftMode } from "@/lib/microsoft-sign-in";
 
 export type SignInState = { error?: string; email?: string };
 
@@ -30,6 +32,23 @@ export async function demoSignIn(formData: FormData) {
   if (error) redirect("/sign-in?demo=failed");
 
   redirect("/workspace");
+}
+
+/** "Sign in with Microsoft": the demo account picker for now, TRU's Microsoft Entra ID once it's connected. */
+export async function microsoftSignIn() {
+  const mode = await microsoftMode();
+  if (mode === "demo") redirect("/sign-in/microsoft");
+  if (mode !== "entra") redirect("/sign-in");
+
+  const h = await headers();
+  const origin = `${h.get("x-forwarded-proto") ?? "https"}://${h.get("x-forwarded-host") ?? h.get("host")}`;
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "azure",
+    options: { scopes: "openid email profile", redirectTo: `${origin}/auth/callback` },
+  });
+  if (error || !data.url) redirect("/sign-in?microsoft=failed");
+  redirect(data.url);
 }
 
 export async function signOut() {
