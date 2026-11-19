@@ -167,7 +167,11 @@ async function Microsoft({ params }: { params: PageProps<"/workspace/[role]/micr
       <Card title="How we switch it on">
         <ol className="space-y-2.5">
           {[
-            <><strong>DNS:</strong> Dr. Latif adds <code className="rounded-xs bg-fill-1 px-1.5 py-0.5 font-mono text-[13.5px]">plar-api.airl.ca</code>, then we turn on HTTPS for it.</>,
+            onServer ? (
+              <><strong>DNS and HTTPS</strong> for <code className="rounded-xs bg-fill-1 px-1.5 py-0.5 font-mono text-[13.5px]">plar-api.airl.ca</code>: <strong>done</strong>.</>
+            ) : (
+              <><strong>DNS:</strong> Dr. Latif adds <code className="rounded-xs bg-fill-1 px-1.5 py-0.5 font-mono text-[13.5px]">plar-api.airl.ca</code>, then we turn on HTTPS for it.</>
+            ),
             <><strong>Enter TRU&rsquo;s values:</strong> run <code className="rounded-xs bg-fill-1 px-1.5 py-0.5 font-mono text-[13.5px]">server/plar-api.sh microsoft</code> and paste the three values.</>,
             <><strong>Go live:</strong> deploy with Microsoft switched on (<code className="rounded-xs bg-fill-1 px-1.5 py-0.5 font-mono text-[13.5px]">PLAR_MICROSOFT=entra</code>).</>,
             <><strong>Test</strong> with one TRU staff account added in People.</>,

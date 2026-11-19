@@ -68,6 +68,19 @@ if [ -n "${PLAR_DOMAIN:-}" ]; then
   case "$code" in 2??|3??) say OK "PLAR https" "$PLAR_DOMAIN -> $code" ;; *) say FAIL "PLAR https" "$PLAR_DOMAIN -> $code" ;; esac
   c=$(docker ps -a --filter label=com.docker.compose.project=plar --format '{{.Names}} {{.Status}}' 2>/dev/null)
   [ -n "$c" ] && say OK "PLAR containers" "$(echo "$c" | paste -sd';')" || say WARN "PLAR containers" "no compose project named plar"
+
+  # PLAR's own Supabase (hz project plar-api): every container healthy, and Auth answering through the gateway.
+  sb=$(docker ps -a --filter label=com.docker.compose.project=plar-api --format '{{.Names}} {{.Status}}' 2>/dev/null)
+  if [ -z "$sb" ]; then say WARN "PLAR Supabase" "no compose project named plar-api"
+  elif echo "$sb" | grep -qv '(healthy)'; then say FAIL "PLAR Supabase" "$(echo "$sb" | paste -sd';')"
+  else say OK "PLAR Supabase" "$(echo "$sb" | wc -l | tr -d ' ') containers healthy"; fi
+  key=$(grep '^ANON_KEY=' /opt/projects/plar-api/.env 2>/dev/null | cut -d= -f2)
+  code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 --resolve "plar-api.airl.ca:443:127.0.0.1" -H "apikey: $key" "https://plar-api.airl.ca/auth/v1/health")
+  [ "$code" = 200 ] && say OK "PLAR Supabase https" "plar-api.airl.ca auth -> 200" || say FAIL "PLAR Supabase https" "plar-api.airl.ca auth -> $code"
+  last=$(ls -t "$HOME"/backups/plar-api/db-*.sql.gz 2>/dev/null | head -1)
+  if [ -z "$last" ]; then say WARN "PLAR backup" "none yet in ~/backups/plar-api"
+  elif [ -n "$(find "$last" -mmin +1560 2>/dev/null)" ]; then say WARN "PLAR backup" "newest is older than 26 hours: $(basename "$last")"
+  else say OK "PLAR backup" "$(basename "$last")"; fi
 fi
 
 echo

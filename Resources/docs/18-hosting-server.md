@@ -27,7 +27,7 @@ Where PLAR runs, how the team's servers are set up, and what to watch out for. F
 | living-heritage | 9000 | https://heritage.airl.ca (and :8080) | Next.js + Supabase |
 | faculty-desk | 9001 | https://faculty-desk.airl.ca (and :8081) | Next.js |
 | self-hosted Supabase | 9002 | https://supabase.airl.ca | Living Heritage's own (by design, per its docs); not in hz. Not used by PLAR |
-| **plar-api** (PLAR's own Supabase) | **9007** | https://plar-api.airl.ca (waiting on DNS) | Added 2026-11-19. See A6 |
+| **plar-api** (PLAR's own Supabase) | **9007** | https://plar-api.airl.ca | Added 2026-11-19. See A6 |
 | wildfireiq | 9003 | https://wildfireiq.airl.ca (and :8082) | Python API + web build |
 | **plar** | **9004** | **https://plar.airl.ca** | Added 2026-11-13 |
 | prebinary (exam app) | — | :8501, `144-217-80-160.sslip.io`, `lms.airl.ca` | Streamlit + MySQL + Caddy, not `hz`-managed |
@@ -45,7 +45,7 @@ Source: `[SRV-OVH]`.
 | **Public** | nginx vhost `hz-plar` for `plar.airl.ca`, written by `hz proxy`; Let's Encrypt certificate valid to 2027-02-11; HTTP redirects to HTTPS. nginx config backed up to `/opt/backups/` first |
 | **Settings** | `.env` (build args) and `.env.local` (runtime), mode 600, owned by `hh_horaizon`. Both hold `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (public by design) and `VERIFICATION_LAB=true`; `.env.local` also holds `OPENROUTER_API_KEY` and `VERIFICATION_AI_MODEL` for the lab's AI check. Since 2026-11-19 `.env.local` also holds `DEMO_LOGIN_PASSWORD` (one-click demo sign-in and the Microsoft demo picker, synthetic accounts only) and `MICROSOFT_SIGN_IN=demo`. `server/common.sh` switches: `PLAR_LAB`, `PLAR_LAB_AI`, `PLAR_DEMO`, `PLAR_MICROSOFT` |
 | **Verification lab** | **On, and open to anyone, since 2026-11-13** (project lead's decision, until sign-in is added): `/verify` and `/testing`, linked from the home page. Anyone with the link can open `/testing` and see every capture, name and ID detail. Captures are kept in the Docker volume `plar_verification-data` (mounted at `/app/.verification-data`), so redeploys keep them. Memory limit raised to 1 GB for ID straightening |
-| **Data** | Lab captures in the volume above. Everything else is in the hosted Supabase project `plar-dev` (Canada Central) |
+| **Data** | Lab captures in the volume above. Everything else is in PLAR's own Supabase on this server (A6) since 2026-11-19; before that, the cloud project `plar-dev` |
 
 **Checked 2026-11-13:** `/` and `/sign-in` return 200, `/verify` 404 (lab off), OpenCV and MediaPipe files served, valid certificate, HTTP→HTTPS redirect, sign-in page renders in a browser with no console errors. heritage, faculty-desk, wildfireiq and the index page still serve their own pages.
 
@@ -76,7 +76,7 @@ Each project has its own Supabase (project lead's decision). Living Heritage's i
 | **Folder** | `/opt/projects/plar-api`, registered in hz. Files from `server/plar-api/` in our repo |
 | **Containers** | `plar-api` (Envoy gateway, the hz `app` service), `plar-api-auth` (GoTrue v2.189.0), `plar-api-rest` (PostgREST v14.12), `plar-api-db` (supabase/postgres 17.6.1.136). Same image tags as Heritage's stack. Memory limits 256 MB / 256 MB / 512 MB / 1 GB. No Storage, Realtime, Studio or pooler yet |
 | **Port** | `127.0.0.1:9007` → gateway 8000 (hz override). The database has no host port; reach it with `docker exec plar-api-db psql -U postgres` |
-| **Public** | `https://plar-api.airl.ca` once the A record exists at Porkbun and `server/plar-api.sh publish` has run (`hz proxy`, needs the sudo password). Until then the web app uses the cloud project `plar-dev` |
+| **Public** | `https://plar-api.airl.ca`: A record added at Porkbun by Dr. Latif, vhost `hz-plar-api` and Let's Encrypt certificate (to 2027-02-17, auto-renewing) by `server/plar-api.sh publish` on 2026-11-19. The web app and live site use it since then |
 | **Auth** | Sign-up off, autoconfirm off, no anonymous or phone sign-in, no mail server yet. `SITE_URL=https://plar.airl.ca`. Own JWT secret and keys. Microsoft (Azure) provider wired but off: `./plar-api.sh microsoft` sets `AZURE_TENANT_ID`, `AZURE_CLIENT_ID`, `AZURE_SECRET` and `AZURE_ENABLED` in `.env` and restarts Auth |
 | **Secrets** | `/opt/projects/plar-api/.env` (mode 600), made on the server by `plar-api.sh deploy`. Only the anon key (public) leaves the server |
 | **Migrations** | `server/plar-api.sh migrate` applies `supabase/migrations` in order, each in a transaction, recorded in `supabase_migrations.schema_migrations`. `seed` loads the demo data; `test` runs the pgTAP tests (39 of 39 pass) |
