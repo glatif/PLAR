@@ -5,7 +5,7 @@ import { ChevronRight } from "lucide-react";
 import { BrandMark } from "@/components/ui/brand-mark";
 import { MicrosoftLogo } from "@/components/ui/microsoft-logo";
 import { SignInForm } from "@/components/app/sign-in-form";
-import { UserFilled } from "@/components/ui/filled-icons";
+import { AlertFilled, UserFilled } from "@/components/ui/filled-icons";
 import { demoAccountGroups } from "@/lib/demo-accounts";
 import { demoSignInEnabled, microsoftMode } from "@/lib/microsoft-sign-in";
 import { demoSignIn, microsoftSignIn } from "@/app/sign-in/actions";
@@ -37,7 +37,26 @@ async function MicrosoftSignIn() {
   );
 }
 
-export default function SignInPage() {
+const microsoftProblems: Record<string, string> = {
+  "not-added": "Your TRU Microsoft account isn’t on PLAR yet. Ask the PLAR office to add your TRU email address.",
+  deactivated: "This account has been deactivated. Contact the PLAR office if you think that’s wrong.",
+  failed: "Microsoft sign-in didn’t finish. Try again, or sign in with your email and password.",
+};
+
+/** Explains a Microsoft sign-in that was refused (?microsoft=…). Reads the URL, so it sits in <Suspense>. */
+async function MicrosoftProblem({ searchParams }: { searchParams: PageProps<"/sign-in">["searchParams"] }) {
+  const value = (await searchParams).microsoft;
+  const text = typeof value === "string" ? microsoftProblems[value] : undefined;
+  if (!text) return null;
+  return (
+    <p role="alert" className="mb-5 flex items-start gap-2 rounded-md bg-danger-subtle px-3.5 py-3 text-[14px] leading-[20px] text-danger">
+      <AlertFilled className="mt-0.5 size-4 shrink-0" />
+      {text}
+    </p>
+  );
+}
+
+export default function SignInPage({ searchParams }: PageProps<"/sign-in">) {
   return (
     <main id="main" className="hero-glow flex flex-1 flex-col items-center px-4 py-12 sm:py-16">
       <BrandMark className="mb-8" />
@@ -47,6 +66,9 @@ export default function SignInPage() {
           <p className="mt-2 text-[15px] leading-[22px] text-label-2">Students, advisors, assessors and PLAR staff all sign in here.</p>
 
           <div className="mt-7">
+            <Suspense>
+              <MicrosoftProblem searchParams={searchParams} />
+            </Suspense>
             <SignInForm />
           </div>
 

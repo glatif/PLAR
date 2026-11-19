@@ -11,6 +11,7 @@
 #   ./plar-api.sh test       run the pgTAP tests in supabase/tests/database (everything rolls back)
 #   ./plar-api.sh status     containers and applied migrations
 #   ./plar-api.sh backup-install   nightly database backup (hh_horaizon crontab), and run one now
+#   ./plar-api.sh microsoft [status|off]   TRU Microsoft sign-in (asks for TRU's app values)
 #
 # Never run `hz rm plar-api` or `hz deploy plar-api`: rm runs `docker compose down -v` (deletes the
 # database), and deploy rewrites .env. Use `hz up/restart/logs plar-api` and this script.
@@ -75,6 +76,40 @@ case "${1:-}" in
     code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 "https://$PLAR_API_DOMAIN/auth/v1/health" -H "apikey: $("$0" anon-key)" || true)
     [ "$code" = "200" ] && echo "✓ https://$PLAR_API_DOMAIN answers (auth health $code)" || { echo "! https://$PLAR_API_DOMAIN/auth/v1/health returned $code"; exit 1; }
     ;;
+  microsoft)
+    # TRU Microsoft Entra ID for "Sign in with Microsoft". Run in your own terminal:
+    #   ./plar-api.sh microsoft          asks for the tenant ID, client ID and secret (secret not shown)
+    #   ./plar-api.sh microsoft status   is Microsoft switched on in PLAR's Supabase?
+    #   ./plar-api.sh microsoft off      switch it off again
+    # Values can also come from AZURE_TENANT_ID / AZURE_CLIENT_ID / AZURE_SECRET in the environment.
+    # They're sent over SSH on stdin (never on a command line) into the server's .env (mode 600).
+    settings() { run "curl -s http://127.0.0.1:9007/auth/v1/settings -H 'apikey: $("$0" anon-key)'" \
+      | python3 -c 'import json,sys; s=json.load(sys.stdin); print("Microsoft sign-in in PLAR Supabase:", "ON" if s["external"].get("azure") else "off", "· email sign-in:", "on" if s["external"].get("email") else "off", "· sign-up:", "off" if s.get("disable_signup") else "ON")'; }
+    case "${2:-on}" in
+      status) settings ;;
+      off)
+        run "set -e; cd $DIR; ( umask 077; grep -v '^AZURE_' .env > .env.new; echo AZURE_ENABLED=false >> .env.new; mv .env.new .env ); chmod 600 .env; docker compose up -d --no-deps auth >/dev/null 2>&1"
+        sleep 5; settings ;;
+      on)
+        tenant=${AZURE_TENANT_ID:-}; client=${AZURE_CLIENT_ID:-}; secret=${AZURE_SECRET:-}
+        [ -n "$tenant" ] || read -rp "TRU tenant ID (Directory ID): " tenant
+        [ -n "$client" ] || read -rp "PLAR app's Application (client) ID: " client
+        [ -n "$secret" ] || { read -rsp "Client secret VALUE (not shown as you type): " secret; echo; }
+        guid='^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$'
+        [[ $tenant =~ $guid ]] || { echo "The tenant ID should look like 1a2b3c4d-…-…-…-123456789abc"; exit 1; }
+        [[ $client =~ $guid ]] || { echo "The client ID should look like 1a2b3c4d-…-…-…-123456789abc"; exit 1; }
+        [ ${#secret} -ge 10 ] && [[ $secret != *"'"* ]] || { echo "That doesn't look like a client secret value (use the Value, not the Secret ID)."; exit 1; }
+        printf '%s\n%s\n%s\n' "$tenant" "$client" "$secret" | run "set -e; cd $DIR; read -r t; read -r c; read -r s
+          ( umask 077; grep -v '^AZURE_' .env > .env.new
+            printf \"AZURE_ENABLED=true\nAZURE_TENANT_ID=%s\nAZURE_CLIENT_ID=%s\nAZURE_SECRET='%s'\n\" \"\$t\" \"\$c\" \"\$s\" >> .env.new
+            mv .env.new .env ); chmod 600 .env
+          docker compose up -d --no-deps auth >/dev/null 2>&1"
+        unset secret
+        sleep 5; settings
+        echo "Next: deploy the web app with Microsoft live:  PLAR_MICROSOFT=entra ./deploy.sh" ;;
+      *) echo "Use: ./plar-api.sh microsoft [status|off]"; exit 1 ;;
+    esac
+    ;;
   backup-install)
     # Nightly pg_dump at 03:45 by hh_horaizon's crontab (no sudo), into ~/backups/plar-api (outside the
     # project folder, so `hz rm` can't take the backups with it). Keeps 14 days.
@@ -110,5 +145,5 @@ case "${1:-}" in
     run "docker ps --filter name=plar-api --format '  {{.Names}}  {{.Status}}'; docker exec plar-api-db psql -U postgres -d postgres -tAc 'select version, name from supabase_migrations.schema_migrations order by 1' 2>/dev/null || true"
     ;;
   *)
-    sed -n '2,21p' "$0"; exit 1 ;;
+    sed -n '2,22p' "$0"; exit 1 ;;
 esac

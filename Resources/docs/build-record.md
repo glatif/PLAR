@@ -30,7 +30,8 @@ What was built, and when. Dates and times are Pacific time. Each **Commit** is a
 | | Demo sign-in live | Demo accounts and the Microsoft demo switched on at plar.airl.ca, using the cloud database. | Deployed |
 | | Identity check test in the admin panel (10:55) | The admin panel links straight to the identity check test and the results page, for manual testing. | Commit `28663e0` |
 | | PLAR's own Supabase on the server | Each project now has its own Supabase. PLAR's runs on the team's server, separate from Living Heritage's, with sign-up switched off and a nightly backup. Database structure, demo data and all tests loaded and passing there. | Commits `bba6486`, `a02a7d4` |
-| | People management for admins | From the admin portal: add people with their roles, promote or change roles, reset passwords, deactivate and reactivate, sign people out everywhere, edit details and delete people with no records. Every change is recorded. New and reset accounts choose their own password at first sign-in. | This commit |
+| | People management for admins | From the admin portal: add people with their roles, promote or change roles, reset passwords, deactivate and reactivate, sign people out everywhere, edit details and delete people with no records. Every change is recorded. New and reset accounts choose their own password at first sign-in. | Commit `eeb2d84` |
+| | Microsoft sign-in ready for TRU | Everything on PLAR's side is ready for TRU Microsoft accounts: limited to TRU's own accounts, only people added by an admin can get in, clear messages when refused. Tested up to Microsoft's sign-in page. A new admin page lists what TRU IT needs to provide and the next steps for TRU Moodle. | This commit |
 
 ## Still to do
 
