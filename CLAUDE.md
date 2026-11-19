@@ -16,10 +16,11 @@ AI-assisted efficiency platform for Thompson Rivers University Open Learning's P
 - Commands (run in `web/`): `npm run dev`, `npm run lint`, `npm run typecheck`, `npm run build`. The desktop preview config is `.claude/launch.json` (port 3100).
 - This Next.js version has breaking changes: read `web/node_modules/next/dist/docs/` before using an unfamiliar API, and read `params` inside `<Suspense>`.
 - Milestones and the architecture decision log: `Resources/docs/16-implementation-plan.md`.
-- Database: `supabase/` (Supabase CLI project: migrations, seed, pgTAP tests). Hosted dev project `plar-dev`, ref `dxnurogvpdxtbaocallr`, Canada (Central). Every table has row-level security on, and each new table gets a pgTAP test per role.
-- **One cloud database for everything** (no staging, no local stack). `harness/` configures and tests it: `npm run doctor`, `npm run check` (signs in as every demo account), `npm run dev:seed`, `npm run types`, `dev:push`. See `harness/README.md`.
+- Database: `supabase/` (migrations, seed, pgTAP tests). Every table has row-level security on, and each new table gets a pgTAP test per role.
+- **PLAR has its own Supabase** on the OVH project server (decision 2026-11-19: each project gets its own): `/opt/projects/plar-api`, gateway `127.0.0.1:9007`, public at `https://plar-api.airl.ca` once DNS and HTTPS are in place. Run it from `server/plar-api.sh` (`deploy`, `publish`, `migrate`, `seed`, `test`, `status`, `backup-install`). Never `hz rm` or `hz deploy` it (rm deletes the database). The older cloud project `plar-dev` (ref `dxnurogvpdxtbaocallr`) is a fallback until the web app is switched over.
+- `harness/` tests it: `npm run check` (signs in as every demo account; targets the server by default, `check:dev` for the cloud project).
 - Demo accounts (synthetic, one per role) are listed in `harness/DEMO-ACCOUNTS.md`. Keep `harness/src/fixtures.ts` in step with `supabase/seed.sql`.
-- The web app uses the publishable key only. Secret or service keys never go in `web/` or in git.
+- The web app uses the publishable key only (on the server stack that's the anon key). Secret or service keys never go in `web/` or in git. Admin actions (people, roles, passwords) are security-definer database functions that check the admin role, so they need no secret key.
 - **Verification lab** (`/verify`, `/testing`, dev only): see `Resources/docs/17-identity-verification.md`. Captures live in `web/.verification-data/` (git-ignored, never committed). `npm test` runs the detection tests; `npm run dev:phone` serves HTTPS for phone testing. The lab AI check uses OpenRouter (key in `web/.env.local` only), approved for the lab only.
 - Synthetic data only in code, seeds and tests.
 

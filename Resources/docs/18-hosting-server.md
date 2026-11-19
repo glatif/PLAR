@@ -26,7 +26,8 @@ Where PLAR runs, how the team's servers are set up, and what to watch out for. F
 |---|---|---|---|
 | living-heritage | 9000 | https://heritage.airl.ca (and :8080) | Next.js + Supabase |
 | faculty-desk | 9001 | https://faculty-desk.airl.ca (and :8081) | Next.js |
-| self-hosted Supabase | 9002 | https://supabase.airl.ca | Not used by PLAR (PLAR uses the hosted `plar-dev` project) |
+| self-hosted Supabase | 9002 | https://supabase.airl.ca | Living Heritage's own (by design, per its docs); not in hz. Not used by PLAR |
+| **plar-api** (PLAR's own Supabase) | **9007** | https://plar-api.airl.ca (waiting on DNS) | Added 2026-11-19. See A6 |
 | wildfireiq | 9003 | https://wildfireiq.airl.ca (and :8082) | Python API + web build |
 | **plar** | **9004** | **https://plar.airl.ca** | Added 2026-11-13 |
 | prebinary (exam app) | — | :8501, `144-217-80-160.sslip.io`, `lms.airl.ca` | Streamlit + MySQL + Caddy, not `hz`-managed |
@@ -65,6 +66,22 @@ cd server
 - **Add PLAR to the server index page** (`/var/www/horaizon-index/index.html`), as the deploy guide asks. It needs sudo, so the person with the password does it.
 - **Change the `hh_horaizon` and IONOS root passwords**: both were shared in chat.
 - **Reboot** the OVH server in a quiet moment (libc6 and kernel updates are waiting).
+
+## A6. PLAR's own Supabase (2026-11-19)
+
+Each project has its own Supabase (project lead's decision). Living Heritage's is `/opt/supabase` (its own docs describe it as Heritage's backend). PLAR's follows the dermixa pattern: one hz project with the database inside it and no host port for the database.
+
+| | |
+|---|---|
+| **Folder** | `/opt/projects/plar-api`, registered in hz. Files from `server/plar-api/` in our repo |
+| **Containers** | `plar-api` (Envoy gateway, the hz `app` service), `plar-api-auth` (GoTrue v2.189.0), `plar-api-rest` (PostgREST v14.12), `plar-api-db` (supabase/postgres 17.6.1.136). Same image tags as Heritage's stack. Memory limits 256 MB / 256 MB / 512 MB / 1 GB. No Storage, Realtime, Studio or pooler yet |
+| **Port** | `127.0.0.1:9007` → gateway 8000 (hz override). The database has no host port; reach it with `docker exec plar-api-db psql -U postgres` |
+| **Public** | `https://plar-api.airl.ca` once the A record exists at Porkbun and `server/plar-api.sh publish` has run (`hz proxy`, needs the sudo password). Until then the web app uses the cloud project `plar-dev` |
+| **Auth** | Sign-up off, autoconfirm off, no anonymous or phone sign-in, no mail server yet. `SITE_URL=https://plar.airl.ca`. Own JWT secret and keys |
+| **Secrets** | `/opt/projects/plar-api/.env` (mode 600), made on the server by `plar-api.sh deploy`. Only the anon key (public) leaves the server |
+| **Migrations** | `server/plar-api.sh migrate` applies `supabase/migrations` in order, each in a transaction, recorded in `supabase_migrations.schema_migrations`. `seed` loads the demo data; `test` runs the pgTAP tests (39 of 39 pass) |
+| **Backups** | Nightly `pg_dumpall` at 03:45 from hh_horaizon's crontab, `~/bin/plar-api-backup.sh` → `~/backups/plar-api` (14 days, size and policy checks, log in `backup.log`). Same disk: an off-server copy is still needed |
+| **Don't** | `hz rm plar-api` runs `docker compose down -v` and deletes the database; `hz deploy plar-api` rewrites `.env`. Use `hz up / restart / logs plar-api` and `server/plar-api.sh` |
 
 # Part B: the IONOS server (`74.208.142.195`)
 

@@ -29,9 +29,13 @@ What was built, and when. Dates and times are Pacific time. Each **Commit** is a
 | | Roles and access page | Admin page showing each role's purpose, duties and access, a table of what each role can do, the other TRU offices involved and what's still to confirm. | Commit `dc52a50` |
 | | Demo sign-in live | Demo accounts and the Microsoft demo switched on at plar.airl.ca, using the cloud database. | Deployed |
 | | Identity check test in the admin panel (10:55) | The admin panel links straight to the identity check test and the results page, for manual testing. | Commit `28663e0` |
+| | PLAR's own Supabase on the server | Each project now has its own Supabase. PLAR's runs on the team's server, separate from Living Heritage's, with sign-up switched off and a nightly backup. Database structure, demo data and all tests loaded and passing there. | Commits `bba6486`, `a02a7d4` |
+| | People management for admins | From the admin portal: add people with their roles, promote or change roles, reset passwords, deactivate and reactivate, sign people out everywhere, edit details and delete people with no records. Every change is recorded. New and reset accounts choose their own password at first sign-in. | This commit |
 
 ## Still to do
 
+- **Switch the live site to PLAR's own Supabase**, once the `plar-api` address is added at Porkbun.
+- **Off-server copy of the backups.**
 - **Sign-in for the lab.** `/verify` and `/testing` are open to anyone with the link until sign-in is added.
 - **Privacy note** for the start of the ID check (wording to come).
 - **TRU Microsoft sign-in**, to replace the demo once TRU IT sets it up.

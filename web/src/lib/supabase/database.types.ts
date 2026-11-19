@@ -16,6 +16,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_events: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          detail: Json
+          id: string
+          target_id: string | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          detail?: Json
+          id?: string
+          target_id?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          detail?: Json
+          id?: string
+          target_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_events_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "admin_events_target_id_fkey"
+            columns: ["target_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       case_assessors: {
         Row: {
           assessor_id: string
@@ -351,7 +393,51 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      admin_create_person: {
+        Args: {
+          p_email: string
+          p_full_name: string
+          p_password: string
+          p_roles: Database["public"]["Enums"]["app_role"][]
+        }
+        Returns: string
+      }
+      admin_delete_person: { Args: { p_user: string }; Returns: undefined }
+      admin_list_people: {
+        Args: never
+        Returns: {
+          active: boolean
+          can_sign_in: boolean
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          last_sign_in_at: string | null
+          must_change_password: boolean
+          roles: Database["public"]["Enums"]["app_role"][]
+        }[]
+      }
+      admin_reset_password: {
+        Args: { p_password: string; p_user: string }
+        Returns: undefined
+      }
+      admin_set_active: {
+        Args: { p_active: boolean; p_user: string }
+        Returns: undefined
+      }
+      admin_set_roles: {
+        Args: {
+          p_roles: Database["public"]["Enums"]["app_role"][]
+          p_user: string
+        }
+        Returns: undefined
+      }
+      admin_sign_out_everywhere: { Args: { p_user: string }; Returns: undefined }
+      admin_update_person: {
+        Args: { p_email: string; p_full_name: string; p_user: string }
+        Returns: undefined
+      }
+      complete_password_change: { Args: never; Returns: undefined }
     }
     Enums: {
       app_role:

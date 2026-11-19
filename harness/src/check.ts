@@ -102,6 +102,66 @@ async function main() {
     assert(n === TOTAL_PROFILES, `sees ${n}, expected ${TOTAL_PROFILES}`);
   });
 
+  // People management end to end, through the real auth service. Uses a throwaway synthetic person
+  // and deletes it at the end, so the demo data is unchanged.
+  report.section("Admin manages people");
+  const admin = await signIn(target, demoUsers.admin.email);
+  const email = `harness-${Date.now()}@example.test`;
+  const temp = `Temp-${Math.random().toString(36).slice(2, 10)}`;
+  let personId = "";
+  const passwordWorks = async (password: string) => {
+    const { data, error } = await client(target).auth.signInWithPassword({ email, password });
+    return { ok: !error && Boolean(data.user), user: data.user, error };
+  };
+  try {
+    await report.check("non-admins can't list or add people", async () => {
+      const { error: listError } = await student.c.rpc("admin_list_people");
+      const { error: addError } = await student.c.rpc("admin_create_person", { p_email: email, p_full_name: "X", p_roles: ["admin"], p_password: temp });
+      assert(listError?.code === PERMISSION_DENIED && addError?.code === PERMISSION_DENIED, `got ${listError?.code} / ${addError?.code}`);
+    });
+    await report.check("admin adds a person who can sign in, and must choose a password", async () => {
+      const { data, error } = await admin.c.rpc("admin_create_person", { p_email: email, p_full_name: "Harness Person", p_roles: ["assessor"], p_password: temp });
+      assert(!error && data, error?.message ?? "no id");
+      personId = data as string;
+      const signedIn = await passwordWorks(temp);
+      assert(signedIn.ok, `sign-in failed: ${signedIn.error?.message}`);
+      assert(signedIn.user?.app_metadata?.must_change_password === true, "must_change_password not set");
+    });
+    await report.check("admin promotes them", async () => {
+      const { error } = await admin.c.rpc("admin_set_roles", { p_user: personId, p_roles: ["assessor", "manager"] });
+      assert(!error, error?.message ?? "");
+      const { data } = await admin.c.from("role_assignments").select("role").eq("user_id", personId);
+      assert(data?.length === 2, `has ${data?.length} roles`);
+    });
+    await report.check("admin resets their password: the old one stops working", async () => {
+      const next = `${temp}-2`;
+      const { error } = await admin.c.rpc("admin_reset_password", { p_user: personId, p_password: next });
+      assert(!error, error?.message ?? "");
+      assert(!(await passwordWorks(temp)).ok, "old password still works");
+      assert((await passwordWorks(next)).ok, "new password doesn't work");
+    });
+    await report.check("admin deactivates them: they can't sign in, then reactivates", async () => {
+      const next = `${temp}-2`;
+      await admin.c.rpc("admin_set_active", { p_user: personId, p_active: false });
+      const blocked = await passwordWorks(next);
+      assert(!blocked.ok, "a deactivated person signed in");
+      await admin.c.rpc("admin_set_active", { p_user: personId, p_active: true });
+      assert((await passwordWorks(next)).ok, "reactivated person can't sign in");
+      return blocked.error?.message;
+    });
+    await report.check("every change is in the audit log", async () => {
+      const { data } = await admin.c.from("admin_events").select("action").eq("target_id", personId);
+      assert((data?.length ?? 0) >= 5, `${data?.length} events`);
+    });
+  } finally {
+    if (personId) {
+      await report.check("admin deletes the test person", async () => {
+        const { error } = await admin.c.rpc("admin_delete_person", { p_user: personId });
+        assert(!error, error?.message ?? "");
+      });
+    }
+  }
+
   report.finish();
 }
 

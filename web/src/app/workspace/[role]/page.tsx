@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { notFound, redirect } from "next/navigation";
 import { ArrowRight, ScanFace, ShieldCheck } from "lucide-react";
 import { ButtonLink } from "@/components/ui/button";
-import { IdCardFilled, InfoFilled, KeyFilled } from "@/components/ui/filled-icons";
+import { IdCardFilled, InfoFilled, KeyFilled, UsersFilled } from "@/components/ui/filled-icons";
 import { labEnabled } from "@/lib/verification/storage";
 import { ActivityFeed, CaseTable, JourneyCard, StagePipeline, StatGrid, TaskList } from "@/components/app/overview";
 import { getViewer, roleLabels } from "@/lib/auth";
@@ -70,7 +70,8 @@ async function RoleOverview({ params }: { params: PageProps<"/workspace/[role]">
       </div>
 
       {role === "admin" ? (
-        <div className="grid gap-4 lg:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <PeopleShortcut />
           <RolesShortcut />
           {labEnabled() ? <VerificationShortcut /> : null}
         </div>
@@ -141,6 +142,29 @@ function VerificationShortcut() {
         <ButtonLink href="/testing" variant="neutral" className="w-full sm:w-auto">
           <ShieldCheck aria-hidden className="size-4" />
           Identity checks
+        </ButtonLink>
+      </div>
+    </section>
+  );
+}
+
+/** Admin only: add people, change roles, reset passwords, deactivate accounts. */
+function PeopleShortcut() {
+  return (
+    <section aria-labelledby="people-shortcut" className="card flex flex-col gap-4 p-5 sm:p-6">
+      <div className="flex items-start gap-4">
+        <span className="flex size-12 shrink-0 items-center justify-center rounded-[14px] bg-[#5E5CE6] text-white">
+          <UsersFilled className="size-6" />
+        </span>
+        <div className="min-w-0">
+          <h2 id="people-shortcut" className="text-[17px] font-semibold">People</h2>
+          <p className="mt-0.5 text-[14px] leading-[20px] text-label-2">Add people, change their roles, reset passwords and deactivate accounts.</p>
+        </div>
+      </div>
+      <div className="mt-auto flex flex-wrap gap-2">
+        <ButtonLink href="/workspace/admin/people" variant="secondary" className="w-full sm:w-auto">
+          Manage people
+          <ArrowRight aria-hidden className="size-4" />
         </ButtonLink>
       </div>
     </section>

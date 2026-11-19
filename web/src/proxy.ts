@@ -33,11 +33,13 @@ export async function proxy(request: NextRequest) {
     return redirect;
   };
 
-  if (!user && pathname.startsWith("/workspace")) return redirectTo("/sign-in");
+  if (!user && (pathname.startsWith("/workspace") || pathname.startsWith("/account"))) return redirectTo("/sign-in");
+  // Someone with a temporary password (new account or admin reset) chooses their own before anything else.
+  if (user?.app_metadata?.must_change_password === true && pathname.startsWith("/workspace")) return redirectTo("/account/password");
   if (user && pathname === "/sign-in") return redirectTo("/workspace");
   return response;
 }
 
 export const config = {
-  matcher: ["/workspace/:path*", "/sign-in"],
+  matcher: ["/workspace/:path*", "/account/:path*", "/sign-in"],
 };

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LogOut } from "lucide-react";
+import { KeyRound, LogOut } from "lucide-react";
 import { signOut } from "@/app/sign-in/actions";
 import { getViewer, roleLabels } from "@/lib/auth";
 import { initials } from "@/lib/format";
@@ -28,6 +28,14 @@ export async function ViewerMenu() {
           <span className="block text-[11.5px] text-label-2">{viewer.roles.map((r) => roleLabels[r]).join(" · ")}</span>
         </span>
       </div>
+      <Link
+        href="/account/password"
+        aria-label="Change password"
+        title="Change password"
+        className="flex size-9 items-center justify-center rounded-full text-label-2 transition-colors hover:bg-fill-1 hover:text-label"
+      >
+        <KeyRound aria-hidden className="size-[18px]" />
+      </Link>
       <form action={signOut}>
         <button
           type="submit"

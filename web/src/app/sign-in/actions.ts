@@ -16,6 +16,7 @@ export async function signIn(_prev: SignInState, formData: FormData): Promise<Si
 
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error?.code === "user_banned") return { error: "This account has been deactivated. Contact the PLAR office if you think that's wrong.", email };
   if (error) return { error: "That email and password don't match. Check them and try again.", email };
 
   redirect("/workspace");

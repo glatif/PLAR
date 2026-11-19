@@ -1,6 +1,6 @@
 # Demo accounts
 
-These accounts live in the hosted dev project (`plar-dev`) and only see **synthetic** data. They're for testing and demos. Never reuse them anywhere that holds real student information.
+These accounts live in PLAR's own Supabase on the OVH server (and in the older cloud project `plar-dev`) and only see **synthetic** data. They're for testing and demos. Never reuse them anywhere that holds real student information.
 
 **Password for every account: `demo1234`**
 
@@ -30,7 +30,8 @@ The demo data also includes 15 more synthetic students (`…@students.demo.test`
 The seed clears the previous demo data and loads it fresh. Ticked tasks go back to their original state.
 
 ```bash
-cd harness
-npm run dev:seed   # needs PLAR_DEV_DB_URL in harness/.env.local (Supabase dashboard → Connect → Session pooler)
-npm run check      # confirms every account sees exactly what it should
+server/plar-api.sh seed      # PLAR's server Supabase
+cd harness && npm run check  # confirms every account sees exactly what it should
 ```
+
+An admin can also add, change, reset or deactivate accounts from **Admin → People**. Resetting a demo account's password there breaks its one-click demo sign-in until you run the seed again.

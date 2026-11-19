@@ -138,7 +138,7 @@ export const roleConfigs: Record<RoleSlug, RoleConfig> = {
     nav: [
       overview("admin"),
       { label: "Roles & access", href: "/workspace/admin/roles", icon: KeyRound, iconSelected: KeyFilled },
-      { label: "People", milestone: "M1", icon: Users, iconSelected: UsersFilled },
+      { label: "People", href: "/workspace/admin/people", icon: Users, iconSelected: UsersFilled },
       allCases,
       { label: "Test identity check", href: "/verify", icon: ScanFace, iconSelected: IdCardFilled },
       identityChecks,
