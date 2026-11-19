@@ -4,9 +4,12 @@ import { repoRoot, supabase } from "./shell.js";
 
 // A target is one Supabase environment the harness can talk to.
 //   local: the CLI stack on this machine (supabase/ folder, seeded with synthetic demo users)
-//   dev:   the hosted development project in Canada (Central), migrations only, no seed users
+//   server: PLAR's own Supabase on the OVH project server (https://plar-api.airl.ca). The default since
+//           2026-11-19: the one database the app uses, with the synthetic demo accounts.
+//   dev:    the earlier cloud project in Canada (Central), kept for now but no longer used by the app
+//   local:  the CLI stack on this machine (supabase/ folder, seeded with synthetic demo users)
 
-export type TargetName = "local" | "dev";
+export type TargetName = "server" | "local" | "dev";
 
 export type Target = {
   name: TargetName;
@@ -24,12 +27,18 @@ if (existsSync(envFile)) process.loadEnvFile(envFile);
 
 export function targetFromArgs(argv = process.argv): TargetName {
   const i = argv.indexOf("--target");
-  const value = i >= 0 ? argv[i + 1] : "dev";
-  if (value !== "local" && value !== "dev") throw new Error(`Unknown target "${value}". Use --target local or --target dev.`);
+  const value = i >= 0 ? argv[i + 1] : "server";
+  if (value !== "server" && value !== "local" && value !== "dev") throw new Error(`Unknown target "${value}". Use --target server, dev or local.`);
   return value;
 }
 
 export async function resolveTarget(name: TargetName): Promise<Target> {
+  if (name === "server") {
+    const url = process.env.PLAR_SERVER_URL || "https://plar-api.airl.ca";
+    const publishableKey = process.env.PLAR_SERVER_PUBLISHABLE_KEY ?? "";
+    if (!publishableKey) throw new Error("PLAR_SERVER_PUBLISHABLE_KEY is not set. Get it with `server/plar-api.sh anon-key`.");
+    return { name, url, publishableKey, hasDemoUsers: true };
+  }
   if (name === "dev") {
     const url = process.env.PLAR_DEV_URL || `https://${DEV_PROJECT_REF}.supabase.co`;
     const publishableKey = process.env.PLAR_DEV_PUBLISHABLE_KEY ?? "";

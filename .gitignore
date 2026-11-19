@@ -19,3 +19,6 @@ web/next-env.d.ts
 
 # Server harness snapshots (server details; stay on this Mac)
 server/.snapshots/
+
+# PLAR Supabase secrets live only on the server
+server/plar-api/.env

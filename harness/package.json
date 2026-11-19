@@ -5,7 +5,8 @@
   "description": "Configure and test the PLAR Supabase backend (the hosted dev project).",
   "scripts": {
     "doctor": "tsx src/doctor.ts",
-    "check": "tsx src/check.ts --target dev",
+    "check": "tsx src/check.ts --target server",
+    "check:dev": "tsx src/check.ts --target dev",
     "dev:seed": "node --env-file=.env.local -e \"const u=process.env.PLAR_DEV_DB_URL; if(!u){console.error('Set PLAR_DEV_DB_URL in harness/.env.local first.');process.exit(1)} require('node:child_process').execFileSync('psql',[u,'-v','ON_ERROR_STOP=1','-q','-f','../supabase/seed.sql'],{stdio:'inherit'})\"",
     "types": "tsx src/types.ts --target dev",
     "dev:link": "supabase link --project-ref dxnurogvpdxtbaocallr --workdir ..",
