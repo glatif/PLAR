@@ -736,7 +736,7 @@ function StudentRow({
               const a = session.artifacts.find((x) => x.kind === slot.kind);
               const outcome = session.steps[slot.step]?.outcome;
               const note =
-                outcome && outcome !== "passed"
+                outcome && outcome !== "passed" && outcome !== "manual"
                   ? outcomeMeta[outcome].label
                   : a?.straightening && a.straightening !== "corrected"
                     ? straighteningMeta[a.straightening].label

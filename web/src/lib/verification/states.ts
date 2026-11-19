@@ -24,7 +24,7 @@ export type SessionStatus =
   | "in_progress"
   /** Every step captured with every automatic check passing. Waiting for a person to review. */
   | "submitted"
-  /** Every step captured, with at least one flag (manual capture, partial movement, card not found). */
+  /** Every step captured, with at least one flag (head movement not completed, card corners not found). */
   | "submitted_flagged"
   /** Couldn't continue: no camera, camera blocked or unsupported browser. Falls back to a check by the advisor. */
   | "blocked"
@@ -43,7 +43,8 @@ export const stepLabels: Record<StepKey, string> = {
 
 export const outcomeMeta: Record<StepOutcome, { label: string; tone: "success" | "warning" | "neutral"; description: string }> = {
   passed: { label: "Passed", tone: "success", description: "Captured with the automatic checks passing" },
-  manual: { label: "Manual", tone: "warning", description: "Captured without the automatic checks: review closely" },
+  // A manual capture (the person pressed the button themselves) is as good as an automatic one: no flag.
+  manual: { label: "Captured", tone: "success", description: "Captured" },
   partial: { label: "Partial", tone: "warning", description: "Movement recorded but not completed" },
   missing: { label: "Missing", tone: "neutral", description: "Not captured" },
 };
@@ -73,18 +74,15 @@ export const straighteningMeta: Record<Straightening, { label: string; descripti
 export function summarise(steps: Partial<Record<StepKey, StepOutcome>>, straightening: Straightening[] = []): SessionStatus {
   const outcomes = (["face", "headTurn", "idFront", "idBack"] as StepKey[]).map((k) => steps[k] ?? "missing");
   if (outcomes.includes("missing")) return "in_progress";
-  const flagged = outcomes.some((o) => o !== "passed") || straightening.some((s) => s === "cropped" || s === "failed");
+  // Manual captures count as passed (project lead, 2026-11-19): only real problems flag a session.
+  const flagged = outcomes.some((o) => o === "partial") || straightening.some((s) => s === "cropped" || s === "failed");
   return flagged ? "submitted_flagged" : "submitted";
 }
 
 /** Plain-language reasons a reviewer should look closely. */
 export function flagsFor(steps: Partial<Record<StepKey, StepOutcome>>, straightening: Partial<Record<"idFront" | "idBack", Straightening>> = {}) {
   const flags: string[] = [];
-  if (steps.face === "manual") flags.push("Face photo taken without automatic alignment");
   if (steps.headTurn === "partial") flags.push("Head movement not completed");
-  if (steps.headTurn === "manual") flags.push("Head movement recorded without face tracking");
-  if (steps.idFront === "manual") flags.push("ID front taken without the card being detected");
-  if (steps.idBack === "manual") flags.push("ID back taken without the card being detected");
   for (const side of ["idFront", "idBack"] as const) {
     if (straightening[side] === "cropped") flags.push(`${stepLabels[side]}: corners not found, cropped to the frame`);
     if (straightening[side] === "failed") flags.push(`${stepLabels[side]}: straightening failed`);

@@ -30,7 +30,7 @@ Mobile: full-screen camera (`100dvh`, safe-area insets, `viewport-fit=cover`), t
 | Outcome | Meaning |
 |---|---|
 | Passed | Captured with the automatic checks passing |
-| Manual | Captured without the checks (or they weren't available): usable, flagged for the reviewer |
+| Manual | Captured without the checks (or they weren't available). Shown as "Captured" and **not flagged** (project lead, 2026-11-19): a manual capture needs no extra check |
 | Partial | Head movement recorded but not completed |
 | Missing | Not captured |
 
@@ -42,7 +42,7 @@ Mobile: full-screen camera (`100dvh`, safe-area insets, `viewport-fit=cover`), t
 |---|---|
 | In progress | Not every step captured |
 | Ready for review | Every step Passed and both IDs straightened |
-| Ready for review · flagged | Complete, with at least one flag (manual, partial, cropped) |
+| Ready for review · flagged | Complete, with at least one flag (head movement not completed, ID corners not found or straightening failed). Manual captures don't flag |
 | Camera unavailable | Couldn't use a camera; the advisor confirms identity another way |
 | Not finished | Left before the end |
 
