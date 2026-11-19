@@ -34,6 +34,22 @@ What was built, and when. Dates and times are Pacific time. Each **Commit** is a
 | | Microsoft sign-in ready for TRU | Everything on PLAR's side is ready for TRU Microsoft accounts: limited to TRU's own accounts, only people added by an admin can get in, clear messages when refused. Tested up to Microsoft's sign-in page. A new admin page lists what TRU IT needs to provide and the next steps for TRU Moodle. | Commit `855cf42` |
 | | Live site on PLAR's own Supabase | With the new address in place (added by Dr. Latif), the live site now uses PLAR's own database on the team's server, over HTTPS. Everything tested live. | Deployed |
 | | Identity checks protected | Photos, videos and ID details are now stored in PLAR's own database storage on the team's server, encrypted. The identity checks list shows only names and the AI's match percentage; everything else needs a password. Tested end to end on the live site. | Commit `61f911e` |
+| | Manual captures no longer flagged | A photo taken with the button counts the same as an automatic one: no "to check" count or "Manual" label. Only real problems are flagged (an unfinished head movement, or ID corners not found). | Commit `d6475b1` |
+
+## Thursday 19 November 2026 in brief
+
+- **Six roles.** The database was rebuilt around Student, Advisor (who also books interviews), Assessor, PLAR Manager, PLAR Director and Admin, each with its own workspace and access rules, and automated tests that sign in as every role.
+- **Roles and access page.** A page in the admin panel, ready to show stakeholders, sets out each role's purpose, duties and permissions, and what still needs confirming.
+- **People management.** Admins add people, promote them, reset passwords, deactivate, sign out everywhere and delete, all from the portal and all recorded. New and reset accounts must choose their own password.
+- **Microsoft sign-in, ready for TRU.** A demo is live, and the real TRU Microsoft sign-in is tested up to Microsoft's own page and waits only on TRU IT. An admin page sets out what TRU IT needs and the next steps for Moodle.
+- **PLAR's own Supabase on the team server.** PLAR's database now runs separately from Living Heritage's, with sign-up off, HTTPS at `plar-api.airl.ca` and the live site switched over.
+- **Encrypted identity checks.** Photos, videos and ID details are stored encrypted in a private bucket only the lab can open. The list shows names and AI match percentages, and everything else needs the password.
+- **Storage set up on the server.** File storage was added to PLAR's Supabase, with a new private bucket for identity checks and a key that opens only that bucket. The encryption and storage keys were created on the server and never leave it. The existing live capture was moved in, verified and its plain copy removed.
+- **The full pipeline, checked live.** Capture, straightening, AI matching and review all work against the new storage, tested end to end with synthetic images.
+- **Backups and health checks.** Nightly backups cover the database and the stored files, and the health check now covers the new containers, HTTPS and backups.
+- **Admin panel shortcuts.** One-click buttons open the identity-check test and the results page for manual testing, and the "to check" flags for manual captures are gone.
+- **WellnessHub live on the team server.** The WellnessHub app was deployed alongside the other projects at https://wellness.airl.ca, the same way they're set up, and its AI key was moved off the public page onto the server. That fix is on its own branch on GitHub, waiting for a pull request.
+- **Every change pushed and deployed.** All of today's PLAR work is on GitHub and live, with the docs and this record kept up to date throughout.
 
 ## Still to do
 
