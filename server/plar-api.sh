@@ -10,6 +10,10 @@
 #   ./plar-api.sh seed       load supabase/seed.sql (synthetic demo data; clears the previous demo data)
 #   ./plar-api.sh test       run the pgTAP tests in supabase/tests/database (everything rolls back)
 #   ./plar-api.sh status     containers and applied migrations
+#   ./plar-api.sh backup-install   nightly database backup (hh_horaizon crontab), and run one now
+#
+# Never run `hz rm plar-api` or `hz deploy plar-api`: rm runs `docker compose down -v` (deletes the
+# database), and deploy rewrites .env. Use `hz up/restart/logs plar-api` and this script.
 #
 # Secrets (Postgres password, JWT secret, service-role key, gateway dashboard password) are made on the
 # server and stay in /opt/projects/plar-api/.env (mode 600). Only the anon key is ever printed.
@@ -63,7 +67,19 @@ case "${1:-}" in
       echo \":: auth health through the gateway: HTTP \$code\""
     ;;
   publish)
-    run "hz proxy plar-api $PLAR_API_DOMAIN"
+    # hz proxy uses sudo, so the server asks for the hh_horaizon password: run this in your own terminal.
+    a=$(dig +short A "$PLAR_API_DOMAIN" | tail -1)
+    [ "$a" = "$PLAR_SERVER_HOST" ] || { echo "DNS: $PLAR_API_DOMAIN -> ${a:-nothing}, not $PLAR_SERVER_HOST. Add the A record first."; exit 1; }
+    echo ":: DNS ok ($PLAR_API_DOMAIN -> $a). The server will ask for the $PLAR_SERVER_USER password (sudo)."
+    ssh -t "${SSH_OPTS[@]}" "$TARGET" "sudo -v && sudo tar czf /opt/backups/nginx-\$(date +%Y%m%d-%H%M%S).tar.gz -C /etc/nginx sites-available sites-enabled && hz proxy plar-api '$PLAR_API_DOMAIN'"
+    code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 "https://$PLAR_API_DOMAIN/auth/v1/health" -H "apikey: $("$0" anon-key)" || true)
+    [ "$code" = "200" ] && echo "✓ https://$PLAR_API_DOMAIN answers (auth health $code)" || { echo "! https://$PLAR_API_DOMAIN/auth/v1/health returned $code"; exit 1; }
+    ;;
+  backup-install)
+    # Nightly pg_dump at 03:45 by hh_horaizon's crontab (no sudo), into ~/backups/plar-api (outside the
+    # project folder, so `hz rm` can't take the backups with it). Keeps 14 days.
+    run "mkdir -p ~/backups/plar-api ~/bin && cat > ~/bin/plar-api-backup.sh && chmod 700 ~/bin/plar-api-backup.sh" < "$HERE/plar-api/backup.sh"
+    run "( crontab -l 2>/dev/null | grep -v plar-api-backup.sh; echo '45 3 * * * \$HOME/bin/plar-api-backup.sh >> \$HOME/backups/plar-api/backup.log 2>&1' ) | crontab - && crontab -l | grep plar-api && ~/bin/plar-api-backup.sh && ls -la ~/backups/plar-api | tail -3"
     ;;
   anon-key)
     run "grep '^ANON_KEY=' $DIR/.env | cut -d= -f2"
@@ -94,5 +110,5 @@ case "${1:-}" in
     run "docker ps --filter name=plar-api --format '  {{.Names}}  {{.Status}}'; docker exec plar-api-db psql -U postgres -d postgres -tAc 'select version, name from supabase_migrations.schema_migrations order by 1' 2>/dev/null || true"
     ;;
   *)
-    sed -n '2,16p' "$0"; exit 1 ;;
+    sed -n '2,21p' "$0"; exit 1 ;;
 esac
