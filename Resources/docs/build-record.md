@@ -33,10 +33,11 @@ What was built, and when. Dates and times are Pacific time. Each **Commit** is a
 | | People management for admins | From the admin portal: add people with their roles, promote or change roles, reset passwords, deactivate and reactivate, sign people out everywhere, edit details and delete people with no records. Every change is recorded. New and reset accounts choose their own password at first sign-in. | Commit `eeb2d84` |
 | | Microsoft sign-in ready for TRU | Everything on PLAR's side is ready for TRU Microsoft accounts: limited to TRU's own accounts, only people added by an admin can get in, clear messages when refused. Tested up to Microsoft's sign-in page. A new admin page lists what TRU IT needs to provide and the next steps for TRU Moodle. | Commit `855cf42` |
 | | Live site on PLAR's own Supabase | With the new address in place (added by Dr. Latif), the live site now uses PLAR's own database on the team's server, over HTTPS. Everything tested live. | Deployed |
+| | Identity checks protected | Photos, videos and ID details are now stored in PLAR's own database storage on the team's server, encrypted. The identity checks list shows only names and the AI's match percentage; everything else needs a password. Tested end to end on the live site. | Commit `61f911e` |
 
 ## Still to do
 
-- **Off-server copy of the backups.**
+- **Off-server copy of the backups**, and a safe copy of the captures' encryption key.
 - **Sign-in for the lab.** `/verify` and `/testing` are open to anyone with the link until sign-in is added.
 - **Privacy note** for the start of the ID check (wording to come).
 - **TRU Microsoft sign-in**, to replace the demo once TRU IT sets it up.

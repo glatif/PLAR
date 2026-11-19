@@ -2,7 +2,7 @@
 
 **Status:** working demo, built 2026-11-11. Lab only: `/verify` (the flow) and `/testing` (the identity checks page) run in development, or when `VERIFICATION_LAB=true` is set at build time and runtime. Both are linked from the home page wherever the lab is on. Captures are stored on disk next to the app (`.verification-data/`), not in Supabase.
 
-**Live since 2026-11-13** at https://plar.airl.ca, **open to anyone** (project lead's decision, temporary until sign-in is added): anyone with the link can see every capture on `/testing`. Captures sit in a Docker volume on the OVH server; the AI check runs there too. See [18-hosting-server.md](18-hosting-server.md).
+**Live since 2026-11-13** at https://plar.airl.ca. **Since 2026-11-19 the captures are protected** (project lead's request): they're stored in the private `verification` bucket of PLAR's own Supabase on the OVH server, **encrypted with AES-256-GCM** by the web app before upload (the bucket and its backups only hold ciphertext). The `/testing` list shows only names, dates, the AI's match percentage and decisions; photos, video, ID details, AI reasons and notes stay on the server until a reviewer **unlocks the page with the password** (the demo password for now; `VERIFICATION_VIEW_PASSWORD` changes it) for 30 minutes. Decisions, deleting and re-running need unlocking. The person verifying can see their own captures in the same browser (signed cookie). The page itself is still open to anyone with the link. See [18-hosting-server.md](18-hosting-server.md) A6.
 
 This is the "photo ID check before the interview" from the features list, built as a separate, testable piece before it joins the interview flow (M3). Design decision: AI assists, a person decides (project rule; see [15-technical-approach.md](15-technical-approach.md)).
 
@@ -90,5 +90,6 @@ Safeguards: requests ask for providers that **don't collect data for training** 
 | `web/src/app/testing`, `testing-gallery.tsx`, `ai-check-panel.tsx` | "Identity checks" page: search by name, filter by decision (to review, verified, not verified), sort (newest, oldest, name, highest match). One collapsible row per student: face photo, name, date and time, device, AI match percentage, a "to check" count, and the Verified / Not verified toggle. Opening a row shows the captures, the flags and what the AI read from the ID. Delete per row or in bulk |
 | `web/src/app/api/verification/` | Sessions, uploads, files (with Range), delete, reprocess, AI check, samples, straightener |
 | `web/src/lib/verification/` | Config, geometry, card detection, OpenCV loaders, storage, processing, states, camera, face tracker, worker, AI check |
-| `web/.verification-data/` | Captures (git-ignored) |
+| `web/.verification-data/` | Captures in development (git-ignored). Live: the `verification` bucket |
+| `src/lib/verification/crypto.ts`, `blob-store.ts`, `access.ts` | Encryption at rest, where files are stored, who may see them |
 | `web/scripts/` | `setup-verification.mjs` (runtime and model, after install), `dev-https.mjs` (phone testing) |

@@ -21,7 +21,7 @@ AI-assisted efficiency platform for Thompson Rivers University Open Learning's P
 - `harness/` tests it: `npm run check` (signs in as every demo account; targets the server by default, `check:dev` for the cloud project).
 - Demo accounts (synthetic, one per role) are listed in `harness/DEMO-ACCOUNTS.md`. Keep `harness/src/fixtures.ts` in step with `supabase/seed.sql`.
 - The web app uses the publishable key only (on the server stack that's the anon key). Secret or service keys never go in `web/` or in git. Admin actions (people, roles, passwords) are security-definer database functions that check the admin role, so they need no secret key.
-- **Verification lab** (`/verify`, `/testing`, dev only): see `Resources/docs/17-identity-verification.md`. Captures live in `web/.verification-data/` (git-ignored, never committed). `npm test` runs the detection tests; `npm run dev:phone` serves HTTPS for phone testing. The lab AI check uses OpenRouter (key in `web/.env.local` only), approved for the lab only.
+- **Verification lab** (`/verify`, `/testing`, dev only): see `Resources/docs/17-identity-verification.md`. Captures: live, the private `verification` bucket in PLAR's Supabase, encrypted (AES-256-GCM, key on the server only) and shown on `/testing` only after unlocking with the password; in development, `web/.verification-data/` (git-ignored, never committed). `npm test` runs the detection tests; `npm run dev:phone` serves HTTPS for phone testing. The lab AI check uses OpenRouter (key in `web/.env.local` only), approved for the lab only.
 - Synthetic data only in code, seeds and tests.
 
 ## Working rules
