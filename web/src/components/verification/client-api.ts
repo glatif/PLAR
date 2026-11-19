@@ -76,3 +76,13 @@ export async function runAiCheck(sessionId: string) {
 }
 
 export const fileUrl = (sessionId: string, file: string) => `/api/verification/files/${sessionId}/${file}`;
+
+/** Unlocks photos, video and ID details on the identity checks page for 30 minutes. */
+export async function unlockCaptures(password: string) {
+  const res = await fetch("/api/verification/unlock", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password }) });
+  return json<{ until: number }>(res);
+}
+
+export async function lockCaptures() {
+  return json<{ locked: boolean }>(await fetch("/api/verification/unlock", { method: "DELETE" }));
+}

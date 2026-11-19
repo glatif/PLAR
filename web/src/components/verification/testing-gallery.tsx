@@ -3,11 +3,11 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
-import { ArrowRight, Check, ChevronDown, Download, Play, RefreshCw, Search, Trash2, X } from "lucide-react";
+import { ArrowRight, Check, ChevronDown, Download, Lock, LockOpen, Play, RefreshCw, Search, Trash2, X } from "lucide-react";
 import { BrandMark } from "@/components/ui/brand-mark";
 import { Badge, type Tone } from "@/components/ui/badge";
-import { InboxFilled } from "@/components/ui/filled-icons";
-import { deleteCaptures, fileUrl, patchSession, reprocess } from "@/components/verification/client-api";
+import { AlertFilled, InboxFilled, LockFilled } from "@/components/ui/filled-icons";
+import { deleteCaptures, fileUrl, lockCaptures, patchSession, reprocess, unlockCaptures } from "@/components/verification/client-api";
 import { AiCheckPanel } from "@/components/verification/ai-check-panel";
 import { cn } from "@/lib/cn";
 import type { AiCheck } from "@/lib/verification/ai-check";
@@ -154,8 +154,101 @@ function captureDetails(a: Artifact): [string, string][] {
 
 type Toast = { message: string; undo?: () => void };
 
-export function TestingGallery({ sessions, aiEnabled }: { sessions: VerificationSession[]; aiEnabled: boolean }) {
+/**
+ * Locked or unlocked. Locked (the default), the list shows names, dates, the AI's match percentage and
+ * decisions only: no photos, video or ID details reach the browser. The password unlocks them for 30
+ * minutes, which also allows decisions and deleting.
+ */
+function UnlockBar({ until, onChanged }: { until: number | null; onChanged: () => void }) {
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const time = useSyncExternalStore(
+    noSubscribe,
+    () => (until ? new Date(until).toLocaleTimeString("en-CA", { hour: "numeric", minute: "2-digit" }) : null),
+    () => null,
+  );
+
+  if (until) {
+    return (
+      <div className="mt-6 flex flex-wrap items-center gap-3 rounded-xl bg-success-subtle px-4 py-3">
+        <LockOpen className="size-5 shrink-0 text-success" aria-hidden />
+        <p className="min-w-0 flex-1 text-[14.5px] text-success">
+          <strong>Unlocked.</strong> Photos, video and ID details are visible{time ? ` until ${time}` : ""}.
+        </p>
+        <button
+          type="button"
+          onClick={async () => {
+            await lockCaptures().catch(() => undefined);
+            onChanged();
+          }}
+          className="inline-flex h-9 items-center gap-1.5 rounded-full bg-surface px-4 text-[13.5px] font-semibold text-label shadow-1 hover:bg-surface-2"
+        >
+          <Lock className="size-4" aria-hidden />
+          Lock now
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <form
+      className="mt-6 rounded-xl bg-surface p-4 shadow-1 sm:p-5"
+      onSubmit={async (e) => {
+        e.preventDefault();
+        setBusy(true);
+        setError(null);
+        try {
+          await unlockCaptures(password);
+          setPassword("");
+          onChanged();
+        } catch (err) {
+          setError(err instanceof Error ? err.message : "Couldn't unlock");
+        } finally {
+          setBusy(false);
+        }
+      }}
+    >
+      <div className="flex items-start gap-3">
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-[11px] bg-label text-white">
+          <LockFilled className="size-5" />
+        </span>
+        <div className="min-w-0">
+          <p className="text-[15.5px] font-semibold">Photos, video and ID details are hidden</p>
+          <p className="text-[13.5px] leading-[19px] text-label-2">They&rsquo;re stored encrypted. Enter the password to see them for 30 minutes, and to record decisions.</p>
+        </div>
+      </div>
+      <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+        <label className="min-w-0 flex-1">
+          <span className="sr-only">Password</span>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            autoComplete="off"
+            placeholder="Password"
+            aria-describedby={error ? "unlock-error" : undefined}
+            className="h-11 w-full rounded-full bg-surface-2 px-4 text-[15px] shadow-[inset_0_0_0_1px_var(--separator-strong)] outline-none placeholder:text-label-2 focus:shadow-[inset_0_0_0_1.5px_var(--accent),0_0_0_4px_var(--focus-ring)]"
+          />
+        </label>
+        <button type="submit" disabled={busy || !password} className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-accent px-5 text-[15px] font-semibold text-on-accent hover:bg-accent-hover disabled:opacity-50">
+          <LockOpen className="size-4" aria-hidden />
+          {busy ? "Unlocking…" : "Unlock"}
+        </button>
+      </div>
+      {error ? (
+        <p id="unlock-error" role="alert" className="mt-2 flex items-center gap-2 text-[13.5px] text-danger">
+          <AlertFilled className="size-4 shrink-0" />
+          {error}
+        </p>
+      ) : null}
+    </form>
+  );
+}
+
+export function TestingGallery({ sessions, aiEnabled, unlockedUntil }: { sessions: VerificationSession[]; aiEnabled: boolean; unlockedUntil: number | null }) {
   const router = useRouter();
+  const locked = !unlockedUntil;
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<StatusFilter>("all");
   const [sort, setSort] = useState<Sort>("newest");
@@ -211,6 +304,13 @@ export function TestingGallery({ sessions, aiEnabled }: { sessions: Verification
     const timer = setInterval(() => router.refresh(), 2000);
     return () => clearInterval(timer);
   }, [processing, router]);
+
+  // When the unlock runs out, show the locked list again.
+  useEffect(() => {
+    if (!unlockedUntil) return;
+    const timer = setTimeout(() => router.refresh(), Math.max(0, unlockedUntil - Date.now()) + 500);
+    return () => clearTimeout(timer);
+  }, [unlockedUntil, router]);
 
   useEffect(() => {
     if (!toast) return;
@@ -271,6 +371,8 @@ export function TestingGallery({ sessions, aiEnabled }: { sessions: Verification
         <p className="mt-2 max-w-2xl text-[16px] leading-[24px] text-label-2">Open a student to compare their photos with their ID, then mark them verified or not.</p>
       </header>
 
+      <UnlockBar until={unlockedUntil} onChanged={() => router.refresh()} />
+
       {sessions.length ? (
         <div className="sticky top-0 z-30 -mx-4 mt-6 space-y-3 bg-canvas/90 px-4 py-3 backdrop-blur-xl sm:-mx-6 sm:px-6">
           <div className="flex gap-2">
@@ -327,7 +429,7 @@ export function TestingGallery({ sessions, aiEnabled }: { sessions: Verification
               ))}
             </div>
             <span className="flex-1" />
-            {chosen.length ? (
+            {chosen.length && !locked ? (
               <div className="flex items-center gap-2">
                 <button type="button" onClick={() => setSelected(new Set())} className="h-9 rounded-full px-3 text-[13.5px] font-semibold text-label-2 hover:bg-fill-1">
                   Clear
@@ -361,7 +463,7 @@ export function TestingGallery({ sessions, aiEnabled }: { sessions: Verification
       ) : (
         <>
           <div className="mt-2 flex items-center gap-3 px-1 text-[13px] text-label-2">
-            <label className="flex size-8 cursor-pointer items-center justify-center">
+            <label className={cn("flex size-8 cursor-pointer items-center justify-center", locked && "hidden")}>
               <input
                 type="checkbox"
                 checked={allChosen}
@@ -389,6 +491,7 @@ export function TestingGallery({ sessions, aiEnabled }: { sessions: Verification
                   decision={decisionOf(r.session)}
                   selected={selected.has(r.session.id)}
                   aiEnabled={aiEnabled}
+                  locked={locked}
                   onSelect={() => toggle(r.session.id)}
                   onDecide={(d) => decide(r.session, d, r.title.known ? r.title.name : "This test")}
                   onOpen={(a) => setOpen({ session: r.session, artifact: a })}
@@ -416,7 +519,7 @@ export function TestingGallery({ sessions, aiEnabled }: { sessions: Verification
         </>
       )}
 
-      {open ? <Viewer session={sessions.find((s) => s.id === open.session.id) ?? open.session} artifact={open.artifact} onClose={() => setOpen(null)} onChanged={() => router.refresh()} /> : null}
+      {open && !locked ? <Viewer session={sessions.find((s) => s.id === open.session.id) ?? open.session} artifact={open.artifact} onClose={() => setOpen(null)} onChanged={() => router.refresh()} /> : null}
 
       {deleting ? (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 backdrop-blur-sm sm:items-center" role="dialog" aria-modal="true" aria-labelledby="delete-title">
@@ -502,6 +605,7 @@ function StudentRow({
   decision,
   selected,
   aiEnabled,
+  locked,
   onSelect,
   onDecide,
   onOpen,
@@ -515,14 +619,16 @@ function StudentRow({
   decision: Decision;
   selected: boolean;
   aiEnabled: boolean;
+  locked: boolean;
   onSelect: () => void;
   onDecide: (d: Decision) => void;
   onOpen: (a: Artifact) => void;
   onDelete: () => void;
   onChanged: () => void;
 }) {
-  const [expanded, setExpanded] = useState(false);
-  const face = session.artifacts.find((a) => a.kind === "face");
+  const [expandedState, setExpanded] = useState(false);
+  const expanded = expandedState && !locked;
+  const face = locked ? undefined : session.artifacts.find((a) => a.kind === "face");
   const attention = attentionPill(session, flags.length);
   const panelId = `row-${session.id}`;
 
@@ -534,15 +640,16 @@ function StudentRow({
       )}
     >
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2.5 py-3 pl-2 pr-3 sm:pr-4">
-        <label className="flex size-9 shrink-0 cursor-pointer items-center justify-center">
-          <input type="checkbox" checked={selected} onChange={onSelect} className="size-[18px] accent-[#c2550a]" aria-label={`Select ${title.name}`} />
+        <label className={cn("flex size-9 shrink-0 cursor-pointer items-center justify-center", locked && "invisible")}>
+          <input type="checkbox" checked={selected} onChange={onSelect} disabled={locked} className="size-[18px] accent-[#c2550a]" aria-label={`Select ${title.name}`} />
         </label>
 
         <button
           type="button"
           onClick={() => setExpanded((e) => !e)}
-          aria-expanded={expanded}
-          aria-controls={panelId}
+          disabled={locked}
+          aria-expanded={locked ? undefined : expanded}
+          aria-controls={locked ? undefined : panelId}
           className="flex min-w-0 flex-1 basis-[220px] items-center gap-3 rounded-[12px] py-0.5 text-left outline-none focus-visible:shadow-[0_0_0_3px_var(--focus-ring)]"
         >
           <span className="relative size-11 shrink-0">
@@ -578,15 +685,21 @@ function StudentRow({
         </button>
 
         {/* A second way to open the row, where people expect it (the name area is the keyboard target). */}
-        <button
-          type="button"
-          tabIndex={-1}
-          aria-hidden
-          onClick={() => setExpanded((e) => !e)}
-          className="flex size-9 shrink-0 items-center justify-center rounded-full text-label-2 hover:bg-fill-1 sm:order-last"
-        >
-          <ChevronDown className={cn("size-5 transition-transform duration-200", expanded && "rotate-180")} />
-        </button>
+        {locked ? (
+          <span className="flex size-9 shrink-0 items-center justify-center text-label-3 sm:order-last" title="Unlock to see the photos" aria-hidden>
+            <Lock className="size-[18px]" />
+          </span>
+        ) : (
+          <button
+            type="button"
+            tabIndex={-1}
+            aria-hidden
+            onClick={() => setExpanded((e) => !e)}
+            className="flex size-9 shrink-0 items-center justify-center rounded-full text-label-2 hover:bg-fill-1 sm:order-last"
+          >
+            <ChevronDown className={cn("size-5 transition-transform duration-200", expanded && "rotate-180")} />
+          </button>
+        )}
 
         {/* Fixed-width slots on wider screens so the pills line up from row to row. */}
         <div className="flex w-full flex-wrap items-center gap-2 pl-[52px] sm:w-auto sm:flex-nowrap sm:pl-0">
@@ -604,7 +717,15 @@ function StudentRow({
               </Badge>
             ) : null}
           </span>
-          <DecisionToggle decision={decision} onDecide={onDecide} />
+          {locked ? (
+            <span className="flex sm:w-[190px] sm:justify-end">
+              <Badge tone={decision === "verified" ? "success" : decision === "not_verified" ? "danger" : "neutral"} className="h-7 px-3 text-[13px]">
+                {decision === "verified" ? "Verified" : decision === "not_verified" ? "Not verified" : "To review"}
+              </Badge>
+            </span>
+          ) : (
+            <DecisionToggle decision={decision} onDecide={onDecide} />
+          )}
         </div>
       </div>
 

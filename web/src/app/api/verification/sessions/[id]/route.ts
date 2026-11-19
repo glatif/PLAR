@@ -1,4 +1,5 @@
 import type { NextRequest } from "next/server";
+import { canSeeSession, isUnlocked } from "@/lib/verification/access";
 import { badRequest, guard, notAvailable } from "@/lib/verification/api";
 import { deleteItems, getSession, updateSession, type StepRecord } from "@/lib/verification/storage";
 import type { ReviewDecision, StepKey, StepOutcome } from "@/lib/verification/states";
@@ -10,7 +11,9 @@ const DECISIONS: ReviewDecision[] = ["verified", "not_verified", "retry"];
 export async function GET(_request: NextRequest, ctx: RouteContext<"/api/verification/sessions/[id]">) {
   const blocked = guard();
   if (blocked) return blocked;
-  const session = await getSession((await ctx.params).id).catch(() => null);
+  const { id } = await ctx.params;
+  if (!(await canSeeSession(id).catch(() => false))) return notAvailable();
+  const session = await getSession(id).catch(() => null);
   return session ? Response.json({ session }) : notAvailable();
 }
 
@@ -31,6 +34,9 @@ export async function PATCH(request: NextRequest, ctx: RouteContext<"/api/verifi
     review?: { decision: ReviewDecision; note?: string } | null;
   } | null;
   if (!body) return badRequest("JSON body required");
+  // The person verifying records their own steps; only an unlocked reviewer records a decision.
+  if (!(await canSeeSession(id).catch(() => false))) return notAvailable();
+  if (body.review !== undefined && !(await isUnlocked())) return Response.json({ error: "Unlock the identity checks page first." }, { status: 403 });
 
   for (const [key, value] of Object.entries(body.steps ?? {})) {
     if (!STEPS.includes(key as StepKey) || !OUTCOMES.includes(value?.outcome)) return badRequest(`Invalid step ${key}`);
@@ -55,6 +61,7 @@ export async function PATCH(request: NextRequest, ctx: RouteContext<"/api/verifi
 export async function DELETE(_request: NextRequest, ctx: RouteContext<"/api/verification/sessions/[id]">) {
   const blocked = guard();
   if (blocked) return blocked;
+  if (!(await isUnlocked())) return Response.json({ error: "Unlock the identity checks page first." }, { status: 403 });
   const { id } = await ctx.params;
   const result = await deleteItems({ sessions: [id] }).catch(() => null);
   return result ? Response.json(result) : notAvailable();

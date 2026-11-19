@@ -1,4 +1,5 @@
 import { after, type NextRequest } from "next/server";
+import { canSeeSession } from "@/lib/verification/access";
 import { badRequest, guard, notAvailable } from "@/lib/verification/api";
 import type { Quad, Rect } from "@/lib/verification/geometry";
 import { runAiCheck } from "@/lib/verification/ai-check";
@@ -18,6 +19,8 @@ export async function POST(request: NextRequest, ctx: RouteContext<"/api/verific
   const blocked = guard();
   if (blocked) return blocked;
   const { id } = await ctx.params;
+  // Only the browser that started the session (or an unlocked reviewer) can add captures to it.
+  if (!(await canSeeSession(id).catch(() => false))) return notAvailable();
   if (!(await getSession(id).catch(() => null))) return notAvailable();
 
   const form = await request.formData().catch(() => null);

@@ -48,6 +48,8 @@ ssh "${SSH_OPTS[@]}" "$TARGET" "set -e
   rm -f /tmp/_plar_files
   # .env.local: runtime env (env_file, read on the host by hh_horaizon). .env: compose build args.
   install -m 600 /tmp/env .env.local && install -m 600 /tmp/buildenv .env && rm -f /tmp/env /tmp/buildenv /tmp/plar.tar.gz
+  # Server-only lab secrets (storage key, encryption key) never leave the server: see plar-api.sh lab-keys.
+  [ -f .env.server ] && cat .env.server >> .env.local
   echo $rev > .deployed-commit
   hz rebuild plar
   docker image prune -f >/dev/null 2>&1 || true

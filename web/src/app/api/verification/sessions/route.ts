@@ -1,10 +1,15 @@
 import { connection } from "next/server";
+import { isUnlocked, rememberOwnSession } from "@/lib/verification/access";
 import { badRequest, guard } from "@/lib/verification/api";
-import { createSession, listSessions } from "@/lib/verification/storage";
+import { createSession, listSessions, redactSession } from "@/lib/verification/storage";
 
+/** Every session: in full for an unlocked reviewer, otherwise only what the list shows. */
 export async function GET() {
   await connection();
-  return guard() ?? Response.json({ sessions: await listSessions() });
+  const blocked = guard();
+  if (blocked) return blocked;
+  const sessions = await listSessions();
+  return Response.json({ sessions: (await isUnlocked()) ? sessions : sessions.map(redactSession), locked: !(await isUnlocked()) });
 }
 
 /** Starts a verification attempt. Body: { device: { userAgent, viewport, touch, pixelRatio } }. */
@@ -21,5 +26,7 @@ export async function POST(request: Request) {
     touch: Boolean(d.touch),
     pixelRatio: Number(d.pixelRatio) || 1,
   });
+  // This browser may now add captures to the session and see them (for its own review screen).
+  await rememberOwnSession(session.id);
   return Response.json({ session }, { status: 201 });
 }

@@ -12,6 +12,7 @@
 #   ./plar-api.sh status     containers and applied migrations
 #   ./plar-api.sh backup-install   nightly database backup (hh_horaizon crontab), and run one now
 #   ./plar-api.sh microsoft [status|off]   TRU Microsoft sign-in (asks for TRU's app values)
+#   ./plar-api.sh lab-keys   the verification lab's storage key and encryption key (server-only, once)
 #
 # Never run `hz rm plar-api` or `hz deploy plar-api`: rm runs `docker compose down -v` (deletes the
 # database), and deploy rewrites .env. Use `hz up/restart/logs plar-api` and this script.
@@ -110,6 +111,29 @@ case "${1:-}" in
       *) echo "Use: ./plar-api.sh microsoft [status|off]"; exit 1 ;;
     esac
     ;;
+  lab-keys)
+    # The identity-verification lab's server-only settings, in /opt/projects/plar/.env.server (mode 600),
+    # which deploy.sh adds to the web container's runtime settings. Made once, on the server:
+    #   VERIFICATION_STORAGE_KEY   token for the private "verification" bucket only (claim plar_lab)
+    #   VERIFICATION_ENCRYPTION_KEY  AES-256 key the web app encrypts captures with. NEVER replace it:
+    #                                captures saved with it can't be opened without it. It's backed up
+    #                                with the database backup.
+    run "set -e; f=/opt/projects/plar/.env.server; touch \$f; chmod 600 \$f
+      jwt=\$(grep '^JWT_SECRET=' $DIR/.env | cut -d= -f2)
+      if ! grep -q '^VERIFICATION_STORAGE_KEY=' \$f; then
+        key=\$(docker run --rm -e JWT_SECRET=\$jwt node:22-bookworm-slim node -e '
+          const c=require(\"crypto\"), b=(o)=>Buffer.from(JSON.stringify(o)).toString(\"base64url\");
+          const now=Math.floor(Date.now()/1000); const h=b({alg:\"HS256\",typ:\"JWT\"});
+          const p=b({role:\"authenticated\",aud:\"authenticated\",plar_lab:\"verification\",iss:\"supabase\",iat:now,exp:now+10*365*86400});
+          console.log(h+\".\"+p+\".\"+c.createHmac(\"sha256\",process.env.JWT_SECRET).update(h+\".\"+p).digest(\"base64url\"))')
+        echo VERIFICATION_STORAGE_KEY=\$key >> \$f; echo ':: made the storage key'
+      fi
+      grep -q '^VERIFICATION_STORAGE_URL=' \$f || echo VERIFICATION_STORAGE_URL=https://$PLAR_API_DOMAIN >> \$f
+      if ! grep -q '^VERIFICATION_ENCRYPTION_KEY=' \$f; then
+        echo VERIFICATION_ENCRYPTION_KEY=\$(openssl rand -base64 32) >> \$f; echo ':: made the encryption key'
+      fi
+      grep -o '^[A-Z_]*=' \$f"
+    ;;
   backup-install)
     # Nightly pg_dump at 03:45 by hh_horaizon's crontab (no sudo), into ~/backups/plar-api (outside the
     # project folder, so `hz rm` can't take the backups with it). Keeps 14 days.
@@ -145,5 +169,5 @@ case "${1:-}" in
     run "docker ps --filter name=plar-api --format '  {{.Names}}  {{.Status}}'; docker exec plar-api-db psql -U postgres -d postgres -tAc 'select version, name from supabase_migrations.schema_migrations order by 1' 2>/dev/null || true"
     ;;
   *)
-    sed -n '2,22p' "$0"; exit 1 ;;
+    sed -n '2,23p' "$0"; exit 1 ;;
 esac

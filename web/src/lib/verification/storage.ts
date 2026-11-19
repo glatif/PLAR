@@ -1,8 +1,8 @@
 import "server-only";
 
 import { randomBytes } from "node:crypto";
-import { mkdir, readdir, readFile, rm, stat, writeFile } from "node:fs/promises";
-import { join, resolve } from "node:path";
+import { blobStore } from "@/lib/verification/blob-store";
+import { decrypt, encrypt } from "@/lib/verification/crypto";
 import type { Quad, Rect } from "@/lib/verification/geometry";
 import type { AiCheck } from "@/lib/verification/ai-check";
 import {
@@ -15,10 +15,11 @@ import {
   type Straightening,
 } from "@/lib/verification/states";
 
-// Test captures live on this machine only, in web/.verification-data (git-ignored). Nothing is sent to
-// another service, and deleting removes the files for good.
-
-export const DATA_ROOT = resolve(process.cwd(), ".verification-data", "sessions");
+// Verification sessions and their captures. On the live server they're in the private "verification"
+// bucket of PLAR's own Supabase; in development, in web/.verification-data (see blob-store.ts).
+// Everything is encrypted before it's stored (see crypto.ts) and decrypted only on the server, for
+// the person who made the capture or a reviewer who has unlocked the identity checks page.
+// Deleting removes the files for good.
 
 /** The verification lab (the /verify demo and /testing) runs in development, or when explicitly enabled. */
 export function labEnabled() {
@@ -69,9 +70,9 @@ export function assertSafeId(id: string) {
   if (!SAFE_ID.test(id)) throw new Error("Invalid id");
 }
 
-const sessionDir = (id: string) => {
+const sessionPath = (id: string, name = "") => {
   assertSafeId(id);
-  return join(DATA_ROOT, id);
+  return `sessions/${id}/${name}`;
 };
 
 export function newId(prefix = "") {
@@ -91,7 +92,8 @@ function withSession<T>(id: string, task: () => Promise<T>): Promise<T> {
 
 async function readSession(id: string): Promise<VerificationSession | null> {
   try {
-    return JSON.parse(await readFile(join(sessionDir(id), "session.json"), "utf8")) as VerificationSession;
+    const data = await blobStore().get(sessionPath(id, "session.json"));
+    return data ? (JSON.parse(decrypt(data).toString("utf8")) as VerificationSession) : null;
   } catch {
     return null;
   }
@@ -99,12 +101,11 @@ async function readSession(id: string): Promise<VerificationSession | null> {
 
 async function writeSession(session: VerificationSession) {
   session.updatedAt = new Date().toISOString();
-  await writeFile(join(sessionDir(session.id), "session.json"), JSON.stringify(session, null, 2));
+  await blobStore().put(sessionPath(session.id, "session.json"), encrypt(Buffer.from(JSON.stringify(session))));
 }
 
 export async function createSession(device: VerificationSession["device"]) {
   const id = newId();
-  await mkdir(sessionDir(id), { recursive: true });
   const now = new Date().toISOString();
   const session: VerificationSession = { id, createdAt: now, updatedAt: now, status: "in_progress", device, steps: {}, artifacts: [] };
   await writeSession(session);
@@ -114,12 +115,7 @@ export async function createSession(device: VerificationSession["device"]) {
 export const getSession = (id: string) => readSession(id);
 
 export async function listSessions() {
-  let ids: string[] = [];
-  try {
-    ids = (await readdir(DATA_ROOT)).filter((d) => SAFE_ID.test(d));
-  } catch {
-    return [];
-  }
+  const ids = (await blobStore().list("sessions").catch(() => [] as string[])).filter((d) => SAFE_ID.test(d));
   const sessions = (await Promise.all(ids.map(readSession))).filter((s): s is VerificationSession => s !== null);
   return sessions.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
@@ -153,7 +149,7 @@ export function extensionFor(mime: string) {
 export async function addArtifact(sessionId: string, input: Omit<Artifact, "id" | "file" | "bytes" | "createdAt">, data: Buffer) {
   const id = newId(`${input.kind}-`).slice(0, 64);
   const file = `${id}.${extensionFor(input.mime)}`;
-  await writeFile(join(sessionDir(sessionId), file), data);
+  await putFile(sessionId, file, data);
   const artifact: Artifact = { ...input, id, file, bytes: data.length, createdAt: new Date().toISOString() };
   let replaced: Artifact[] = [];
   const session = await updateSession(sessionId, (s) => {
@@ -161,18 +157,29 @@ export async function addArtifact(sessionId: string, input: Omit<Artifact, "id" 
     s.artifacts = s.artifacts.filter((a) => !replaced.includes(a));
     s.artifacts.push(artifact);
   });
-  await Promise.all(replaced.map((a) => rm(join(sessionDir(sessionId), a.file), { force: true })));
+  await removeFiles(sessionId, replaced.map((a) => a.file));
   return { artifact, session };
 }
 
-export function filePath(sessionId: string, file: string) {
-  if (!/^[a-z0-9-]+\.(jpg|png|webp|webm|mp4)$/.test(file)) throw new Error("Invalid file");
-  return join(sessionDir(sessionId), file);
+const SAFE_FILE = /^[a-z0-9-]+\.(jpg|png|webp|webm|mp4)$/;
+const filePath = (sessionId: string, file: string) => {
+  if (!SAFE_FILE.test(file)) throw new Error("Invalid file");
+  return sessionPath(sessionId, file);
+};
+
+/** Stores one capture file, encrypted. */
+export async function putFile(sessionId: string, file: string, data: Buffer) {
+  await blobStore().put(filePath(sessionId, file), encrypt(data));
 }
 
-export async function fileInfo(sessionId: string, file: string) {
-  const path = filePath(sessionId, file);
-  return { path, size: (await stat(path)).size };
+export async function removeFiles(sessionId: string, files: string[]) {
+  await blobStore().remove(files.map((f) => filePath(sessionId, f)));
+}
+
+/** One capture, decrypted, or null when it doesn't exist. */
+export async function readFileData(sessionId: string, file: string) {
+  const data = await blobStore().get(filePath(sessionId, file));
+  return data ? decrypt(data) : null;
 }
 
 /** Deletes whole sessions and/or single files, permanently. Straightened copies go with their originals. */
@@ -182,7 +189,8 @@ export async function deleteItems(items: { sessions?: string[]; artifacts?: { se
     const session = await readSession(id);
     if (!session) continue;
     files += session.artifacts.length;
-    await rm(sessionDir(id), { recursive: true, force: true });
+    const names = await blobStore().list(sessionPath(id)).catch(() => [] as string[]);
+    await blobStore().remove([...new Set([...names, "session.json"])].map((n) => sessionPath(id, n)));
   }
   const bySession = new Map<string, string[]>();
   for (const { sessionId, artifactId } of items.artifacts ?? []) {
@@ -198,12 +206,47 @@ export async function deleteItems(items: { sessions?: string[]; artifacts?: { se
       s.artifacts = s.artifacts.filter((a) => !doomed.has(a.id));
       for (const a of s.artifacts) if (a.derivedId && doomed.has(a.derivedId)) delete a.derivedId;
     });
-    await Promise.all(removed.map((a) => rm(join(sessionDir(sessionId), a.file), { force: true })));
+    await removeFiles(sessionId, removed.map((a) => a.file));
     files += removed.length;
   }
   return { files };
 }
 
 export async function readArtifact(sessionId: string, artifact: Artifact) {
-  return readFile(join(sessionDir(sessionId), artifact.file));
+  const data = await readFileData(sessionId, artifact.file);
+  if (!data) throw new Error(`Missing capture ${artifact.file}`);
+  return data;
+}
+
+/**
+ * What the identity checks list shows before it's unlocked: the name read from the ID, the AI's
+ * match percentage and verdict, the decision and which steps were done. No ID details (date of birth,
+ * number, address, machine-readable text), no AI reasons and no review notes. The capture records stay
+ * (so the list knows what was captured), but their files can't be fetched without unlocking.
+ */
+export function redactSession(session: VerificationSession): VerificationSession {
+  const r = session.aiCheck?.result;
+  const blank = { document_type: "", issuing_authority: "", date_of_birth: "", sex: "", document_number: "", issue_date: "", expiry_date: "", address: "", other_fields: [] };
+  return {
+    ...session,
+    review: session.review ? { decision: session.review.decision, at: session.review.at } : undefined,
+    blockedReason: session.blockedReason ? "Camera unavailable" : undefined,
+    aiCheck: session.aiCheck
+      ? {
+          ...session.aiCheck,
+          error: session.aiCheck.error ? "The AI check failed" : undefined,
+          usage: undefined,
+          result: r
+            ? {
+                face_match: { probability_same_person: r.face_match.probability_same_person, verdict: r.face_match.verdict, reasons: [] },
+                id_front: { ...blank, full_name: r.id_front.full_name, given_names: r.id_front.given_names, surname: r.id_front.surname },
+                id_back: { summary: "", fields: [], machine_readable_text: "" },
+                image_quality: [],
+                concerns: [],
+              }
+            : undefined,
+        }
+      : undefined,
+    artifacts: session.artifacts.map((a) => ({ ...a, metrics: undefined, quad: undefined, liveQuad: undefined, guide: undefined })),
+  };
 }

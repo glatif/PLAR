@@ -1,12 +1,11 @@
 import "server-only";
 
-import { rm, writeFile } from "node:fs/promises";
 import sharp from "sharp";
 import { detectCard, straightenCard } from "@/lib/verification/card-detect";
 import { verificationConfig as config } from "@/lib/verification/config";
 import type { Quad, Rect } from "@/lib/verification/geometry";
 import { imageToMat, loadOpenCv, matToJpeg } from "@/lib/verification/opencv-node";
-import { filePath, getSession, newId, readArtifact, updateSession, type Artifact } from "@/lib/verification/storage";
+import { getSession, newId, putFile, readArtifact, removeFiles, updateSession, type Artifact } from "@/lib/verification/storage";
 import type { Straightening } from "@/lib/verification/states";
 
 /** The on-screen frame grown by a quarter on each side: where the card should be. */
@@ -66,7 +65,7 @@ export async function processIdPhoto(sessionId: string, artifactId: string) {
     const kind = original.kind === "id-front" ? "id-front-straightened" : "id-back-straightened";
     const id = newId(`${kind}-`).slice(0, 64);
     const file = `${id}.jpg`;
-    await writeFile(filePath(sessionId, file), result.jpeg);
+    await putFile(sessionId, file, result.jpeg);
     const derived: Artifact = {
       id,
       kind,
@@ -94,8 +93,8 @@ export async function processIdPhoto(sessionId: string, artifactId: string) {
       s.artifacts.push(derived);
       kept = true;
     });
-    if (!kept) await rm(filePath(sessionId, file), { force: true });
-    if (previous) await rm(filePath(sessionId, previous.file), { force: true });
+    const unused = [...(kept ? [] : [file]), ...(previous ? [previous.file] : [])];
+    if (unused.length) await removeFiles(sessionId, unused);
   } catch (error) {
     console.error("ID straightening failed", error);
     await updateSession(sessionId, (s) => {
