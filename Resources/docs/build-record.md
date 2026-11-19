@@ -2,7 +2,7 @@
 
 What was built, and when. Dates and times are Pacific time. Each **Commit** is a saved version in the GitHub repository (glatif/PLAR). Rows marked *Project log* come from the project's decision log, because that work happened before it was committed.
 
-**As of Friday 13 November 2026:** the platform is live at https://plar.airl.ca. The repository holds 8 commits, and every one uses synthetic data only.
+**As of Thursday 19 November 2026:** the platform is live at https://plar.airl.ca. Every commit uses synthetic data only.
 
 ## Record
 
@@ -24,9 +24,14 @@ What was built, and when. Dates and times are Pacific time. Each **Commit** is a
 | | First server deployment | Deployed to the shared Ubuntu server as a first live copy, with the lab switched off. | Project log |
 | **Fri 13 Nov 2026** | Moved to the team's project server | Live at **https://plar.airl.ca** with HTTPS, deployed the same way as the team's other projects. The earlier copy was removed. | Project log |
 | | Lab live, with links on the home page (09:52) | **Verify identity** and **Identity checks** buttons on the home page. The lab is switched on at plar.airl.ca and open without sign-in for now. Photos persist across updates. One-step deploy and health-check scripts. A full live test passed, and the test run was deleted. | Commit `f442435` |
+| **Thu 19 Nov 2026** | Six roles (10:50) | Roles set to six for now: Student, Advisor (advisors also book interviews), Assessor, PLAR Manager, PLAR Director and Admin. Database rebuilt around them, with access rules for each and automated tests that sign in as every role. Each role has its own workspace. 8 demo accounts, synthetic only. | Commit `dc52a50` |
+| | Sign in with Microsoft (demo) | A "Sign in with Microsoft" button that opens a picker of the demo accounts. The connection to TRU's Microsoft sign-in is prepared, to switch on once TRU IT sets it up. | Commit `dc52a50` |
+| | Roles and access page | Admin page showing each role's purpose, duties and access, a table of what each role can do, the other TRU offices involved and what's still to confirm. | Commit `dc52a50` |
+| | Demo sign-in live | Demo accounts and the Microsoft demo switched on at plar.airl.ca, using the cloud database. | Deployed |
+| | Identity check test in the admin panel (10:55) | The admin panel links straight to the identity check test and the results page, for manual testing. | Commit `28663e0` |
 
 ## Still to do
 
 - **Sign-in for the lab.** `/verify` and `/testing` are open to anyone with the link until sign-in is added.
 - **Privacy note** for the start of the ID check (wording to come).
-- **TRU single sign-on**, to follow the email-and-password sign-in.
+- **TRU Microsoft sign-in**, to replace the demo once TRU IT sets it up.
