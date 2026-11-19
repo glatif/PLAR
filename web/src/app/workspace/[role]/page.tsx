@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { notFound, redirect } from "next/navigation";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ScanFace, ShieldCheck } from "lucide-react";
 import { ButtonLink } from "@/components/ui/button";
-import { InfoFilled, KeyFilled } from "@/components/ui/filled-icons";
+import { IdCardFilled, InfoFilled, KeyFilled } from "@/components/ui/filled-icons";
+import { labEnabled } from "@/lib/verification/storage";
 import { ActivityFeed, CaseTable, JourneyCard, StagePipeline, StatGrid, TaskList } from "@/components/app/overview";
 import { getViewer, roleLabels } from "@/lib/auth";
 import { firstName } from "@/lib/format";
@@ -68,7 +69,12 @@ async function RoleOverview({ params }: { params: PageProps<"/workspace/[role]">
         <p>Demo environment. Every person and case is synthetic. Tick a task to try it: changes save to the dev database.</p>
       </div>
 
-      {role === "admin" ? <RolesShortcut /> : null}
+      {role === "admin" ? (
+        <div className="grid gap-4 lg:grid-cols-2">
+          <RolesShortcut />
+          {labEnabled() ? <VerificationShortcut /> : null}
+        </div>
+      ) : null}
 
       {data.stats.length ? <StatGrid stats={data.stats} /> : null}
 
@@ -94,18 +100,49 @@ async function RoleOverview({ params }: { params: PageProps<"/workspace/[role]">
 /** Admin only: opens the page that explains each role's purpose and access. */
 function RolesShortcut() {
   return (
-    <section aria-labelledby="roles-shortcut" className="card flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:gap-5 sm:p-6">
-      <span className="flex size-12 shrink-0 items-center justify-center rounded-[14px] text-white" style={{ background: roleConfigs.admin.tile }}>
-        <KeyFilled className="size-6" />
-      </span>
-      <div className="min-w-0 flex-1">
-        <h2 id="roles-shortcut" className="text-[17px] font-semibold">Roles and access</h2>
-        <p className="mt-0.5 text-[14px] leading-[20px] text-label-2">The six roles in PLAR, what each one is for and what each can see and do.</p>
+    <section aria-labelledby="roles-shortcut" className="card flex flex-col gap-4 p-5 sm:p-6">
+      <div className="flex items-start gap-4">
+        <span className="flex size-12 shrink-0 items-center justify-center rounded-[14px] text-white" style={{ background: roleConfigs.admin.tile }}>
+          <KeyFilled className="size-6" />
+        </span>
+        <div className="min-w-0">
+          <h2 id="roles-shortcut" className="text-[17px] font-semibold">Roles and access</h2>
+          <p className="mt-0.5 text-[14px] leading-[20px] text-label-2">The six roles in PLAR, what each one is for and what each can see and do.</p>
+        </div>
       </div>
-      <ButtonLink href="/workspace/admin/roles" className="w-full sm:w-auto">
-        Open roles and access
-        <ArrowRight aria-hidden className="size-4" />
-      </ButtonLink>
+      <div className="mt-auto flex flex-wrap gap-2">
+        <ButtonLink href="/workspace/admin/roles" variant="secondary" className="w-full sm:w-auto">
+          Open roles and access
+          <ArrowRight aria-hidden className="size-4" />
+        </ButtonLink>
+      </div>
+    </section>
+  );
+}
+
+/** Admin only, when the verification lab is on: run the face, head-movement and ID check, then review it. */
+function VerificationShortcut() {
+  return (
+    <section aria-labelledby="verify-shortcut" className="card flex flex-col gap-4 p-5 sm:p-6">
+      <div className="flex items-start gap-4">
+        <span className="flex size-12 shrink-0 items-center justify-center rounded-[14px] bg-[#0F8C82] text-white">
+          <IdCardFilled className="size-6" />
+        </span>
+        <div className="min-w-0">
+          <h2 id="verify-shortcut" className="text-[17px] font-semibold">Test the identity check</h2>
+          <p className="mt-0.5 text-[14px] leading-[20px] text-label-2">Take the face photo, head-movement video and ID photos, then review the result.</p>
+        </div>
+      </div>
+      <div className="mt-auto flex flex-wrap gap-2">
+        <ButtonLink href="/verify" className="w-full sm:w-auto">
+          <ScanFace aria-hidden className="size-4" />
+          Start a test
+        </ButtonLink>
+        <ButtonLink href="/testing" variant="neutral" className="w-full sm:w-auto">
+          <ShieldCheck aria-hidden className="size-4" />
+          Identity checks
+        </ButtonLink>
+      </div>
     </section>
   );
 }
